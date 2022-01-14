@@ -1,0 +1,90 @@
+<template>
+  <div class="controlTools">
+    <measure v-if="this.toolComponents.indexOf('measure')>=0"></measure>
+    <draw v-if="this.toolComponents.indexOf('draw')>=0" :enable-menu-control="true" @drawcreate="handleDraw"></draw>
+    <fullScreen v-if="this.toolComponents.indexOf('fullScreen')>=0" :initScreen="false"></fullScreen>
+    <tian v-if="this.toolComponents.indexOf('tian')>=0" :wmtsMap="wmtsMap"></tian>
+    <home v-if="this.toolComponents.indexOf('home')>=0" :cameraView="cameraView"></home>
+  </div>
+</template>
+
+<script>
+import Draw from './Draw';
+import Measure from './Mesure';
+import FullScreen from "./FullScreen";
+import TianMap from "./TianMap";
+import Home from "./Home";
+
+export default {
+  name: "tools",
+  components: {
+    'draw': Draw,
+    'measure': Measure,
+    'fullScreen': FullScreen,
+    'tian': TianMap,
+    'home': Home
+  },
+  props: {
+    toolComponents: {
+      type: Array,
+      default: () => {
+        return ['measure', 'draw', 'fullScreen', 'tian', 'home'];
+      }
+    },
+    wmtsMap: {
+      type: Object
+    },
+    cameraView: {
+      type: Object
+    }
+  },
+  data() {
+    return {
+      wmtsMap: this.props.wmtsMap,
+      cameraView: this.props.cameraView
+    };
+  },
+  computed: {
+    renderTool(item) {
+      return this.toolComponents.indexOf(item) >= 0;
+    }
+  },
+  methods: {
+    handleDraw(payload) {
+      console.log(payload);
+    }
+  }
+};
+</script>
+
+<style lang="scss">
+.controlTools {
+  position: absolute;
+  right: 1em;
+  bottom: 2em;
+  width: 2em;
+
+  .tool-item {
+    width: 2em;
+    height: 2em;
+    background-color: var(--background-base);
+    color: var(--text-color);
+    border: 1px solid var(--border-color-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--hover-color);
+    }
+  }
+
+  .toolbar-wrapper {
+    position: absolute;
+    right: 100%;
+    top: 0;
+    display: flex;
+  }
+}
+</style>

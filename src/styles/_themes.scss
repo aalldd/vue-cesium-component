@@ -1,0 +1,15 @@
+// 默认主题
+$default-theme : (
+  base-color: #ddd,
+  border-color: #000
+);
+//红色主题
+$red-theme : (
+  base-color: red,
+  border-color: red
+);
+//定义映射集合
+$themes: (
+  default-theme: $default-theme,
+  red-theme: $red-theme
+);
