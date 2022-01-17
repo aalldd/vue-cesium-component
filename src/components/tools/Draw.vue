@@ -35,7 +35,7 @@ import Icon from '../common/Icon';
 
 const {Mapgis3dDraw} = window.Mapgis3d;
 export default {
-  name: "mapgis-drawer",
+  name: "municipal-drawer",
   inject: ['Cesium', 'CesiumZondy', 'webGlobe'],
   components: {
     'mapgis-3d-draw': Mapgis3dDraw,

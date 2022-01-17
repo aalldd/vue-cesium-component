@@ -4,7 +4,7 @@
 
 <script>
 export default {
-  name: "layerControl",
+  name: "municipal-layerControl",
   inject: ["view"],
   mounted() {
     let {view} = this;

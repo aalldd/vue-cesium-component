@@ -8,7 +8,7 @@
 import Icon from '../common/Icon';
 
 export default {
-  name: "FullScreen",
+  name: "municipal-home",
   inject: ['Cesium', 'webGlobe'],
   components: {
     'mapgis-icon': Icon

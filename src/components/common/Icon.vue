@@ -6,7 +6,7 @@
 <script>
 import './svg'
 export default {
-  name:'mapgis-icon',
+  name:'municipal-icon',
   props: ['name']
 }
 </script>

@@ -8,7 +8,7 @@
 import Icon from '../common/Icon';
 
 export default {
-  name: "FullScreen",
+  name: "municipal-fullScreen",
   components: {
     'mapgis-icon': Icon
   },

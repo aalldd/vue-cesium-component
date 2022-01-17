@@ -36,7 +36,7 @@ import CursorTip from '../common/CursorTip';
 
 const {Mapgis3dMeasure} = window.Mapgis3d;
 export default {
-  name: 'mapgis-measure',
+  name: 'municipal-measure',
   components: {
     'mapgis-3d-measure': Mapgis3dMeasure,
     'mapgis-icon': Icon,

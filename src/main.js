@@ -8,14 +8,14 @@ import '@mapgis/webclient-vue-cesium/dist-libs/webclient-vue-cesium.css';
 import './assets/index.scss'
 import VueCesium from '@mapgis/webclient-vue-cesium'
 
-import IgsDocLayer from '@/components/BaseMap/IgsDocLayer'
+import CommonLayer from '@/components/baseMap/CommonLayer'
 
 import MapgisUi from '@mapgis/webclient-vue-ui';
 
 Vue.use(MapgisUi);
 Vue.use(Antd);
 
-Vue.component('igs-doc-layer',IgsDocLayer)
+Vue.component('commonLayer',CommonLayer)
 
 Vue.config.productionTip = false;
 

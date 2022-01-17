@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: "cursorTip",
+  name: "municipal-cursorTip",
   data() {
     return {
       floatLeft: 0,

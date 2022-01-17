@@ -1,7 +1,7 @@
 <script>
 const {MapgisWebScene} = window.Mapgis3d;
 export default {
-  name: "webScene",
+  name: "municipal-webScene",
   extends:MapgisWebScene
 };
 </script>

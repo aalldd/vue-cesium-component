@@ -1,0 +1,48 @@
+$min-height: 6em;
+$min-width: 6em;
+$panel-background: #fff;
+$panel-border-radius: 4px;
+$panel-border-color: #ccc;
+$text-color:#000;
+$font-size-sm:12px;
+$font-size-base:16px;
+$font-size-lg:24px;
+$panel-padding:10px;
+
+//mixins
+
+//控制文本溢出，传参，最多显示几行文本
+@mixin ellipsisBasic($clamp:2) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $clamp;
+}
+
+@mixin nowrap() {
+  white-space: nowrap;
+}
+
+@mixin absolute($top: 0, $right: 0, $bottom: 0, $left: 0) {
+  position: absolute;
+  top: $top;
+  right: $right;
+  bottom: $bottom;
+  left: $left;
+}
+
+@mixin boxShadow() {
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+@mixin flex($flex-flow: row nowrap, $align-items: '', $justify-content: '') {
+  display: flex;
+  flex-flow: $flex-flow;
+  align-items: $align-items;
+  justify-content: $justify-content;
+}
+
+@mixin border($border-width:1px,$border-type:solid,$border-color:$panel-border-color) {
+  border: $border-width $border-type $border-color;
+}

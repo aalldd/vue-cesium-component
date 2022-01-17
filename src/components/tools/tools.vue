@@ -16,7 +16,7 @@ import TianMap from "./TianMap";
 import Home from "./Home";
 
 export default {
-  name: "tools",
+  name: "municipal-tools",
   components: {
     'draw': Draw,
     'measure': Measure,
@@ -25,6 +25,13 @@ export default {
     'home': Home
   },
   props: {
+    vueKey: {
+      type: String,
+      default: 'default'
+    },
+    vueIndex: {
+      type: Number
+    },
     toolComponents: {
       type: Array,
       default: () => {
@@ -40,9 +47,13 @@ export default {
   },
   data() {
     return {
-      wmtsMap: this.props.wmtsMap,
-      cameraView: this.props.cameraView
+      wmtsMapObj: {},
+      cameraViewObj: {}
     };
+  },
+  updated() {
+    this.wmtsMapObj = this.wmtsMap;
+    this.cameraViewObj = this.cameraView;
   },
   computed: {
     renderTool(item) {

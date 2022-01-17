@@ -1,14 +1,40 @@
-import Vue from 'vue';
-import MapgisUi from '@mapgis/webclient-vue-ui';
-import '@mapgis/webclient-vue-ui/dist-libs/webclient-vue-ui.css';
-import '@mapgis/webclient-vue-cesium/dist-libs/webclient-vue-cesium.css';
-import VueCesium from '@mapgis/webclient-vue-cesium';
-import flood from "./components/analysis/flood";
-import IgsDocLayer from './components/BaseMap/IgsDocLayer';
-import Measure from './components/tools/Mesure';
-import Draw from './components/tools/Draw'
+//basemap 图层场景
+import MunicipalCommonLayer from './components/baseMap/CommonLayer'
+import MunicipalArcgisMap from './components/baseMap/ArcgisMap'
+import MunicipalArcgisTileLayer from './components/baseMap/ArcgisTileLayer'
+import MunicipalEchartsLayer from './components/baseMap/EchartsLayer'
+import MunicipalIgsM3d from './components/baseMap/IgsM3d'
+import MunicipalIgsTileLayer from './components/baseMap/IgsTileLayer'
+import MunicipalIgsTrerain from './components/baseMap/IgsTrerain'
+import MunicipalIgsVectorlayer from './components/baseMap/IgsVectorlayer'
+import MunicipalIgsMapvLayer from './components/baseMap/MapvLayer'
+import MunicipalOgcWmsLayer from './components/baseMap/OgcWmsLayer'
+import MunicipalVectortileLayer from './components/baseMap/VectortileLayer'
+import MunicipalWebScene from './components/baseMap/WebScene'
+import MunicipalWmtsDocLayer from './components/baseMap/WmtsDocLayer'
 
-Vue.use(MapgisUi);
-Vue.use(VueCesium);
+//分析功能
+import MunicipalFlood from './components/analysis/flood'
 
-export {flood, IgsDocLayer,Measure,Draw};
+//地图工具
+import MunicipalTool from './components/tools/tools'
+
+export {
+  MunicipalCommonLayer,
+  MunicipalArcgisMap,
+  MunicipalArcgisTileLayer,
+  MunicipalEchartsLayer,
+  MunicipalIgsM3d,
+  MunicipalIgsTileLayer,
+  MunicipalIgsTrerain,
+  MunicipalIgsVectorlayer,
+  MunicipalIgsMapvLayer,
+  MunicipalOgcWmsLayer,
+  MunicipalVectortileLayer,
+  MunicipalWebScene,
+  MunicipalWmtsDocLayer,
+  MunicipalFlood,
+  MunicipalTool
+}
+
+

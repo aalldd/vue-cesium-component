@@ -1,5 +1,5 @@
 <template>
-  <igs-doc-layer :height="height"
+  <commonLayer :height="height"
                  class="mapWrapper"
                  :plugin-path="pluginPath"
                  :lib-path="libPath"
@@ -7,29 +7,18 @@
                  :m3dInfos="m3dInfos"
   >
     <router-view></router-view>
-    <wmts-doc-layer
-      :baseUrl="url"
-      :wmtsLayer="wmtsLayer"
-      :tileMatrixSet="tileMatrixSet"
-      :tilingScheme="tilingScheme"
-      :format="format"
-      :token="token"
-      @load="getWmtsInfo"
-    ></wmts-doc-layer>
-    <tools :wmtsMap="this.wmtsMap" :cameraView="this.cameraView"></tools>
-  </igs-doc-layer>
+    <tools :wmtsMap="wmtsMap" :cameraView="cameraView"></tools>
+  </commonLayer>
 </template>
 
 <style lang="scss" scoped>
 </style>
 
 <script>
-import WmtsDocLayer from "@/components/BaseMap/WmtsDocLayer";
 import tools from "@/components/tools/tools";
 
 export default {
   components: {
-    'wmts-doc-layer': WmtsDocLayer,
     'tools': tools
   },
   data() {
@@ -62,16 +51,17 @@ export default {
         key: "tk",
         value: "9c157e9585486c02edf817d2ecbc7752"
       },
+      wmtsMap:null,
       cameraView: {
         destination: {
-          x: -5087907.392038159,
-          y: 14207074.175879652,
-          z: 3655215.2541255946
+          x: -2416948.392038159,
+          y: 5372543.175879652,
+          z: 2444631.2541255946
         },
         orientation: {
-          heading: 6.1827568973283045,
-          pitch: -1.2409374391413084,
-          roll: 0.0003114284469649675
+          heading: 0.08752,
+          pitch: -0.689042,
+          roll: 0.0002114284469649675
         }
       }
     };
