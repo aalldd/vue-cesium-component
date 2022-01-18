@@ -1,19 +1,29 @@
 <!--/**-->
 <!--* 粒子分析-基于平台二次封装-->
 <!--* 参数列表见props-->
-<!--* created by wangshiyang    2021.01-10-->
+<!--* created by wangshiyang    2021.01-18-->
 <!--*/-->
 <template>
-  <mapgis-ui-card class="storybook-ui-card">
-    <div class="mapgis-ui-particular">
+  <m-panel :draggable="true" :title="title" :need-expand="true">
+      <template v-slot:content>
 
-    </div>
-  </mapgis-ui-card>>
+      </template>
+  </m-panel>
 </template>
 
 <script>
+import Panel from '../common/Panel';
 export default {
-  name: "particular"
+  name: "particular",
+  components:{
+    'm-panel':Panel
+  },
+  props:{
+    title:{
+      type:String,
+      default:'粒子分析'
+    }
+  }
 };
 </script>
 

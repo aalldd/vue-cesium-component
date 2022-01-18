@@ -77,6 +77,11 @@ export default {
               menuName: '淹没分析',
               menuRoute: 'flood',
               key: '4-0'
+            },
+            {
+              menuName: '淹没分析2',
+              menuRoute: 'flood2',
+              key: '4-1'
             }
           ]
         }

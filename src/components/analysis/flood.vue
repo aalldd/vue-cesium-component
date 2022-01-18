@@ -4,68 +4,68 @@
 <!--* created by wangshiyang    2021.11.25-->
 <!--*/-->
 <template>
-  <m-panel title="淹没分析" :need-close="true" :need-expand="true" :panel-style="{
+  <div class="flood">
+    <rain :draggable="draggable" v-if="needRain" title="降雨信息" :rain-style="{
+    width:'400px',marginBottom:'20px'
+  }"></rain>
+    <m-panel :draggable="draggable" :title="title" :need-close="closeable" :need-expand="expandable" :panel-style="{
     width:'400px'
   }">
-    <template v-slot:extra>
-      <div>
-        extra
-      </div>
-    </template>
-    <template v-slot:content>
-      <div class="content">
-        <a-row>
-          <div class="input-item" v-if="components.indexOf('淹没速度')>=0">
-            <span class="input-tag">淹没速度:</span>
-            <a-input v-model="floodSpeed"></a-input>
-          </div>
-          <div class="input-item" v-if="components.indexOf('最低高度')>=0">
-            <span class="input-tag">最低高度:</span>
-            <a-input v-model="minHeight" :disabled="minHeightControl"></a-input>
-          </div>
-          <div class="input-item" v-if="components.indexOf('最高高度')>=0">
-            <span class="input-tag">最高高度:</span>
-            <a-input v-model="maxHeight" :disabled="true"></a-input>
-          </div>
-          <div class="input-item" v-if="components.indexOf('淹没高度')>=0">
-            <span class="input-tag">淹没高度:</span>
-            <a-input v-model="floodHeight"></a-input>
-          </div>
-          <div class="input-item" v-if="components.indexOf('反射光线强度')>=0">
-            <span class="input-tag">反射光线强度:</span>
-            <a-input v-model="specularIntensity"></a-input>
-          </div>
-          <div class="input-item" v-if="components.indexOf('水波高度')>=0">
-            <span class="input-tag">水波高度:</span>
-            <a-input v-model="amplitude"></a-input>
-          </div>
-          <div class="input-item" v-if="components.indexOf('水纹速度')>=0">
-            <span class="input-tag">水纹速度:</span>
-            <a-input v-model="animationSpeed"></a-input>
-          </div>
-          <div class="input-item" v-if="components.indexOf('水纹频率')>=0">
-            <span class="input-tag">水纹频率:</span>
-            <a-input v-model="frequency"></a-input>
-          </div>
-          <div class="input-item" v-if="components.indexOf('洪水颜色')>=0">
-            <span class="input-tag">洪水颜色:</span>
-            <mapgis-ui-sketch-color-picker
-              :color.sync="floodColor"
-              :disableAlpha="false"
-            ></mapgis-ui-sketch-color-picker>
-          </div>
-        </a-row>
-      </div>
-      <div class="buttons">
-        <a-button type="primary" @click="analysis">分析</a-button>
-        <a-button type="info" @click="remove">清除</a-button>
-      </div>
-    </template>
-  </m-panel>
+      <template v-slot:content>
+        <div class="content">
+          <a-row>
+            <div class="input-item" v-if="components.indexOf('淹没速度')>=0">
+              <span class="input-tag">淹没速度:</span>
+              <a-input v-model="floodSpeed"></a-input>
+            </div>
+            <div class="input-item" v-if="components.indexOf('最低高度')>=0">
+              <span class="input-tag">最低高度:</span>
+              <a-input v-model="startHeight" :disabled="!minHeightControl"></a-input>
+            </div>
+            <div class="input-item" v-if="components.indexOf('最高高度')>=0">
+              <span class="input-tag">最高高度:</span>
+              <a-input v-model="maxHeight" :disabled="true"></a-input>
+            </div>
+            <div class="input-item" v-if="components.indexOf('淹没高度')>=0">
+              <span class="input-tag">淹没高度:</span>
+              <a-input v-model="floodHeight"></a-input>
+            </div>
+            <div class="input-item" v-if="components.indexOf('反射光线强度')>=0">
+              <span class="input-tag">反射光线强度:</span>
+              <a-input v-model="specularIntensity"></a-input>
+            </div>
+            <div class="input-item" v-if="components.indexOf('水波高度')>=0">
+              <span class="input-tag">水波高度:</span>
+              <a-input v-model="amplitude"></a-input>
+            </div>
+            <div class="input-item" v-if="components.indexOf('水纹速度')>=0">
+              <span class="input-tag">水纹速度:</span>
+              <a-input v-model="animationSpeed"></a-input>
+            </div>
+            <div class="input-item" v-if="components.indexOf('水纹频率')>=0">
+              <span class="input-tag">水纹频率:</span>
+              <a-input v-model="frequency"></a-input>
+            </div>
+            <div class="input-item" v-if="components.indexOf('洪水颜色')>=0">
+              <span class="input-tag">洪水颜色:</span>
+              <mapgis-ui-sketch-color-picker
+                :color.sync="floodColor"
+                :disableAlpha="false"
+                class="colorPicker"
+              ></mapgis-ui-sketch-color-picker>
+            </div>
+          </a-row>
+        </div>
+        <div class="buttons">
+          <a-button type="primary" @click="analysis">分析</a-button>
+          <a-button type="info" @click="remove">清除</a-button>
+        </div>
+      </template>
+    </m-panel>
+  </div>
 </template>
 
 <script>
-const {Mapgis3dFlood} = window.Mapgis3d;
 import {
   colorToCesiumColor,
   isDepthTestAgainstTerrainEnable,
@@ -73,13 +73,14 @@ import {
   calMinTerrainHeight
 } from "../../util/util";
 import Panel from '../common/Panel';
+import Rain from './rain';
 
 export default {
   name: 'municipal-flood',
   inject: ['Cesium', 'CesiumZondy', 'webGlobe'],
   components: {
-    'mapgis-3d-analysis-flood': Mapgis3dFlood,
-    'm-panel': Panel
+    'm-panel': Panel,
+    'rain': Rain
   },
   props: {
     components: {
@@ -95,10 +96,30 @@ export default {
     vueIndex: {
       type: Number
     },
+    needRain: {
+      type: Boolean,
+      default: true
+    },
+    title: {
+      type: String,
+      default: '淹没分析'
+    },
+    closeable: {
+      type: Boolean,
+      default: true
+    },
+    expandable: {
+      type: Boolean,
+      default: true
+    },
+    draggable:{
+      type:Boolean,
+      default:true
+    },
     //是否需要自己控制最小的淹没高度，如果不控制，默认取范围内的最小地形高度
     minHeightControl: {
       type: Boolean,
-      default: true
+      default: false
     },
     //是否可以淹没超过最大地形高度，默认值否
     allowFloodOverTerrain: {
@@ -111,7 +132,7 @@ export default {
     },
     initFloodSpeed: {
       type: Number,
-      default: 20
+      default: 1
     },
     initFloodColor: {
       type: String,
@@ -137,11 +158,14 @@ export default {
       type: Number,
       default: 500
     },
-    initIsDepthTestAgainstTerrainEnable: true
+    initIsDepthTestAgainstTerrainEnable: {
+      type: Boolean,
+      default: true
+    }
   },
   data() {
     return {
-      floodSpeed: 20,
+      floodSpeed: 1,
       floodColor: 'rgba(149,232,249,0.5)',
       //淹没水体起始高度
       startHeight: 0,
@@ -159,14 +183,14 @@ export default {
   computed: {
     maxHeight: {
       get() {
-        if (!this.allowFloodOverTerrain) {
-          return Math.min(this.minHeight + this.floodHeight, this.maxTerrainHeight);
+        if (!this.allowFloodOverTerrain && (Number(this.startHeight) + Number(this.floodHeight)) >= Number(this.maxTerrainHeight)) {
+          return Number(this.maxTerrainHeight);
         } else {
-          return Math.max(this.minHeight + this.floodHeight, this.maxTerrainHeight);
+          return Number(this.startHeight) + Number(this.floodHeight);
         }
       },
       set(value) {
-        this.maxHeight = value;
+        this.maxHeight = Number(value);
       }
     }
   },
@@ -316,7 +340,6 @@ export default {
       let {floodAnalysis} = options;
       const {viewer} = this.webGlobe;
       const {
-        maxHeight,
         floodColor,
         floodSpeed,
         specularIntensity,
@@ -331,11 +354,21 @@ export default {
         }
       );
       const {_minHeight, _maxHeight} = calMinTerrainHeight(this.webGlobe, positions);
+      //将最大地形高度保存，供计算淹没高度
       this.maxTerrainHeight = _maxHeight;
-      let maxFloodheight = this.allowFloodOverTerrain ? maxHeight : this.maxTerrainHeight;
-      if (this.minHeightControl) {
-        this.minHeight = _minHeight;
+
+      let maxFloodheight;
+      if (!this.allowFloodOverTerrain && (Number(this.floodHeight) + _minHeight) >= _maxHeight) {
+        maxFloodheight = _maxHeight;
+        this.floodHeight = _maxHeight - _minHeight;
+      } else {
+        maxFloodheight = Number(this.floodHeight) + _minHeight;
       }
+
+      if (!this.minHeightControl) {
+        this.startHeight = _minHeight;
+      }
+
       // 初始化洪水淹没分析类
       floodAnalysis =
         floodAnalysis ||
@@ -349,7 +382,7 @@ export default {
         });
 
       // 洪水淹没区域最低高度
-      floodAnalysis.startHeight = Number(this.minHeight);
+      floodAnalysis.startHeight = Number(this.startHeight);
       // 洪水颜色
       floodAnalysis.floodColor = this._getColor(floodColor);
       // 水纹频率 指波浪的个数
@@ -465,10 +498,17 @@ export default {
 .buttons {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
 
   > button {
     margin: 0 10px;
   }
+}
+
+.flood {
+  position: absolute;
+  right: 4em;
+  top: 4em;
 }
 
 .input-item {
@@ -481,4 +521,8 @@ export default {
   }
 }
 
+.colorPicker {
+  flex: 1;
+  max-width: 200px;
+}
 </style>

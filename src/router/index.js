@@ -13,6 +13,11 @@ export default new Router({
           path: '/flood',
           name: 'flood',
           component: ()=>import('../components/analysis/flood')
+        },
+        {
+          path: '/flood2',
+          name: 'flood2',
+          component: ()=>import('../components/analysis/flood2')
         }
       ]
     }
