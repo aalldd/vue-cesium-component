@@ -1,10 +1,10 @@
 {
   "name": "municipal-cesium-components",
-  "version": "0.0.3",
+  "version": "0.0.7",
   "description": "基于mapgis-vue-cesium的二次封装框架",
   "main": "dist/municipal-vue-cesium.umd.min.js",
   "scripts": {
-    "serve": "node --max_old_space_size=8196 ./node_modules/@vue/cli-service/bin/vue-cli-service serve",
+    "serve": "vue-cli-service serve",
     "lint": "node --max_old_space_size=8196 ./node_modules/@vue/cli-service/bin/vue-cli-service lint",
     "expand": "node --max_old_space_size=8196 ./node_modules/@vue/cli-service/bin/vue-cli-service serve",
     "build": "node ./node_modules/@vue/cli-service/bin/vue-cli-service build --target lib --name municipal-vue-cesium src/index.js",

@@ -5,10 +5,11 @@
 <!--*/-->
 <template>
   <div class="flood">
-    <rain :draggable="draggable" v-if="needRain" title="降雨信息" :rain-style="{
+    <rain :draggable="draggable" @close="$emit('onClose')" v-if="needRain" title="降雨信息" :rain-style="{
     width:'400px',marginBottom:'20px'
   }"></rain>
-    <m-panel :draggable="draggable" :title="title" :need-close="closeable" :need-expand="expandable" :panel-style="{
+    <m-panel :draggable="draggable" @close="$emit('onClose')" :title="title" :need-close="closeable"
+             :need-expand="expandable" :panel-style="{
     width:'400px'
   }">
       <template v-slot:content>
@@ -112,9 +113,9 @@ export default {
       type: Boolean,
       default: true
     },
-    draggable:{
-      type:Boolean,
-      default:true
+    draggable: {
+      type: Boolean,
+      default: true
     },
     //是否需要自己控制最小的淹没高度，如果不控制，默认取范围内的最小地形高度
     minHeightControl: {
@@ -177,7 +178,8 @@ export default {
       frequency: 500,
       //淹没高度，洪水距离最小地面高程淹没的深度
       floodHeight: 10,
-      maxTerrainHeight: 0
+      maxTerrainHeight: 0,
+      positions: null
     };
   },
   computed: {

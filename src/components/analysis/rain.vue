@@ -1,8 +1,8 @@
 <template>
-  <m-panel :draggable="draggable" :title="title" :need-expand="true" :panel-style="rainStyle">
+  <m-panel :draggable="draggable" @click="$emit('onClose')" :title="title" :need-expand="true" :panel-style="rainStyle">
     <template v-slot:extra>
       <span :style="{marginRight:'10px'}">展示降雨:</span>
-      <a-switch default-checked @change="onToggleRain" :checked="raining"/>
+      <a-switch @change="onToggleRain" :checked="raining"/>
     </template>
     <template v-slot:content>
       <a-row>
@@ -47,7 +47,7 @@ export default {
   data() {
     return {
       choosedLevel: '小雨',
-      raining: true,
+      raining: false,
       rainMount: null,
       rainObj: null,
       defaultRainParams: {
@@ -56,7 +56,7 @@ export default {
         // 倾斜角度
         angle: 0,
         // 速度
-        speed: 14,
+        speed: 6,
         // 附加长度
         rainLength: 1,
         // 混合度
@@ -64,7 +64,7 @@ export default {
         // 亮度
         brightnessShift: 0,
         // 密度
-        density: 0.3,
+        density: 0.1,
         // 色调
         hueShift: 1
       }
@@ -106,12 +106,12 @@ export default {
       type: Object,
       default: () => {
         return {
-          '小雨': 8,
-          '中雨': 16,
-          '大雨': 30,
-          '暴雨': 60,
-          '大暴雨': 100,
-          '特大暴雨': 140
+          '小雨': 4,
+          '中雨': 8,
+          '大雨': 12,
+          '暴雨': 20,
+          '大暴雨': 30,
+          '特大暴雨': 50
         };
       }
     },
@@ -143,18 +143,13 @@ export default {
     },
     startRain() {
       if (this.raining) {
-        let currentSpeed, currentDensity;
-        const defaultDensity = this.defaultRainParams.density;
-        const defaultSpeed = this.defaultRainParams.speed;
+        let currentSpeed;
         for (let key in this.rainLevelToSpeed) {
           if (key === this.choosedLevel) {
             currentSpeed = this.rainLevelToSpeed[key];
-            const rate = (currentSpeed / defaultSpeed).toFixed(2);
-            currentDensity = (rate * defaultDensity).toFixed(2);
           }
         }
-        this.defaultRainParams.speed = currentSpeed;
-        this.defaultRainParams.density = Number(currentDensity);
+        this.defaultRainParams.speed = Number(currentSpeed);
         const params = _.cloneDeep(this.defaultRainParams);
         this.rainObj = this.createRain(params);
       } else {

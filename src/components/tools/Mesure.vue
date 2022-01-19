@@ -33,12 +33,9 @@
 <script>
 import Icon from '../common/Icon';
 import CursorTip from '../common/CursorTip';
-
-const {Mapgis3dMeasure} = window.Mapgis3d;
 export default {
   name: 'municipal-measure',
   components: {
-    'mapgis-3d-measure': Mapgis3dMeasure,
     'mapgis-icon': Icon,
     'mapgis-cursorTip': CursorTip
   },

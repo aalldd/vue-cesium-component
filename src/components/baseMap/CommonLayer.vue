@@ -19,14 +19,8 @@
 </template>
 
 <script>
-const {MapgisWebScene, Mapgis3dIgsM3d, Mapgis3dStatebar} = window.Mapgis3d;
 export default {
   name: "municipal-commonLayer",
-  components: {
-    'mapgis-web-scene': MapgisWebScene,
-    'mapgis-3d-igs-m3d': Mapgis3dIgsM3d,
-    'mapgis-3d-statebar': Mapgis3dStatebar
-  },
   provide() {
     return {
       get Cesium() {
