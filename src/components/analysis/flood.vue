@@ -5,10 +5,10 @@
 <!--*/-->
 <template>
   <div class="flood">
-    <rain :draggable="draggable" @close="$emit('onClose')" v-if="needRain" title="降雨信息" :rain-style="{
+    <municipal-rain :draggable="draggable" @close="$emit('onClose')" v-if="needRain" title="降雨信息" :rain-style="{
     width:'400px',marginBottom:'20px'
-  }"></rain>
-    <m-panel :draggable="draggable" @close="$emit('onClose')" :title="title" :need-close="closeable"
+  }"></municipal-rain>
+    <municipal-panel :draggable="draggable" @close="$emit('onClose')" :title="title" :need-close="closeable"
              :need-expand="expandable" :panel-style="{
     width:'400px'
   }">
@@ -62,7 +62,7 @@
           <a-button type="info" @click="remove">清除</a-button>
         </div>
       </template>
-    </m-panel>
+    </municipal-panel>
   </div>
 </template>
 
@@ -73,16 +73,10 @@ import {
   setDepthTestAgainstTerrainEnable,
   calMinTerrainHeight
 } from "../../util/util";
-import Panel from '../common/Panel';
-import Rain from './rain';
 
 export default {
   name: 'municipal-flood',
   inject: ['Cesium', 'CesiumZondy', 'webGlobe'],
-  components: {
-    'm-panel': Panel,
-    'rain': Rain
-  },
   props: {
     components: {
       type: Array,

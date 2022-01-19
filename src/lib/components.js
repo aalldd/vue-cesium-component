@@ -3,10 +3,12 @@ export {default as MunicipalCommonLayer} from "../components/baseMap/CommonLayer
 
 //分析
 export {default as MunicipalFlood} from "../components/analysis/flood";
+export {default as MunicipalRain} from '../components/analysis/rain'
 
 //ui组件
 export {default as MunicipalIcon} from "../components/common/Icon";
 export {default as MunicipalCursorTip} from "../components/common/CursorTip";
+export {default as MunicipalPanel} from '../components/common/Panel'
 
 //地图工具
 export {default as MunicipalDraw} from "../components/tools/Draw";

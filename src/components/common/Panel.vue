@@ -49,7 +49,7 @@ import Icon from './Icon';
 import VueDraggableResizable from 'vue-draggable-resizable';
 
 export default {
-  name: 'municipal-cesium-panel',
+  name: 'municipal-panel',
   components: {
     'm-icon': Icon,
     'vr': VueDraggableResizable

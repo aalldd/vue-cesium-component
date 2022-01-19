@@ -1,29 +1,16 @@
 <template>
   <div class="controlTools">
-    <measure v-if="this.toolComponents.indexOf('measure')>=0"></measure>
-    <draw v-if="this.toolComponents.indexOf('draw')>=0" :enable-menu-control="true" @drawcreate="handleDraw"></draw>
-    <fullScreen v-if="this.toolComponents.indexOf('fullScreen')>=0" :initScreen="false"></fullScreen>
-    <tian v-if="this.toolComponents.indexOf('tian')>=0" :wmtsMap="wmtsMap"></tian>
-    <home v-if="this.toolComponents.indexOf('home')>=0" :cameraView="cameraView"></home>
+    <municipal-measure v-if="this.toolComponents.indexOf('measure')>=0"></municipal-measure>
+    <municipal-draw v-if="this.toolComponents.indexOf('draw')>=0" :enable-menu-control="true" @drawcreate="handleDraw"></municipal-draw>
+    <municipal-fullScreen v-if="this.toolComponents.indexOf('fullScreen')>=0" :initScreen="false"></municipal-fullScreen>
+    <municipal-tian v-if="this.toolComponents.indexOf('tian')>=0" :wmtsMap="wmtsMap"></municipal-tian>
+    <municipal-home v-if="this.toolComponents.indexOf('home')>=0" :cameraView="cameraView"></municipal-home>
   </div>
 </template>
 
 <script>
-import Draw from './Draw';
-import Measure from './Mesure';
-import FullScreen from "./FullScreen";
-import TianMap from "./TianMap";
-import Home from "./Home";
-
 export default {
-  name: "municipal-tools",
-  components: {
-    'draw': Draw,
-    'measure': Measure,
-    'fullScreen': FullScreen,
-    'tian': TianMap,
-    'home': Home
-  },
+  name: "municipal-tool",
   props: {
     vueKey: {
       type: String,

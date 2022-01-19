@@ -8,7 +8,7 @@
 import Icon from '../common/Icon';
 
 export default {
-  name: "municipal-tianMap",
+  name: "municipal-tian",
   components: {
     'mapgis-icon': Icon
   },

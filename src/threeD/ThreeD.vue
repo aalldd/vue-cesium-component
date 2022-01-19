@@ -1,5 +1,5 @@
 <template>
-  <commonLayer :height="height"
+  <municipal-commonLayer :height="height"
                  class="mapWrapper"
                  :plugin-path="pluginPath"
                  :lib-path="libPath"
@@ -7,20 +7,16 @@
                  :m3dInfos="m3dInfos"
   >
     <router-view></router-view>
-    <tools :wmtsMap="wmtsMap" :cameraView="cameraView"></tools>
-  </commonLayer>
+    <municipal-tool :wmtsMap="wmtsMap" :cameraView="cameraView"></municipal-tool>
+  </municipal-commonLayer>
 </template>
 
 <style lang="scss" scoped>
 </style>
 
 <script>
-import tools from "@/components/tools/tools";
 
 export default {
-  components: {
-    'tools': tools
-  },
   data() {
     return {
       height: 850,

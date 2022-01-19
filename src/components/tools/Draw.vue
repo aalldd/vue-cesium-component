@@ -33,7 +33,7 @@
 <script>
 import Icon from '../common/Icon';
 export default {
-  name: "municipal-drawer",
+  name: "municipal-draw",
   inject: ['Cesium', 'CesiumZondy', 'webGlobe'],
   components: {
     'mapgis-icon': Icon,

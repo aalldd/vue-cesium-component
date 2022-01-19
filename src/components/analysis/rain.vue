@@ -1,5 +1,5 @@
 <template>
-  <m-panel :draggable="draggable" @click="$emit('onClose')" :title="title" :need-expand="true" :panel-style="rainStyle">
+  <municipal-panel :draggable="draggable" @click="$emit('onClose')" :title="title" :need-expand="true" :panel-style="rainStyle">
     <template v-slot:extra>
       <span :style="{marginRight:'10px'}">展示降雨:</span>
       <a-switch @change="onToggleRain" :checked="raining"/>
@@ -31,19 +31,15 @@
         </div>
       </a-row>
     </template>
-  </m-panel>
+  </municipal-panel>
 </template>
 
 <script>
-import Panel from '../common/Panel';
 import _ from 'lodash';
 
 export default {
-  name: "rain",
+  name: "municipal-rain",
   inject: ['Cesium', 'CesiumZondy', 'webGlobe'],
-  components: {
-    'm-panel': Panel
-  },
   data() {
     return {
       choosedLevel: '小雨',
