@@ -3,7 +3,7 @@
                  class="mapWrapper"
                  :plugin-path="pluginPath"
                  :lib-path="libPath"
-                 :load="handleLoad"
+                 @load="handleLoad"
                  :m3dInfos="m3dInfos"
   >
     <router-view></router-view>
@@ -62,17 +62,15 @@ export default {
       }
     };
   },
-  created() {
-    this.view = null;
-    this.Cesium = null;
-    this.CesiumZondy = null;
-  },
   methods: {
     handleLoad(payload) {
       const {component: {webGlobe}, Cesium, CesiumZondy} = payload;
-      window.webGlobe = webGlobe;
-      window.Cesium = Cesium;
-      window.CesiumZondy = CesiumZondy;
+    },
+    createRain(options,webGlobe) {
+      const optionsParam = Cesium.defaultValue(options, {});
+      const collection = webGlobe.viewer.scene.postProcessStages;
+      const rain = Cesium.PostProcessStageLibrary.createRainStage(optionsParam);
+      collection.add(rain);
     },
     onM3dLoad(payload) {
       console.log(payload);

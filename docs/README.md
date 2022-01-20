@@ -15,62 +15,101 @@ footer: MIT Licensed
 # 按需引入
 ```javascript
 // main.js
-import {IgsDocLayer} from 'mapgis-cesium-components/dist/webclient-vue-cesium.umd.min'
+import {MunicipalCommonLayer} from 'municipal-cesium-components/dist/webclient-vue-cesium.umd.min'
 import 'mapgis-cesium-components/dist/webclient-vue-cesium.css'
-Vue.component('igs-doc-layer',IgsDocLayer)
+import 'municipal-cesium-components/dist/municipal-vue-cesium.css';
+import 'ant-design-vue/dist/antd.css';
+import '@mapgis/webclient-vue-ui/dist-libs/webclient-vue-ui.css';
+import '@mapgis/webclient-vue-cesium/dist-libs/webclient-vue-cesium.css';
+import VueCesium from '@mapgis/webclient-vue-cesium';
+import MapgisUi from '@mapgis/webclient-vue-ui';
+import Antd from 'ant-design-vue';
+Vue.component('municipal-commonLayer',MunicipalCommonLayer)
+Vue.use(VueCesium);
+Vue.use(Antd);
+Vue.use(MapgisUi);
 ```
 
 # 全局引入
 ```javascript
 // main.js
-import mapgisCesium from 'mapgis-cesium-components/dist/webclient-vue-cesium.umd.min'
-import 'mapgis-cesium-components/dist/webclient-vue-cesium.css'
-Vue.use(mapgisCesium)
+import MunicipalCesium from 'municipal-cesium-components'
+import 'municipal-cesium-components/dist/municipal-vue-cesium.css';
+import 'ant-design-vue/dist/antd.css';
+import '@mapgis/webclient-vue-ui/dist-libs/webclient-vue-ui.css';
+import '@mapgis/webclient-vue-cesium/dist-libs/webclient-vue-cesium.css';
+import VueCesium from '@mapgis/webclient-vue-cesium';
+import MapgisUi from '@mapgis/webclient-vue-ui';
+import Antd from 'ant-design-vue';
+import App from './App.vue';
+
+Vue.use(MunicipalCesium)
+Vue.use(VueCesium);
+Vue.use(Antd);
+Vue.use(MapgisUi);
 ```
 
 ```vue
 <template>
-  <igs-doc-layer :height="height"
-                 class="mapWrapper"
-                 :plugin-path="pluginPath"
-                 :lib-path="libPath"
-                 :load="handleLoad"
-                 :m3dInfos="m3dInfos"
-                 :needState="needState"
+  <municipal-commonLayer :height="mapHeight"
+                         class="mapWrapper"
+                         :plugin-path="pluginPath"
+                         :lib-path="libPath"
+                         :load="handleLoad"
+                         :m3dInfos="m3dInfos"
   >
-    <flood></flood>
-  </igs-doc-layer>
+    <municipal-tool :wmtsMap="wmtsMap" :cameraView="cameraView"></municipal-tool>
+    <municipal-flood></municipal-flood>
+  </municipal-commonLayer>
 </template>
 
 <script>
-
 export default {
   data() {
     return {
-      height: document.body.clientHeight ,
-      url: 'http://t0.tianditu.com/DataServer?T=vec_w&L={z}&Y={y}&X={x}&tk=9c157e9585486c02edf817d2ecbc7752',
-      baseUrl: 'http://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer',
-      baseUrl2: 'http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineCommunity/MapServer',
+      // 天地图地址
       pluginPath: '/static/cesium/webclient-cesium-plugin.min.js',
       libPath: '/static/cesium/Cesium.js',
-      m3dInfos:[
+      m3dInfos: [
         {
           maximumMemoryUsage: 1024,
           url: 'http://192.168.12.200:6163/igs/rest/g3d/lgzh0902',
           layers: '',
-          vueIndex:'0'
+          vueIndex: '0'
         }
       ],
-      tilesetList: [],
-      needState:true
+      wmtsMap:null,
+      cameraView: {
+        destination: {
+          x: -2416948.392038159,
+          y: 5372543.175879652,
+          z: 2444631.2541255946
+        },
+        orientation: {
+          heading: 0.08752,
+          pitch: -0.689042,
+          roll: 0.0002114284469649675
+        }
+      }
     };
+  },
+  computed:{
+    mapHeight(){
+      return document.body.clientHeight
+    }
   },
   methods: {
     handleLoad(payload) {
-      console.log('地图加载完毕')
+      const {component: {webGlobe}, Cesium, CesiumZondy} = payload;
+      window.webGlobe = webGlobe;
+      window.Cesium = Cesium;
+      window.CesiumZondy = CesiumZondy;
     },
     onM3dLoad(payload) {
-      console.log('m3d图层加载完毕')
+      console.log(payload);
+    },
+    getWmtsInfo(payload) {
+      this.wmtsMap = payload;
     }
   }
 };
@@ -79,6 +118,9 @@ export default {
 
 ::: tip 依赖
 [Vue.js 2.5+](https://github.com/vuejs/vue)
+[MapGIS/Ui 1.0+](https://github.com/vuejs/vue)
+[Ant-design-vue 1.7+](https://github.com/vuejs/vue)
+[Vue-draggable-resizable 2.3+](https://github.com/vuejs/vue)
 [MapGIS/Cesium 1.0+](https://www.npmjs.com/package/@mapgis/cesium)
 :::
 

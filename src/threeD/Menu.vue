@@ -79,8 +79,8 @@ export default {
               key: '4-0'
             },
             {
-              menuName: '淹没分析2',
-              menuRoute: 'flood2',
+              menuName: '降雨',
+              menuRoute: 'rain2',
               key: '4-1'
             }
           ]

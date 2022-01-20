@@ -4,7 +4,7 @@
     :libPath="libPath"
     :pluginPath="pluginPath"
     :height="height"
-    @load="load"
+    @load="handleLoad"
   >
     <mapgis-3d-igs-m3d v-for="item in m3dInfos"
                        :url="item.url"
@@ -43,9 +43,6 @@ export default {
       type: String,
       require: true
     },
-    load: {
-      type: Function
-    },
     height: {
       type: Number,
       default: 1000
@@ -56,6 +53,11 @@ export default {
     needState: {
       type: Boolean,
       default: true
+    }
+  },
+  methods:{
+    handleLoad(payload){
+      this.$emit('load',payload)
     }
   }
 };

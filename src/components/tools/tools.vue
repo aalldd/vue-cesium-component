@@ -1,7 +1,7 @@
 <template>
   <div class="controlTools">
-    <municipal-measure v-if="this.toolComponents.indexOf('measure')>=0"></municipal-measure>
-    <municipal-draw v-if="this.toolComponents.indexOf('draw')>=0" :enable-menu-control="true" @drawcreate="handleDraw"></municipal-draw>
+    <municipal-measure :vueKey="vueKey" v-if="this.toolComponents.indexOf('measure')>=0" @measureResult="handleMeasure"></municipal-measure>
+    <municipal-draw :vueKey="vueKey" v-if="this.toolComponents.indexOf('draw')>=0" :enable-menu-control="true" @drawcreate="handleDraw"></municipal-draw>
     <municipal-fullScreen v-if="this.toolComponents.indexOf('fullScreen')>=0" :initScreen="false"></municipal-fullScreen>
     <municipal-tian v-if="this.toolComponents.indexOf('tian')>=0" :wmtsMap="wmtsMap"></municipal-tian>
     <municipal-home v-if="this.toolComponents.indexOf('home')>=0" :cameraView="cameraView"></municipal-home>
@@ -49,7 +49,10 @@ export default {
   },
   methods: {
     handleDraw(payload) {
-      console.log(payload);
+      this.$emit('drawcreate',payload)
+    },
+    handleMeasure(payload){
+      this.$emit('measured',payload)
     }
   }
 };

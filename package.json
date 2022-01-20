@@ -1,6 +1,6 @@
 {
   "name": "municipal-cesium-components",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "基于mapgis-vue-cesium的二次封装框架",
   "main": "dist/municipal-vue-cesium.umd.min.js",
   "scripts": {
@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@mapgis/webclient-vue-cesium": "^10.5.5-3",
-    "@mapgis/webclient-vue-mapboxgl": "^10.5.5-5",
     "@mapgis/webclient-vue-ui": "^10.5.5-3",
     "@turf/turf": "^6.5.0",
     "ant-design-vue": "^1.7.8",
@@ -27,8 +26,6 @@
     "uglifyjs-webpack-plugin": "^2.2.0",
     "vue": "^2.6.11",
     "vue-draggable-resizable": "^2.3.0",
-    "vue-draggable-resizable-gorkys": "^2.4.8",
-    "vuedraggable": "^2.24.3",
     "vuex": "^3.6.2"
   },
   "devDependencies": {

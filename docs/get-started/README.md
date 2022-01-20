@@ -2,46 +2,65 @@
 
 ``` vue
 <template>
-  <igs-doc-layer :height="height"
-                 class="mapWrapper"
-                 :plugin-path="pluginPath"
-                 :lib-path="libPath"
-                 :load="handleLoad"
-                 :m3dInfos="m3dInfos"
-                 :needState="needState"
+  <municipal-commonLayer :height="mapHeight"
+                         class="mapWrapper"
+                         :plugin-path="pluginPath"
+                         :lib-path="libPath"
+                         :load="handleLoad"
+                         :m3dInfos="m3dInfos"
   >
-    /*此处可以嵌入组件*/
-  </igs-doc-layer>
+    <municipal-tool :wmtsMap="wmtsMap" :cameraView="cameraView"></municipal-tool>
+    <municipal-flood></municipal-flood>
+  </municipal-commonLayer>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      height: document.body.clientHeight ,
-      url: 'http://t0.tianditu.com/DataServer?T=vec_w&L={z}&Y={y}&X={x}&tk=9c157e9585486c02edf817d2ecbc7752',
-      baseUrl: 'http://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer',
-      baseUrl2: 'http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineCommunity/MapServer',
+      // 天地图地址
       pluginPath: '/static/cesium/webclient-cesium-plugin.min.js',
       libPath: '/static/cesium/Cesium.js',
-      m3dInfos:[
+      m3dInfos: [
         {
           maximumMemoryUsage: 1024,
           url: 'http://192.168.12.200:6163/igs/rest/g3d/lgzh0902',
           layers: '',
-          vueIndex:'0'
+          vueIndex: '0'
         }
       ],
-      tilesetList: [],
-      needState:true
+      wmtsMap:null,
+      cameraView: {
+        destination: {
+          x: -2416948.392038159,
+          y: 5372543.175879652,
+          z: 2444631.2541255946
+        },
+        orientation: {
+          heading: 0.08752,
+          pitch: -0.689042,
+          roll: 0.0002114284469649675
+        }
+      }
     };
+  },
+  computed:{
+    mapHeight(){
+      return document.body.clientHeight
+    }
   },
   methods: {
     handleLoad(payload) {
-      console.log('地图场景加载完毕')
+      const {component: {webGlobe}, Cesium, CesiumZondy} = payload;
+      window.webGlobe = webGlobe;
+      window.Cesium = Cesium;
+      window.CesiumZondy = CesiumZondy;
     },
     onM3dLoad(payload) {
-      console.log('m3d图层加载完毕')
+      console.log(payload);
+    },
+    getWmtsInfo(payload) {
+      this.wmtsMap = payload;
     }
   }
 };
@@ -51,42 +70,59 @@ export default {
 ## 安装
 
 ### ES6 方式
-
+为了节省打包体积,municipal-cesium-components包对应的依赖需用户手动安装并引入：
 ```bash
-安装mapgis-vue-ceisium:
-npm install mapgis-vue-ceisium
+安装mapgis-vue-ceisium以及对应的依赖:
+npm install municipal-cesium-components ant-design-vue vue-draggable-resizable @turf/turf @mapgis/webclient-vue-cesium @mapgis/webclient-vue-ui
 # 或者
-yarn add mapgis-vue-ceisium
+yarn add municipal-cesium-components ant-design-vue vue-draggable-resizable @turf/turf @mapgis/webclient-vue-cesium @mapgis/webclient-vue-ui
 ```
 
 在 main.js 中全局引入组件
 
 ```js
-import mapgisCesium from 'mapgis-cesium-components/dist/webclient-vue-cesium.umd.min'
-import 'mapgis-cesium-components/dist/webclient-vue-cesium.css'
+import MunicipalCesium from 'municipal-cesium-components'
+import 'municipal-cesium-components/dist/municipal-vue-cesium.css';
+import 'ant-design-vue/dist/antd.css';
+import '@mapgis/webclient-vue-ui/dist-libs/webclient-vue-ui.css';
+import '@mapgis/webclient-vue-cesium/dist-libs/webclient-vue-cesium.css';
+import VueCesium from '@mapgis/webclient-vue-cesium';
+import MapgisUi from '@mapgis/webclient-vue-ui';
+import Antd from 'ant-design-vue';
+import App from './App.vue';
 
-Vue.use(mapgisCesium)
+Vue.use(MunicipalCesium)
+Vue.use(VueCesium);
+Vue.use(Antd);
+Vue.use(MapgisUi);
 ```
 
 在 组件或者main.js 中按需引入组件
 
 ```js
-import {flood, IgsDocLayer} from 'mapgis-cesium-components/dist/webclient-vue-cesium.umd.min'
+// main.js
+import {MunicipalCommonLayer} from 'municipal-cesium-components/dist/webclient-vue-cesium.umd.min'
 import 'mapgis-cesium-components/dist/webclient-vue-cesium.css'
-
-Vue.component('flood', flood)
-Vue.component('igs-doc-layer', IgsDocLayer)
+import 'municipal-cesium-components/dist/municipal-vue-cesium.css';
+import 'ant-design-vue/dist/antd.css';
+import '@mapgis/webclient-vue-ui/dist-libs/webclient-vue-ui.css';
+import '@mapgis/webclient-vue-cesium/dist-libs/webclient-vue-cesium.css';
+import VueCesium from '@mapgis/webclient-vue-cesium';
+import MapgisUi from '@mapgis/webclient-vue-ui';
+import Antd from 'ant-design-vue';
+Vue.component('municipal-commonLayer',MunicipalCommonLayer)
+Vue.use(VueCesium);
+Vue.use(Antd);
+Vue.use(MapgisUi);
 ```
 
 ### Ceisum 库引入
 
-mapgis-cesium-components 是基于webclient-vue-cesium的一层封装，底层依赖 `@mapgis/cesium`。 除了本身需要安装以外，你还需要拷贝@mapgis/cesium
+municipal-cesium-components 是基于webclient-vue-cesium的一层封装，底层依赖 `@mapgis/cesium`。 除了本身需要安装以外，你还需要拷贝@mapgis/cesium
 
 ::: tip 为什么要使用@mapgis/cesium 由于 cesium 本身`涉及大量的纹理材质以及多线程Worker`， 公司内部修改版实现`M3D格式`， M3D`不是`3dtile，是中地数码自己独特的格式，与开源的
 3dtile 不是一种格式。很多高级分析功能`只能作用于M3D`,而不支持 3d tile.
 :::
-
-安装`mapgis-cesium-components`的时候会自动安装依赖`@mapgis/cesium`，`@mapgis/cesium`的包结构展示如下：
 
 ![代码结构](./cesium_dist.png)
 
@@ -101,18 +137,18 @@ $path/cesium/dist/Cesium.js # public/cesium/dist/Cesium.js
 $path/cesium/dist/webclient-cesium-plugins.js # public/cesium/dist/webclient-cesium-plugins.js
 ```
 
-mapgis-vue-cesium 组件使用以上两个文件的方式如下所示:
+municipal-cesium-components 组件使用以上两个文件的方式如下所示:
 
 ```vue
-
 <template>
-  <igs-doc-layer
-    ref="webgloberef"
-    libPath="$path/cesium/dist/Cesium.js"
-    pluginPath="$path/cesium/dist/webclient-cesium-plugins.js"
+  <municipal-commonLayer :height="mapHeight"
+                         class="mapWrapper"
+                         :plugin-path="pluginPath"
+                         :lib-path="libPath"
+                         :load="handleLoad"
+                         :m3dInfos="m3dInfos"
   >
-    <!--    children-->
-  </igs-doc-layer>
+  </municipal-commonLayer>
 </template>
 ```
 

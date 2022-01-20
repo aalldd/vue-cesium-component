@@ -2,22 +2,18 @@
 title: 'measure-量测'
 ---
 # 量测
-> mapgis-measure 量测组件，提供了四种不同的地图测量工具
+> municipal-measure 量测组件，提供了四种不同的地图测量工具
 
 ## 基本用法
 
 基本的量测组件用法
 ```vue
 <template>
-  <measure @measureResult="getMeasureRes"></measure>
+  <municipal-measure @measureResult="getMeasureRes"></municipal-measure>
 </template>
 
 <script>
-import {Measure} from 'mapgis-cesium-components/dist/webclient-vue-cesium.umd.min';
 export default {
-  components: {
-    'measure': Measure
-  },
   methods: {
     getMeasureRes(result) {
       console.log('量测结果:' + result)
@@ -32,16 +28,12 @@ export default {
 ```html
 
 <template>
-  <measure @measureResult="getMeasureRes" :measures="measures"></measure>
+  <municipal-measure @measureResult="getMeasureRes" :measures="measures"></municipal-measure>
 </template>
 
 <script>
-import {Measure} from 'mapgis-cesium-components/dist/webclient-vue-cesium.umd.min';
 
 export default {
-  components: {
-    'measure': Measure
-  },
   data() {
     return {
       measures: ['length', 'area', 'triangle', 'slope', 'delete']
@@ -62,7 +54,7 @@ export default {
 ```html
 
 <template>
-  <measure @measureResult="getMeasureRes" :enableControl="false" @load="handleLoad">
+  <municipal-measure @measureResult="getMeasureRes" :enableControl="false" @load="handleLoad">
     <div id="toolbar-wrapper">
       <div class="toolbar-item" v-on:click="measureLength">直线测量</div>
       <div class="toolbar-item" v-on:click="measureArea">面积测量</div>
@@ -70,16 +62,12 @@ export default {
       <div class="toolbar-item" v-on:click="measureSlope">坡度测量</div>
       <div class="toolbar-item" v-on:click="deleteMeasure">删除</div>
     </div>
-  </measure>
+  </municipal-measure>
 </template>
 
 <script>
-import {Measure} from 'mapgis-cesium-components/dist/webclient-vue-cesium.umd.min';
 
 export default {
-  components: {
-    'measure': Measure
-  },
   methods: {
     getMeasureRes(result) {
       console.log('量测结果:' + result)

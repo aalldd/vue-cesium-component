@@ -1,21 +1,17 @@
 ---
 title: 'draw-绘制'
 ---
-> > mapgis-draw 绘制组件，提供了五种不同的绘制交互工具
+> > municipal-draw 绘制组件，提供了五种不同的绘制交互工具
 
 ## 基本用法
 基本的绘制组件用法，用于右下角菜单
 ```vue
 <template>
-  <draw :enable-menu-control="true"></draw>
+  <municipal-draw :enable-menu-control="true"></municipal-draw>
 </template>
 
 <script>
-import {Draw} from 'mapgis-cesium-components/dist/webclient-vue-cesium.umd.min';
 export default {
-  components: {
-    'draw': Draw
-  },
   methods: {
     getMeasureRes(result) {
       console.log('量测结果:' + result)
@@ -140,22 +136,20 @@ export default {
 ```vue
 <template>
   <div id="app">
-    <mapgis-web-scene>
-      <mapgis-3d-raster-layer
-              url="http://t0.tianditu.com/DataServer?T=vec_w&L={z}&Y={y}&X={x}&tk=9c157e9585486c02edf817d2ecbc7752" />
-      <mapgis-3d-igs-m3d
+    <municipal-web-scene>
+      <municipal-igs-m3d
               :autoReset="autoReset"
               :maximumScreenSpaceError="maximumScreenSpaceError"
               :url="m3dUrl">
-      </mapgis-3d-igs-m3d>
-      <mapgis-3d-draw
+      </municipal-igs-m3d>
+      <municipal-draw
               :enableControl="enableControl"
               :drawStyle="drawStyle"
               :clampToGround="clampToGround"
               :position="position"
               :infinite="infinite">
-      </mapgis-3d-draw>
-    </mapgis-web-scene>
+      </municipal-draw>
+    </municipal-web-scene>
   </div>
 </template>
 
@@ -183,32 +177,6 @@ export default {
   }
 };
 </script>
-
-<style>
-#app {
-  height: 100vh;
-  width: 100vw;
-}
-#toolbar-wrapper {
-  position: absolute;
-  z-index: 9999;
-  display: inline-flex;
-  overflow-x: hidden;
-  overflow-y: visible;
-  top: 20px;
-  left: 20px;
-}
-.toolbar-item {
-  background: #ffffff;
-  border: 1px dashed #666666;
-  text-align: center;
-  font-size: 20px;
-  line-height: 20px;
-  height: fit-content;
-  padding: 6px 16px;
-  cursor: pointer;
-}
-</style>
 ```
 
 :::

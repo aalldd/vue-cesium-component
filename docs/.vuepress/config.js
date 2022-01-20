@@ -70,8 +70,12 @@ module.exports = {
             title: "地图工具",
             collapsable: false
           },
+          ["/components/tools/tool.md", "工具"],
           ["/components/tools/measure.md", "量测"],
           ["/components/tools/draw.md", "绘制"],
+          ["/components/tools/fullScreen.md", "全屏"],
+          ["/components/tools/tianmap.md", "天地图"],
+          ["/components/tools/home.md", "复位"],
 
           {
             title: "空间分析",

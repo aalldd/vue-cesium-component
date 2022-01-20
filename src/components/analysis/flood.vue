@@ -5,52 +5,21 @@
 <!--*/-->
 <template>
   <div class="flood">
-    <municipal-rain :draggable="draggable" @close="$emit('onClose')" v-if="needRain" title="降雨信息" :rain-style="{
-    width:'400px',marginBottom:'20px'
-  }"></municipal-rain>
+    <municipal-rain :draggable="draggable" @close="$emit('onClose')" v-if="needRain" title="降雨信息"
+                    :panel-style="panelStyle" :panel-class-name="panelClass" :rain-level="rainLevel"></municipal-rain>
     <municipal-panel :draggable="draggable" @close="$emit('onClose')" :title="title" :need-close="closeable"
-             :need-expand="expandable" :panel-style="{
-    width:'400px'
-  }">
+                     :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClass">
       <template v-slot:content>
         <div class="content">
           <a-row>
-            <div class="input-item" v-if="components.indexOf('淹没速度')>=0">
-              <span class="input-tag">淹没速度:</span>
-              <a-input v-model="floodSpeed"></a-input>
-            </div>
-            <div class="input-item" v-if="components.indexOf('最低高度')>=0">
-              <span class="input-tag">最低高度:</span>
-              <a-input v-model="startHeight" :disabled="!minHeightControl"></a-input>
-            </div>
-            <div class="input-item" v-if="components.indexOf('最高高度')>=0">
-              <span class="input-tag">最高高度:</span>
-              <a-input v-model="maxHeight" :disabled="true"></a-input>
-            </div>
-            <div class="input-item" v-if="components.indexOf('淹没高度')>=0">
-              <span class="input-tag">淹没高度:</span>
-              <a-input v-model="floodHeight"></a-input>
-            </div>
-            <div class="input-item" v-if="components.indexOf('反射光线强度')>=0">
-              <span class="input-tag">反射光线强度:</span>
-              <a-input v-model="specularIntensity"></a-input>
-            </div>
-            <div class="input-item" v-if="components.indexOf('水波高度')>=0">
-              <span class="input-tag">水波高度:</span>
-              <a-input v-model="amplitude"></a-input>
-            </div>
-            <div class="input-item" v-if="components.indexOf('水纹速度')>=0">
-              <span class="input-tag">水纹速度:</span>
-              <a-input v-model="animationSpeed"></a-input>
-            </div>
-            <div class="input-item" v-if="components.indexOf('水纹频率')>=0">
-              <span class="input-tag">水纹频率:</span>
-              <a-input v-model="frequency"></a-input>
-            </div>
-            <div class="input-item" v-if="components.indexOf('洪水颜色')>=0">
-              <span class="input-tag">洪水颜色:</span>
+            <div class="input-item" v-for="(item,key) in renderData" :key="key">
+              <span class="input-tag">{{ item.itemName }}</span>
+              <a-input v-model="item.itemValue"
+                       v-if="item.uniqueKey!=='floodColor'"
+                       :disabled="(item.uniqueKey==='startHeight' || item.uniqueKey==='maxHeight') && terrainMode"></a-input>
               <mapgis-ui-sketch-color-picker
-                :color.sync="floodColor"
+                v-else
+                :color.sync="item.itemValue"
                 :disableAlpha="false"
                 class="colorPicker"
               ></mapgis-ui-sketch-color-picker>
@@ -81,7 +50,40 @@ export default {
     components: {
       type: Array,
       default: () => {
-        return ['淹没速度', '最低高度', '最高高度', '淹没高度', '反射光线强度', '水波高度', '水纹速度', '水纹频率', '洪水颜色'];
+        return [{itemName: '淹没速度', itemValue: 1, uniqueKey: 'speed'},
+          {
+            itemName: '最低高度',
+            itemValue: 0,
+            uniqueKey: 'startHeight'
+          }, {
+            itemName: '最高高度',
+            itemValue: 0,
+            uniqueKey: 'maxHeight'
+          }, {
+            itemName: '淹没高度',
+            itemValue: 10,
+            uniqueKey: 'floodHeight'
+          }, {
+            itemName: '反射光线强度',
+            itemValue: 2,
+            uniqueKey: 'specularIntensity'
+          }, {
+            itemName: '水波高度',
+            itemValue: 10,
+            uniqueKey: 'amplitude'
+          }, {
+            itemName: '水纹速度',
+            itemValue: 0.01,
+            uniqueKey: 'animationSpeed'
+          }, {
+            itemName: '水纹频率',
+            itemValue: 500,
+            uniqueKey: 'frequency'
+          }, {
+            itemName: '洪水颜色',
+            itemValue: 'rgba(149,232,249,0.5)',
+            uniqueKey: 'floodColor'
+          }];
       }
     },
     vueKey: {
@@ -111,131 +113,94 @@ export default {
       type: Boolean,
       default: true
     },
-    //是否需要自己控制最小的淹没高度，如果不控制，默认取范围内的最小地形高度
-    minHeightControl: {
-      type: Boolean,
-      default: false
-    },
-    //是否可以淹没超过最大地形高度，默认值否
-    allowFloodOverTerrain: {
-      type: Boolean,
-      default: false
-    },
-    initMinHeight: {
-      type: Number,
-      default: 0
-    },
-    initFloodSpeed: {
-      type: Number,
-      default: 1
-    },
-    initFloodColor: {
-      type: String,
-      default: 'rgba(149,232,249,0.5)'
-    },
-    initStartHeight: {
-      type: Number,
-      default: 0
-    },
-    initSpecularIntensity: {
-      type: Number,
-      default: 2
-    },
-    initAmplitude: {
-      type: Number,
-      default: 10
-    },
-    initAnimationSpeed: {
-      type: Number,
-      default: 0.01
-    },
-    initFrequency: {
-      type: Number,
-      default: 500
-    },
-    initIsDepthTestAgainstTerrainEnable: {
+    //是否要开启地形模式，地形模式开启，将自动计算地形高度，用户将无法改变最小淹没高度
+    terrainMode: {
       type: Boolean,
       default: true
+    },
+    panelStyle: {
+      type: Object,
+      default: () => {
+        return {
+          width: '400px', marginBottom: '20px'
+        };
+      }
+    },
+    panelClass: {
+      type: String,
+      default: ''
+    },
+    rainLevel: {
+      type: Array,
+      default: () => {
+        return [{rain: '小雨', level: '0——0.41', rainSpeed: 4},
+          {rain: '中雨', level: '0.41——1.04', rainSpeed: 8},
+          {rain: '大雨', level: '1.04——2.08', rainSpeed: 12},
+          {rain: '暴雨', level: '2.08——4.17', rainSpeed: 20},
+          {rain: '大暴雨', level: '4.17——10.41', rainSpeed: 30},
+          {rain: '特大暴雨', level: '10.41——以上', rainSpeed: 50}];
+      }
+    },
+    rainTitle: {
+      type: String,
+      default: '降雨信息'
     }
   },
   data() {
     return {
-      floodSpeed: 1,
-      floodColor: 'rgba(149,232,249,0.5)',
-      //淹没水体起始高度
-      startHeight: 0,
-      //淹没动画起始高度
-      minHeight: 0,
-      specularIntensity: 2,
-      amplitude: 10,
-      animationSpeed: 0.01,
-      frequency: 500,
-      //淹没高度，洪水距离最小地面高程淹没的深度
-      floodHeight: 10,
+      //默认的洪水淹没参数
+      params: [{itemName: '淹没速度', itemValue: 1, uniqueKey: 'speed'},
+        {
+          itemName: '最低高度',
+          itemValue: 0,
+          uniqueKey: 'startHeight'
+        }, {
+          itemName: '最高高度',
+          itemValue: 0,
+          uniqueKey: 'maxHeight'
+        }, {
+          itemName: '淹没高度',
+          itemValue: 10,
+          uniqueKey: 'floodHeight'
+        }, {
+          itemName: '反射光线强度',
+          itemValue: 2,
+          uniqueKey: 'specularIntensity'
+        }, {
+          itemName: '水波高度',
+          itemValue: 10,
+          uniqueKey: 'amplitude'
+        }, {
+          itemName: '水纹速度',
+          itemValue: 0.01,
+          uniqueKey: 'animationSpeed'
+        }, {
+          itemName: '水纹频率',
+          itemValue: 500,
+          uniqueKey: 'frequency'
+        }, {
+          itemName: '洪水颜色',
+          itemValue: 'rgba(149,232,249,0.5)',
+          uniqueKey: 'floodColor'
+        }],
+      renderData: [],
       maxTerrainHeight: 0,
       positions: null
     };
   },
-  computed: {
-    maxHeight: {
-      get() {
-        if (!this.allowFloodOverTerrain && (Number(this.startHeight) + Number(this.floodHeight)) >= Number(this.maxTerrainHeight)) {
-          return Number(this.maxTerrainHeight);
-        } else {
-          return Number(this.startHeight) + Number(this.floodHeight);
-        }
-      },
-      set(value) {
-        this.maxHeight = Number(value);
-      }
-    }
-  },
   watch: {
-    initMinHeight: {
+    //将用户传入的参数和默认的参数进行合并
+    components: {
       handler() {
-        this.minHeight = this.initMinHeight;
-      },
-      immediate: true
-    },
-    initFloodSpeed: {
-      handler() {
-        this.floodSpeed = this.initFloodSpeed;
-      },
-      immediate: true
-    },
-    initFloodColor: {
-      handler() {
-        this.floodColor = this.initFloodColor;
-      },
-      immediate: true
-    },
-    initStartHeight: {
-      handler() {
-        this.startHeight = this.initStartHeight;
-      },
-      immediate: true
-    },
-    initSpecularIntensity: {
-      handler() {
-        this.specularIntensity = this.initSpecularIntensity;
-      },
-      immediate: true
-    },
-    initAmplitude: {
-      handler() {
-        this.amplitude = this.initAmplitude;
-      },
-      immediate: true
-    },
-    initAnimationSpeed: {
-      handler() {
-        this.animationSpeed = this.initAnimationSpeed;
-      },
-      immediate: true
-    },
-    initFrequency: {
-      handler() {
-        this.frequency = this.initFrequency;
+        //先合并
+        this.params = this.params
+          .map(item => {
+            const value = this.components.find(component => component.uniqueKey === item.uniqueKey);
+            return Object.assign(item, value);
+          });
+        this.renderData = this.params.filter(item => {
+          return this.components.map(item => item.itemName).indexOf(item.itemName) < 0 ? false : !this.terrainMode && item.uniqueKey === 'floodHeight' ? false : true;
+        });
       },
       immediate: true
     }
@@ -336,13 +301,17 @@ export default {
       let {floodAnalysis} = options;
       const {viewer} = this.webGlobe;
       const {
-        floodColor,
-        floodSpeed,
-        specularIntensity,
-        amplitude,
-        animationSpeed,
-        frequency
+        params
       } = this;
+      const floodColor = params.find(item => item.uniqueKey === 'floodColor').itemValue;
+      const floodSpeed = params.find(item => item.uniqueKey === 'speed').itemValue;
+      const specularIntensity = params.find(item => item.uniqueKey === 'specularIntensity').itemValue;
+      const amplitude = params.find(item => item.uniqueKey === 'amplitude').itemValue;
+      const animationSpeed = params.find(item => item.uniqueKey === 'animationSpeed').itemValue;
+      const frequency = params.find(item => item.uniqueKey === 'frequency').itemValue;
+      const maxHeight = params.find(item => item.uniqueKey === 'maxHeight').itemValue;
+      let startHeight = params.find(item => item.uniqueKey === 'startHeight').itemValue;
+      let floodHeight = params.find(item => item.uniqueKey === 'floodHeight').itemValue;
       // 初始化高级分析功能管理类
       const advancedAnalysisManager = new this.CesiumZondy.Manager.AdvancedAnalysisManager(
         {
@@ -354,15 +323,17 @@ export default {
       this.maxTerrainHeight = _maxHeight;
 
       let maxFloodheight;
-      if (!this.allowFloodOverTerrain && (Number(this.floodHeight) + _minHeight) >= _maxHeight) {
+      if (this.terrainMode && (Number(floodHeight) + _minHeight) >= _maxHeight) {
         maxFloodheight = _maxHeight;
-        this.floodHeight = _maxHeight - _minHeight;
+        floodHeight = _maxHeight - _minHeight;
+      } else if (this.terrainMode) {
+        maxFloodheight = Number(floodHeight) + _minHeight;
       } else {
-        maxFloodheight = Number(this.floodHeight) + _minHeight;
+        maxFloodheight = maxHeight;
       }
 
-      if (!this.minHeightControl) {
-        this.startHeight = _minHeight;
+      if (this.terrainMode) {
+        startHeight = _minHeight;
       }
 
       // 初始化洪水淹没分析类
@@ -370,7 +341,7 @@ export default {
         floodAnalysis ||
         advancedAnalysisManager.createFlood(positions, {
           // 设置洪水淹没区域动画最低高度
-          minHeight: Number(this.minHeight), // 设置洪水淹没区域动画最低高度
+          minHeight: Number(0), // 设置洪水淹没区域动画最低高度
           // 设置洪水淹没区域最高高度
           maxHeight: Number(maxFloodheight),
           // 设置洪水上涨速度
@@ -378,7 +349,7 @@ export default {
         });
 
       // 洪水淹没区域最低高度
-      floodAnalysis.startHeight = Number(this.startHeight);
+      floodAnalysis.startHeight = Number(startHeight);
       // 洪水颜色
       floodAnalysis.floodColor = this._getColor(floodColor);
       // 水纹频率 指波浪的个数
@@ -399,7 +370,17 @@ export default {
       }
       // 添加洪水淹没结果显示
       this.webGlobe.scene.VisualAnalysisManager.add(floodAnalysis);
-      this.mHeight = maxFloodheight;
+      this.params.forEach(param => {
+        if (param.uniqueKey === 'startHeight') {
+          param.itemValue = startHeight;
+        }
+        if (param.uniqueKey === 'floodHeight') {
+          param.itemValue = floodHeight;
+        }
+        if (param.uniqueKey === 'maxHeight') {
+          param.itemValue = maxFloodheight;
+        }
+      });
       CesiumZondy.FloodAnalysisManager.changeOptions(
         vueKey,
         vueIndex,

@@ -123,6 +123,7 @@ export default {
         font-size: $font-size-base;
         color: $text-color;
         overflow: hidden;
+        pointer-events: none;
       }
 
       .right {
@@ -137,11 +138,13 @@ export default {
           border-right: 1px solid #f0f0f0;
           font-size: $font-size-base;
           padding: 0 $panel-padding;
+          cursor: pointer;
         }
 
         .close {
           font-size: $font-size-base;
           padding-left: $panel-padding;
+          cursor: pointer;
         }
       }
     }

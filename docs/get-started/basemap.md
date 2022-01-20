@@ -72,7 +72,7 @@ path/to/statics/cesium/webclient-cesium-plugins.js
 
 ```vue
 <template>
-  <mapgis-web-scene
+  <municipal-web-scene
     libPath="statics/cesium/Cesium.js"
     pluginPath="statics/cesium/webclient-cesium-plugin.min.js"
     @load="handleLoad"
@@ -87,12 +87,7 @@ path/to/statics/cesium/webclient-cesium-plugins.js
 </style>
 
 <script>
-import { MapgisWebScene } from "@mapgis/webclient-vue-cesium";
-
 export default {
-  components: {
-    MapgisWebScene
-  },
   methods: {
     handleLoad(payload) {
       const { Cesium, CesiumZondy, component } = payload;
@@ -204,7 +199,7 @@ Vue 为每个属性添加了 getter 和 setter 方法，所以如果你将 Map �
 
 ```vue
 <template>
-  <mapgis-web-scene @load="onMapLoaded" />
+  <municipal-web-scene @load="onMapLoaded" />
 </template>
 
 <script>

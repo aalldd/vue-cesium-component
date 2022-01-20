@@ -15,9 +15,9 @@ export default new Router({
           component: ()=>import('../components/analysis/flood')
         },
         {
-          path: '/flood2',
-          name: 'flood2',
-          component: ()=>import('../components/analysis/flood2')
+          path: '/rain2',
+          name: 'rain2',
+          component: ()=>import('../components/analysis/rain2')
         }
       ]
     }
