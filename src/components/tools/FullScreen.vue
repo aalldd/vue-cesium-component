@@ -1,17 +1,13 @@
 <template>
   <div class="tool-item" @click="switchFullScreen">
-    <mapgis-icon :name="expand"></mapgis-icon>
+    <municipal-icon :name="expand"></municipal-icon>
   </div>
 </template>
 
 <script>
-import Icon from '../common/Icon';
 
 export default {
   name: "municipal-fullScreen",
-  components: {
-    'mapgis-icon': Icon
-  },
   props: {
     initScreen: {
       type: Boolean,

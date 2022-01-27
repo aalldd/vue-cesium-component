@@ -6,9 +6,9 @@
 <template>
   <div class="flood">
     <municipal-rain :draggable="draggable" @close="$emit('onClose')" v-if="needRain" title="降雨信息"
-                    :panel-style="panelStyle" :panel-class-name="panelClass" :rain-level="rainLevel"></municipal-rain>
-    <municipal-panel :draggable="draggable" @close="$emit('onClose')" :title="title" :need-close="closeable"
-                     :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClass">
+                    :panel-style="panelStyle" :panel-class-name="panelClassName" :rain-level="rainLevel"></municipal-rain>
+    <municipal-panel :draggable="draggable" @close="$emit('onClose')" :title="title" :closable="closable"
+                     :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
       <template v-slot:content>
         <div class="content">
           <a-row>
@@ -42,6 +42,8 @@ import {
   setDepthTestAgainstTerrainEnable,
   calMinTerrainHeight
 } from "../../util/util";
+import PanelOpts from '@/util/panelOptions'
+import VueOptions from '@/util/vueOptions'
 
 export default {
   name: 'municipal-flood',
@@ -86,13 +88,8 @@ export default {
           }];
       }
     },
-    vueKey: {
-      type: String,
-      default: 'default'
-    },
-    vueIndex: {
-      type: Number
-    },
+    ...VueOptions,
+    ...PanelOpts,
     needRain: {
       type: Boolean,
       default: true
@@ -100,18 +97,6 @@ export default {
     title: {
       type: String,
       default: '淹没分析'
-    },
-    closeable: {
-      type: Boolean,
-      default: true
-    },
-    expandable: {
-      type: Boolean,
-      default: true
-    },
-    draggable: {
-      type: Boolean,
-      default: true
     },
     //是否要开启地形模式，地形模式开启，将自动计算地形高度，用户将无法改变最小淹没高度
     terrainMode: {
@@ -125,10 +110,6 @@ export default {
           width: '400px', marginBottom: '20px'
         };
       }
-    },
-    panelClass: {
-      type: String,
-      default: ''
     },
     rainLevel: {
       type: Array,

@@ -1,10 +1,11 @@
 <template>
   <municipal-commonLayer :height="height"
-                 class="mapWrapper"
-                 :plugin-path="pluginPath"
-                 :lib-path="libPath"
-                 @load="handleLoad"
-                 :m3dInfos="m3dInfos"
+                         class="mapWrapper"
+                         :plugin-path="pluginPath"
+                         :lib-path="libPath"
+                         @load="handleLoad"
+                         @onM3dLoad="onM3dLoad"
+                         :m3dInfos="m3dInfos"
   >
     <router-view></router-view>
     <municipal-tool :wmtsMap="wmtsMap" :cameraView="cameraView"></municipal-tool>
@@ -15,7 +16,6 @@
 </style>
 
 <script>
-
 export default {
   data() {
     return {
@@ -47,7 +47,7 @@ export default {
         key: "tk",
         value: "9c157e9585486c02edf817d2ecbc7752"
       },
-      wmtsMap:null,
+      wmtsMap: null,
       cameraView: {
         destination: {
           x: -2416948.392038159,
@@ -62,21 +62,92 @@ export default {
       }
     };
   },
+  provide(){
+    return {
+      get globalConfig(){
+        return this.globalConfig
+      }
+    }
+  },
+  async mounted() {
+    const sysConfig = await this.getSystemConfig('threeD');
+    console.log(sysConfig);
+    let mapSolution
+    //获取地图配置
+    if (sysConfig) {
+      if (sysConfig.mapConfigID >= 0) {
+        const ms = await this.getMapSolution(sysConfig.mapConfigID);
+        mapSolution = ms;
+      }
+      console.log(mapSolution);
+      this.globalConfig=mapSolution.globalConfig
+    }
+  },
   methods: {
     handleLoad(payload) {
       const {component: {webGlobe}, Cesium, CesiumZondy} = payload;
     },
-    createRain(options,webGlobe) {
-      const optionsParam = Cesium.defaultValue(options, {});
-      const collection = webGlobe.viewer.scene.postProcessStages;
-      const rain = Cesium.PostProcessStageLibrary.createRainStage(optionsParam);
-      collection.add(rain);
-    },
     onM3dLoad(payload) {
-      console.log(payload);
+      const m3ds = payload.m3ds;
+      const gdbp = 'gdbp://sa:sasa@192.168.12.66/龙城街道/ds/';
+      this.$nextTick(async () => {
+        const mapServer = this.$serve.City.Plugin("MapServer");
+        const {data: {layers}} = await mapServer.get(`/lgzh?f=json`, {params: {udt: Date.now()}});
+        if (m3ds.length) {
+          m3ds.forEach(m3d => {
+            let gdbpUrl = m3d.gdbpUrl.split('\\');
+            let name = gdbpUrl[gdbpUrl.length - 1].split('.')[0];
+            //获取二维对应的图层ID 管子类型：civFeatureType
+            let layer = layers.find(l => l.name.indexOf(name) > -1 || name.indexOf(l) > -1);
+            if (layer) {
+              m3d.layerId = layer.id;
+              m3d.civFeatureType = layer.civFeatureType;
+
+              let pLayer = layers.find(l => l.id === layer.parentLayerId);
+              if (pLayer)
+                m3d.gdbp = gdbp + pLayer.name + '/sfcls/' + layer.name;
+            }
+          });
+        }
+      });
     },
     getWmtsInfo(payload) {
       this.wmtsMap = payload;
+    },
+    async getMapSolution(id){
+      try {
+        const {
+          data
+        } = await this.$serve.City.Plugin("Services").get("mapsolution", {
+          params: {
+            id
+          }
+        });
+        if (data && data.length) {
+          data[0].configJSON = JSON.parse(data[0].configJSON);
+          return data[0];
+        }
+        return null;
+      } catch (e) {
+        console.error(e);
+        return null;
+      }
+    },
+    async getSystemConfig(client) {
+      try {
+        const {
+          data
+        } = await this.$serve.City.Plugin("Services").get("systemconfig", {
+          params: {
+            client,
+            _ts: Date.now()
+          }
+        });
+        return data;
+      } catch (e) {
+        console.error(e);
+        return null;
+      }
     }
   }
 };

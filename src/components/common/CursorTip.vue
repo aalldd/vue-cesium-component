@@ -1,12 +1,14 @@
 <template>
-  <div class="tipContainer" :style="{left:floatLeft,top:floatTop}">
-    <slot></slot>
+  <div>
+    <div class="tipContainer" :style="{left:floatLeft,top:floatTop}">
+      <slot></slot>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "municipal-cursorTip",
+  name: "municipal-cursor-tip",
   data() {
     return {
       floatLeft: 0,
@@ -25,17 +27,24 @@ export default {
     }
   },
   mounted() {
+    this.container = document.body;
+    this.tipContainer = document.querySelector('.tipContainer');
+    this.container.appendChild(this.tipContainer);
     document.body.addEventListener('mousemove', this.mouseLisenter);
   },
   destroyed() {
+    this.container.removeChild(this.tipContainer);
     document.body.removeEventListener('mousemove', this.mouseLisenter);
   },
   methods: {
     mouseLisenter(e) {
       const {pageX, pageY} = e;
       const {x, y} = this.offset;
+
       this.floatTop = pageY + x + 'px';
       this.floatLeft = pageX + y + 'px';
+      console.log(this.floatTop);
+      console.log(this.floatLeft);
     }
   }
 };

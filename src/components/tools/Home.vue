@@ -1,18 +1,14 @@
 <template>
   <div class="tool-item" @click="goHome">
-    <mapgis-icon name="home"></mapgis-icon>
+    <municipal-icon name="home"></municipal-icon>
   </div>
 </template>
 
 <script>
-import Icon from '../common/Icon';
 
 export default {
   name: "municipal-home",
   inject: ['Cesium', 'webGlobe'],
-  components: {
-    'mapgis-icon': Icon
-  },
   props: {
     cameraView: {
       type: Object

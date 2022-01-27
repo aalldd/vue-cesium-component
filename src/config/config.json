@@ -1,0 +1,11 @@
+{
+    "initialized": 1,
+    "servers": [
+        {
+            "origin": "default",
+            "cityServer": "http://localhost:8088//CityInterface",
+            "gisServer": "http://localhost:8088//CityInterface",
+            "fileServer": "http://localhost:8088//CityInterface"
+        }
+    ]
+}

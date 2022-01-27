@@ -14,31 +14,26 @@
     </mapgis-3d-measure>
     <div v-if="enableControl">
       <div class="tool-item" @mouseenter="activeMeasure" @mouseleave="deactiveMeasure">
-        <mapgis-icon name="ruler"></mapgis-icon>
+        <municipal-icon name="ruler"></municipal-icon>
       </div>
       <div class="toolbar-wrapper" v-show="popoverVisible" @mouseenter="activeMeasure" @mouseleave="deactiveMeasure">
         <div class="tool-item"
              v-for="item in Object.keys(measureToolmap).filter(jitem=>this.measures.indexOf(jitem)>=0) "
              v-on:click="measureStart(item)" :key="item">
-          <mapgis-icon :name="measureToolmap[item][0]"></mapgis-icon>
+          <municipal-icon :name="measureToolmap[item][0]"></municipal-icon>
         </div>
       </div>
-      <mapgis-cursorTip v-if="cursorVisible">
+      <municipal-cursor-tip v-if="cursorVisible" :container="container">
         <span>左键点击测量，右键结束</span>
-      </mapgis-cursorTip>
+      </municipal-cursor-tip>
     </div>
   </div>
 </template>
 
 <script>
-import Icon from '../common/Icon';
-import CursorTip from '../common/CursorTip';
+
 export default {
   name: 'municipal-measure',
-  components: {
-    'mapgis-icon': Icon,
-    'mapgis-cursorTip': CursorTip
-  },
   data() {
     return {
       vueKeyOne: 'sceneOne',
@@ -50,7 +45,8 @@ export default {
         'triangle': ['sanjiaochi'],
         'slope': ['podufenxi'],
         'delete': ['shanchu'],
-      }
+      },
+      container: document.getElementsByClassName('cesium-viewer')
     };
   },
   props: {

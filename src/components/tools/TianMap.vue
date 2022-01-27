@@ -1,17 +1,13 @@
 <template>
   <div class="tool-item" @click="switchTianMap">
-    <mapgis-icon name="-map"></mapgis-icon>
+    <municipal-icon name="-map"></municipal-icon>
   </div>
 </template>
 
 <script>
-import Icon from '../common/Icon';
 
 export default {
   name: "municipal-tian",
-  components: {
-    'mapgis-icon': Icon
-  },
   data() {
     return {
       tianMapVisible: true

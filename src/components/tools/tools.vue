@@ -1,9 +1,13 @@
 <template>
   <div class="controlTools">
-    <municipal-measure :vueKey="vueKey" v-if="this.toolComponents.indexOf('measure')>=0" @measureResult="handleMeasure"></municipal-measure>
-    <municipal-draw :vueKey="vueKey" v-if="this.toolComponents.indexOf('draw')>=0" :enable-menu-control="true" @drawcreate="handleDraw"></municipal-draw>
-    <municipal-fullScreen v-if="this.toolComponents.indexOf('fullScreen')>=0" :initScreen="false"></municipal-fullScreen>
+    <municipal-measure :vueKey="vueKey" v-if="this.toolComponents.indexOf('measure')>=0"
+                       @measureResult="handleMeasure"></municipal-measure>
+    <municipal-draw :vueKey="vueKey" v-if="this.toolComponents.indexOf('draw')>=0" :enable-menu-control="true"
+                    @drawcreate="handleDraw"></municipal-draw>
+    <municipal-fullScreen v-if="this.toolComponents.indexOf('fullScreen')>=0"
+                          :initScreen="false"></municipal-fullScreen>
     <municipal-tian v-if="this.toolComponents.indexOf('tian')>=0" :wmtsMap="wmtsMap"></municipal-tian>
+    <municipal-layer-control v-if="this.toolComponents.indexOf('layerControl')>=0"></municipal-layer-control>
     <municipal-home v-if="this.toolComponents.indexOf('home')>=0" :cameraView="cameraView"></municipal-home>
   </div>
 </template>
@@ -22,7 +26,7 @@ export default {
     toolComponents: {
       type: Array,
       default: () => {
-        return ['measure', 'draw', 'fullScreen', 'tian', 'home'];
+        return ['measure', 'draw', 'fullScreen', 'tian', 'home', 'layerControl'];
       }
     },
     wmtsMap: {
@@ -49,10 +53,10 @@ export default {
   },
   methods: {
     handleDraw(payload) {
-      this.$emit('drawcreate',payload)
+      this.$emit('drawcreate', payload);
     },
-    handleMeasure(payload){
-      this.$emit('measured',payload)
+    handleMeasure(payload) {
+      this.$emit('measured', payload);
     }
   }
 };

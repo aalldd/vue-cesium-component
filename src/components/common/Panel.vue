@@ -8,10 +8,10 @@
             <div class="extra" :style="{display:'flex',alignItems:'center'}">
               <slot name="extra"></slot>
             </div>
-            <div class="expand" v-show="needExpand" @click="expanded=!expanded">
+            <div class="expand" v-show="expandable" @click="expanded=!expanded">
               <m-icon :name="expandIcon"></m-icon>
             </div>
-            <div class="close" v-show="needClose" @click="$emit('onClose')">
+            <div class="close" v-show="closable" @click="$emit('onClose')">
               <m-icon name="close"></m-icon>
             </div>
           </div>
@@ -29,10 +29,10 @@
           <div class="extra" :style="{display:'flex',alignItems:'center'}">
             <slot name="extra"></slot>
           </div>
-          <div class="expand" v-show="needExpand" @click="expanded=!expanded">
+          <div class="expand" v-show="expandable" @click="expanded=!expanded">
             <m-icon :name="expandIcon"></m-icon>
           </div>
-          <div class="close" v-show="needClose" @click="$emit('onClose')">
+          <div class="close" v-show="closable" @click="$emit('onClose')">
             <m-icon name="close"></m-icon>
           </div>
         </div>
@@ -46,6 +46,7 @@
 
 <script>
 import Icon from './Icon';
+import PanelOpts from '@/util/panelOptions';
 import VueDraggableResizable from 'vue-draggable-resizable';
 
 export default {
@@ -64,35 +65,7 @@ export default {
       return this.expanded ? 'up' : 'down';
     }
   },
-  props: {
-    title: {
-      type: String,
-      default:''
-    },
-    draggable: {
-      type: Boolean,
-      default: true
-    },
-    needExpand: {
-      type: Boolean,
-      default: true
-    },
-    needClose: {
-      type: Boolean,
-      default: true
-    },
-    panelClassName: {
-      type: String
-    },
-    panelStyle: {
-      type: Object,
-      default: () => {
-        return {
-          width: 400
-        };
-      }
-    }
-  }
+  props: {...PanelOpts}
 };
 </script>
 

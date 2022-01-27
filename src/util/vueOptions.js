@@ -12,6 +12,6 @@ export default {
    */
   vueIndex: {
     typs: [String, Number],
-    default: () => (Math.random() * 100000000).toFixed(0)
+    default: 0
   }
 };

@@ -16,4 +16,7 @@ export {default as MunicipalFullScreen} from "../components/tools/FullScreen";
 export {default as MunicipalHome} from "../components/tools/Home";
 export {default as MunicipalMeasure} from "../components/tools/Mesure";
 export {default as MunicipalTianControl} from "../components/tools/TianMap";
+export {default as MunicipalLayerControl} from '../components/tools/layerControl'
+export {default as MunicipalPopup} from '../components/tools/Popup'
 export {default as MunicipalTianTools} from "../components/tools/tools";
+

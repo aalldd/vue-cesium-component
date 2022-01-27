@@ -15,9 +15,14 @@ export default new Router({
           component: ()=>import('../components/analysis/flood')
         },
         {
-          path: '/rain2',
-          name: 'rain2',
-          component: ()=>import('../components/analysis/rain2')
+          path: '/clickQuery',
+          name: 'clickQuery',
+          component: ()=>import('../components/query/clickQuery')
+        },
+        {
+          path: '/dynacut',
+          name: 'dynacut',
+          component: ()=>import('../components/analysis/Dynacut')
         }
       ]
     }

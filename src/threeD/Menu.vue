@@ -79,8 +79,8 @@ export default {
               key: '4-0'
             },
             {
-              menuName: '降雨',
-              menuRoute: 'rain2',
+              menuName: '开挖',
+              menuRoute: 'dynacut',
               key: '4-1'
             }
           ]

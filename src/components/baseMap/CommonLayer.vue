@@ -12,6 +12,7 @@
                        :offset="item.offset"
                        :key="item.vueIndex"
                        :vueIndex="item.vueIndex"
+                       @loaded="handleM3dload"
                        :maximumMemoryUsage="item.maximumMemoryUsage"/>
     <mapgis-3d-statebar v-if="needState"/>
     <slot></slot>
@@ -32,7 +33,15 @@ export default {
       get webGlobe() {
         return window.webGlobe;
       },
+      get m3ds() {
+        return window.m3ds;
+      }
     };
+  },
+  data(){
+    return {
+      m3dLoadCount:0
+    }
   },
   props: {
     libPath: {
@@ -55,9 +64,19 @@ export default {
       default: true
     }
   },
-  methods:{
-    handleLoad(payload){
-      this.$emit('load',payload)
+  methods: {
+    handleLoad(payload) {
+      this.$emit('load', payload);
+    },
+    handleM3dload(payload) {
+      if(payload.m3ds.length>0 && this.m3dLoadCount===0){
+        this.m3ds=payload.m3ds
+        this.$nextTick(()=>{
+          this.m3dLoadCount++
+          window.m3ds=payload.m3ds
+        })
+      }
+      this.$emit('onM3dLoad', payload);
     }
   }
 };
