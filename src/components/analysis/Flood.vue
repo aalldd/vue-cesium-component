@@ -41,7 +41,7 @@ import {
   isDepthTestAgainstTerrainEnable,
   setDepthTestAgainstTerrainEnable,
   calMinTerrainHeight
-} from "../../util/util";
+} from "@/util/util";
 import PanelOpts from '@/util/panelOptions'
 import VueOptions from '@/util/vueOptions'
 

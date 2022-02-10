@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 Vue.use(Router)
 
-export default new Router({
+const router=new Router({
   routes: [
     {
       path: '/',
@@ -12,7 +12,7 @@ export default new Router({
         {
           path: '/flood',
           name: 'flood',
-          component: ()=>import('../components/analysis/flood')
+          component: ()=>import('../components/analysis/Flood')
         },
         {
           path: '/clickQuery',
@@ -22,9 +22,11 @@ export default new Router({
         {
           path: '/dynacut',
           name: 'dynacut',
-          component: ()=>import('../components/analysis/Dynacut')
+          component: ()=>import('../pages/DynacutAna')
         }
       ]
     }
   ]
 })
+
+export default router

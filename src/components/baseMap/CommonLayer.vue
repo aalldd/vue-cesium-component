@@ -69,14 +69,16 @@ export default {
       this.$emit('load', payload);
     },
     handleM3dload(payload) {
+      console.log(payload);
       if(payload.m3ds.length>0 && this.m3dLoadCount===0){
         this.m3ds=payload.m3ds
         this.$nextTick(()=>{
           this.m3dLoadCount++
           window.m3ds=payload.m3ds
+          this.$emit('onM3dLoad', payload);
         })
       }
-      this.$emit('onM3dLoad', payload);
+
     }
   }
 };

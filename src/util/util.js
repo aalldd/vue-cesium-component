@@ -312,5 +312,3 @@ export function calMinTerrainHeight(webGlobal, positions) {
     _maxHeight: _.max(heightList)
   };
 };
-
-
