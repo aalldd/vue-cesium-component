@@ -32,6 +32,7 @@
 
 <script>
 import Icon from '../common/Icon';
+
 export default {
   name: "municipal-draw",
   inject: ['Cesium', 'CesiumZondy', 'webGlobe'],

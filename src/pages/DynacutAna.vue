@@ -1,5 +1,5 @@
 <template>
-  <municipal-dynacut :drawTools="['square', 'polygon']" :drawTextures="drawTextures"></municipal-dynacut>
+  <municipal-dynacut @onCutFill="getCutInfo" @onDynacut="getDynacutInfo" :drawTools="['square', 'polygon']" :drawTextures="drawTextures" :layerIndexs="[0,1]"></municipal-dynacut>
 </template>
 
 <script>
@@ -9,10 +9,16 @@ export default {
     return {
       drawTextures: [
         '/static/cesium/model/wall.jpg',
-        '/static/cesium/model/wall1.jpg',
-        '/static/cesium/model/wall2.jpg',
-        '/static/cesium/model/wall3.jpg'
+        '/static/cesium/model/wall1.jpg'
       ]
+    }
+  },
+  methods:{
+    getDynacutInfo(info){
+      console.log(info);
+    },
+    getCutInfo(info){
+      console.log(info);
     }
   }
 };

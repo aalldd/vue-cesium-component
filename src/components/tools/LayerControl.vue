@@ -28,7 +28,7 @@ import {treeUtil} from '@/util/helper';
 
 export default {
   name: "municipal-layer-control",
-  inject: ['Cesium', 'CesiumZondy', 'webGlobe'],
+  inject: ['Cesium', 'CesiumZondy', 'webGlobe', 'commonConfig'],
   data() {
     return {
       visible: false,
@@ -91,16 +91,29 @@ export default {
   },
   mounted() {
     const scopedSlots = {title: 'custom'};
-    const treeData = treeUtil.map(this.layerGroupTree, (item) => {
-      return {
-        ...item,
-        scopedSlots
-      };
-    });
+
     //由于M3d图层数据加载慢，每秒轮询一次
     const resetChecked = () => {
-      if (window.m3ds) {
-        const checkedKeys = treeUtil.filter(this.layerGroupTree, (item) => item.visible === true).map(n => n.key);
+      if (window.m3ds && window.commonConfig) {
+        const layerGroupNamesTree = [window.commonConfig?.globalConfig?.layerGroupNamesTree] || this.layerGroupTree;
+        let count = 0;
+        const treeData = treeUtil.map(layerGroupNamesTree, (item) => {
+          const name = item.title;
+          const {title, Id, ...rest} = item;
+          let layerIndex;
+          if (!item.children) {
+            layerIndex = count;
+            count++;
+          }
+          return {
+            ...rest,
+            scopedSlots,
+            name,
+            visible: true,
+            layerIndex
+          };
+        });
+        const checkedKeys = treeUtil.filter(treeData,(item) => item.visible === true).map(n => n.key);
         this.treeData = treeData;
         this.checkedKeys = checkedKeys;
         this.m3ds = window.m3ds;
@@ -115,7 +128,9 @@ export default {
   watch: {
     checkedKeys: {
       handler() {
-        this.treeData?.length && this.onLayerVisibleChange();
+        if(this.treeData.length>0){
+          this.onLayerVisibleChange();
+        }
       },
       immediate: true
     }
@@ -127,7 +142,7 @@ export default {
     reAskM3ds(callback) {
       this.myInterval = window.setInterval(() => {
         setTimeout(callback);
-      }, 1000);
+      }, 3000);
     },
     onClose() {
       this.visible = false;
@@ -140,13 +155,11 @@ export default {
         return ch.layerIndex;
       });//找到对应的layerIndex
       if (this.m3ds?.length) {
-        const openLayers = this.m3ds.filter((t, index) => itemFlatten.includes(index));
-        const closeLayers = this.m3ds.filter((t, index) => !itemFlatten.includes(index));
-        closeLayers.forEach(layer => {
-          layer.show = false;
-        });
-        openLayers.forEach(layer => {
+        this.m3ds.filter((t, index) => itemFlatten.includes(index)).forEach(layer => {
           layer.show = true;
+        });
+        this.m3ds.filter((t, index) => !itemFlatten.includes(index)).forEach(layer => {
+          layer.show = false;
         });
       }
     },

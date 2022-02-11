@@ -1,9 +1,13 @@
 import _ from 'lodash';
-import turf from '@turf/turf';
+import {polygon, point, booleanPointInPolygon} from '@turf/turf';
 
 class emgUtil {
   constructor(view) {
     this.view = view;
+    this.view.viewer.scene.globe.undergroundMode = true;
+    //开启深度检测
+    this.view.viewer.scene.globe.depthTestAgainstTerrain = true;
+    this.dynaCutList = [];
   }
 
   // 坐标转换类方法
@@ -70,7 +74,7 @@ class emgUtil {
     });
 
     // 生成多边形-二维
-    const poly = turf.polygon([pos]);
+    const poly = polygon([pos]);
 
     // 去掉最后一个点
     positions.pop();
@@ -118,8 +122,8 @@ class emgUtil {
     pointList.length && pointList.forEach(item => {
       //  经纬度转二维模型
       let p = this.positionTransfer(item);
-      let pt = turf.point(p);
-      let res = turf.booleanPointInPolygon(pt, poly);
+      let pt = point(p);
+      let res = booleanPointInPolygon(pt, poly);
       if (res) {
         resPointList.push(item);
       }
@@ -332,7 +336,7 @@ class emgUtil {
   };
 
   // 绘制贴地纹理
-  drawTexture = (points, height,urlWall) => {
+  drawTexture = (points, height, urlWall) => {
     // 将传入的点坐标两两一组，两点之间取样200个点  坐标类型cartesian3
     // 围墙顶部高度
     let terranHeight = [];
@@ -495,7 +499,7 @@ class emgUtil {
       //开挖坐标
       longitude: centerPoints[0],
       latitude: centerPoints[1],
-      height: 0
+      height: -1000
     });
     // 设置开挖的动态效果
     dynaCut.planes[0].plane.plane = new Cesium.CallbackProperty(function () {
@@ -520,19 +524,21 @@ class emgUtil {
     return [lng, lat];
   };
 
-  // 开挖实现
-  dig = (pointArr, height) => {
+  // 开挖实现  layerIndexs地上图层的id
+  dig = (pointArr, height, layerIndexs) => {
     //计算开挖面 对于挖，需要模仿开挖的效果
     let tileset = this.view.tilesetList.find(t => t.layerId) || this.view.tilesetList[0];
     let transform = tileset.root.transform;
     const gravity = this.getGravityPoint(pointArr);
     const clippingPlanes = this.getClippingPlane(pointArr, gravity);
     //开挖
-    this.view.tilesetList.map(t =>
+    const cutTilesets = layerIndexs ? this.view.tilesetList.filter(t => layerIndexs.includes(t.layerIndex)) : this.view.tilesetList;
+    cutTilesets.map(t =>
       setTimeout(() => {
         this.startDynaCut(t, this.getCenterPoint(transform, gravity), clippingPlanes, height);
       })
     );
+    return this.dynaCutList
   };
 
   /*移除填挖方计算*/
@@ -543,6 +549,17 @@ class emgUtil {
     this.dynaCutList.forEach(d => this.analysisManager && this.analysisManager.deleteDynamicCutting(d));
     this.dynaCutList = [];
   };
+
+  removeAll=()=>{
+    if(!this.entityController){
+      //构造几何控制对象
+      this.entityController = new CesiumZondy.Manager.EntityController({
+        viewer: this.view.viewer
+      });
+    }
+    this.entityController && this.entityController.removeAllEntities();
+    this.stopCutFillM()
+  }
 }
 
 export default emgUtil;

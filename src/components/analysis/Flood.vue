@@ -193,6 +193,9 @@ export default {
     }
     this.mount();
   },
+  activated() {
+    console.log(this.globalConfig);
+  },
   destroyed() {
     this.unmount();
   },

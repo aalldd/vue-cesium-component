@@ -20,6 +20,8 @@
 </template>
 
 <script>
+import Vue from 'vue';
+
 export default {
   name: "municipal-commonLayer",
   provide() {
@@ -35,13 +37,16 @@ export default {
       },
       get m3ds() {
         return window.m3ds;
-      }
+      },
+      commonConfig: window.commonConfig,
+      eventBus: this.eventBus
     };
   },
-  data(){
+  data() {
     return {
-      m3dLoadCount:0
-    }
+      m3dLoadCount: 0,
+      eventBus: new Vue()
+    };
   },
   props: {
     libPath: {
@@ -62,6 +67,18 @@ export default {
     needState: {
       type: Boolean,
       default: true
+    },
+    commonConfig: {
+      type: Object
+    }
+  },
+  watch: {
+    commonConfig: {
+      handler() {
+        if (this.commonConfig) {
+          window.commonConfig = this.commonConfig;
+        }
+      }
     }
   },
   methods: {
@@ -69,14 +86,13 @@ export default {
       this.$emit('load', payload);
     },
     handleM3dload(payload) {
-      console.log(payload);
-      if(payload.m3ds.length>0 && this.m3dLoadCount===0){
-        this.m3ds=payload.m3ds
-        this.$nextTick(()=>{
-          this.m3dLoadCount++
-          window.m3ds=payload.m3ds
+      if (payload.m3ds.length > 0 && this.m3dLoadCount === 0) {
+        this.m3ds = payload.m3ds;
+        this.$nextTick(() => {
+          this.m3dLoadCount++;
+          window.m3ds = payload.m3ds;
           this.$emit('onM3dLoad', payload);
-        })
+        });
       }
 
     }

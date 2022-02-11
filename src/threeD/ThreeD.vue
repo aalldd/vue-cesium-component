@@ -6,6 +6,7 @@
                          @load="handleLoad"
                          @onM3dLoad="onM3dLoad"
                          :m3dInfos="m3dInfos"
+                         :commonConfig="globalConfig"
   >
     <router-view></router-view>
     <municipal-tool :wmtsMap="wmtsMap" :cameraView="cameraView"></municipal-tool>
@@ -29,7 +30,7 @@ export default {
       m3dInfos: [
         {
           maximumMemoryUsage: 1024,
-          url: 'http://192.168.12.200:6163/igs/rest/g3d/lgzh0902',
+          url: 'http://192.168.12.200:6163/igs/rest/g3d/lgzh0701',
           layers: '',
           vueIndex: '0'
         }
@@ -59,19 +60,12 @@ export default {
           pitch: -0.689042,
           roll: 0.0002114284469649675
         }
-      }
+      },
+      globalConfig:null
     };
-  },
-  provide(){
-    return {
-      get globalConfig(){
-        return this.globalConfig
-      }
-    }
   },
   async mounted() {
     const sysConfig = await this.getSystemConfig('threeD');
-    console.log(sysConfig);
     let mapSolution
     //获取地图配置
     if (sysConfig) {
@@ -79,8 +73,7 @@ export default {
         const ms = await this.getMapSolution(sysConfig.mapConfigID);
         mapSolution = ms;
       }
-      console.log(mapSolution);
-      this.globalConfig=mapSolution.globalConfig
+      this.globalConfig=mapSolution?.configJSON?.config3d
     }
   },
   methods: {
@@ -89,7 +82,7 @@ export default {
     },
     onM3dLoad(payload) {
       const m3ds = payload.m3ds;
-      const gdbp = 'gdbp://sa:sasa@192.168.12.66/龙城街道/ds/';
+      const gdbp = 'gdbp://sa:sasa@192.168.12.200/龙城街道/ds/';
       this.$nextTick(async () => {
         const mapServer = this.$serve.City.Plugin("MapServer");
         const {data: {layers}} = await mapServer.get(`/lgzh?f=json`, {params: {udt: Date.now()}});
