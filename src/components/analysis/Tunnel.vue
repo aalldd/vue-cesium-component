@@ -1,6 +1,6 @@
 <template>
   <municipal-panel title="隧道分析">
-    <template>
+    <template v-slot:content>
 
     </template>
   </municipal-panel>

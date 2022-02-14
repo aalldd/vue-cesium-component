@@ -133,7 +133,6 @@ export default {
         this.emgManager.drawTexture([...this.drawRange, this.drawRange[0]], _minHeight - this.digDistance, this.drawTexture);
         this.cutFillAna(this.drawRange, _minHeight);
         const dynacut = this.emgManager.dig(pointArr, this.digDistance, this.layerIndexs ? this.layerIndexs : null);
-        console.log(dynacut);
         const data = {
           dynacut,
           minHeight: _minHeight - this.digDistance,
@@ -144,7 +143,7 @@ export default {
       }
     },
     cutFillAna(positions, terrainHeight) {
-      const view = this.view;
+      const view = this.webGlobe;
       view.viewer.scene.globe.depthTestAgainstTerrain = false;
       //初始化高级分析功能管理类
       const advancedAnalysisManager = new CesiumZondy.Manager.AdvancedAnalysisManager({
@@ -164,12 +163,12 @@ export default {
           this.heightRange = result.minHeight.toFixed(2) + '~' + result.maxHeight.toFixed(2);
           this.sArea = result.surfaceArea;
           this.fArea = result.cutVolume;
-          const data={
-            heightRange:this.heightRange,
-            sArea:this.sArea,
-            fArea:this.fArea
-          }
-          this.$emit('onCutFill',data)
+          const data = {
+            heightRange: this.heightRange,
+            sArea: this.sArea,
+            fArea: this.fArea
+          };
+          this.$emit('onCutFill', data);
         }
       });
       //开始执行填挖方分析
@@ -181,7 +180,7 @@ export default {
           this.drawOper.enableDrawPolygon();
           return;
         case 'square':
-          this.drawOper.enableDrawRectangle();
+          this.activeRect();
           return;
         case 'circle':
           this.drawOper.enableDrawCircle();
@@ -190,6 +189,57 @@ export default {
           break;
           return;
       }
+    },
+    activeRect() {
+      const view = this.webGlobe;
+      if (!this.drawElement) {
+        this.drawElement = new Cesium.DrawElement(view.viewer);
+        this.drawElement.setGroundPrimitiveType('TERRAIN');
+      }
+      if (!this.entityController) {
+        this.entityController = new CesiumZondy.Manager.EntityController({
+          viewer: view.viewer
+        });
+      }
+
+      this.drawElement.startDrawingExtent({
+        callback: (positions, e) => {
+          console.log(positions);
+          this.drawElement.stopDrawing();
+
+          //获取弧度制经纬度坐标
+          let northwest = Cesium.Rectangle.northwest(positions, new Cesium.Cartographic());//西北角的坐标
+          let northeast = Cesium.Rectangle.northeast(positions, new Cesium.Cartographic());//东北角的坐标
+          let southeast = Cesium.Rectangle.southeast(positions, new Cesium.Cartographic());//东南角的坐标
+          let southwest = Cesium.Rectangle.southwest(positions, new Cesium.Cartographic());//西南角的坐标
+
+          //经纬度
+          const cnw = [Cesium.Math.toDegrees(northwest.longitude), Cesium.Math.toDegrees(northwest.latitude), northwest.height];
+          const cne = [Cesium.Math.toDegrees(northeast.longitude), Cesium.Math.toDegrees(northeast.latitude), northwest.height];
+          const cse = [Cesium.Math.toDegrees(southeast.longitude), Cesium.Math.toDegrees(southeast.latitude), northwest.height];
+          const csw = [Cesium.Math.toDegrees(southwest.longitude), Cesium.Math.toDegrees(southwest.latitude), northwest.height];
+          this.drawRange = Cesium.Cartesian3.fromDegreesArrayHeights([...cnw, ...cne, ...cse, ...csw, ...cnw]);
+          //构造区对象
+          let polygon = {
+            name: "矩形",
+            polygon: {
+              //坐标点
+              hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights([...cnw, ...cne, ...cse, ...csw]),
+              //是否指定各点高度
+              perPositionHeight: true,
+              //颜色
+              material: new Cesium.Color(33 / 255, 150 / 255, 243 / 255, 0.3),
+              //轮廓线是否显示
+              outline: true,
+              //轮廓线颜色
+              outlineColor: Cesium.Color.BLACK
+            }
+          };
+          //绘制图形通用方法：对接Cesium原生特性
+          this.entityController.appendGraphics(polygon);
+          this.dynacut();
+        }
+      });
     }
   }
 };

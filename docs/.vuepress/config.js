@@ -2,6 +2,7 @@ module.exports = {
   title: 'Mapgis-Cesium-Components',
   description: '一个基于webclient-vue-cesium库二次封装的组件库',
   dest: "dist-docs",
+  base:'/vue-cesium-component/',
   locales: {
     "/": {
       lang: "zh-CN",
