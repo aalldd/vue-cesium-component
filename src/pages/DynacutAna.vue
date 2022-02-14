@@ -1,5 +1,5 @@
 <template>
-  <municipal-dynacut @onCutFill="getCutInfo" @onDynacut="getDynacutInfo" :drawTools="['square', 'polygon']" :drawTextures="drawTextures" :layerIndexs="[0,1]"></municipal-dynacut>
+  <municipal-dynacut title="开挖分析" @onCutFill="getCutInfo" @onDynacut="getDynacutInfo" :drawTools="['square', 'polygon']" :drawTextures="drawTextures" :layerIndexs="[0,1]"></municipal-dynacut>
 </template>
 
 <script>

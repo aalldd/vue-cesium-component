@@ -79,9 +79,14 @@ export default {
               key: '4-0'
             },
             {
-              menuName: '开挖',
+              menuName: '开挖分析',
               menuRoute: 'dynacut',
               key: '4-1'
+            },
+            {
+              menuName: '隧道分析',
+              menuRoute: 'tunnel',
+              key: '4-2'
             }
           ]
         }

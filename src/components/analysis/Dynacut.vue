@@ -1,5 +1,6 @@
 <template>
-  <municipal-panel title="开挖分析">
+  <municipal-panel :draggable="draggable" @close="$emit('onClose')" :title="title" :closable="closable"
+                   :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
     <template v-slot:content>
       <a-row class="input-item">
         <a-col :span="6">
@@ -53,6 +54,7 @@
 
 <script>
 import VueOptions from '@/util/vueOptions';
+import PanelOpts from '@/util/panelOptions';
 import loadingM3ds from '@/util/mixins/withLoadingM3ds';
 
 export default {
@@ -61,19 +63,22 @@ export default {
   mixins: [loadingM3ds],
   props: {
     ...VueOptions,
+    ...PanelOpts,
+    //用来控制开挖的材质，字符串数组，里面是图片的url
     drawTextures: {
       type: Array,
       default: () => {
         return [];
       }
     },
+    // 绘制开挖的形状，矩形，多边形，圆三种
     drawTools: {
       type: Array,
       default: () => {
         return ['square', 'polygon'];
       }
     },
-    //用来指定地上图层的layerIndex
+    //用来指定地上图层的layerIndex,
     layerIndexs: {
       type: Array
     }
@@ -112,7 +117,8 @@ export default {
       const pointArr = [];
       const pointL = [];
       if (this.drawRange?.length) {
-        this.drawRange.forEach(point => {
+        for (let i = 0; i < this.drawRange.length - 1; i++) {
+          let point = this.drawRange[i];
           let resPoint = new Cesium.Cartesian3;
           let invserTran = new Cesium.Matrix4;
           Cesium.Matrix4.inverse(transform, invserTran);
@@ -126,7 +132,7 @@ export default {
           let lng = Cesium.Math.toDegrees(cartographic.longitude);
           let alt = cartographic.height;
           pointL.push(lng, lat, alt);
-        });
+        }
         // 获取地形最小高度
         const {_minHeight} = this.emgManager.calMinTerrainHeight(this.drawRange);
         //绘制纹理
@@ -204,7 +210,6 @@ export default {
 
       this.drawElement.startDrawingExtent({
         callback: (positions, e) => {
-          console.log(positions);
           this.drawElement.stopDrawing();
 
           //获取弧度制经纬度坐标

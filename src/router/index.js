@@ -23,6 +23,11 @@ const router=new Router({
           path: '/dynacut',
           name: 'dynacut',
           component: ()=>import('../pages/DynacutAna')
+        },
+        {
+          path: '/tunnel',
+          name: 'tunnel',
+          component: ()=>import('../pages/TunnelAna')
         }
       ]
     }

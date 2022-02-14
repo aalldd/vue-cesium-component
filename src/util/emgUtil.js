@@ -433,7 +433,7 @@ class emgUtil {
     // 海伦公式算面积
     let S = Math.sqrt(p * (p - S1) * (p - S2) * (p - S3));
     // 面积除底边长度等于距离
-    let distance = 2.0 * S / S1;
+    let distance = 2.0 * S / S1 || 0;
     return distance;
   };
 
@@ -448,6 +448,7 @@ class emgUtil {
       let p2 = points[nextIndex];
       //求重心点到point[i]和point[nextIndex]组成边的距离
       let distancePlane = this.getDistance(gravity, points[i], points[nextIndex]);
+      console.log(distancePlane);
       // 求经过重心点的向量 算法二 垂直加距离
       let retVec = new Cesium.Cartesian3();
       if (p2.x - p1.x !== 0.0) {
@@ -526,13 +527,14 @@ class emgUtil {
 
   // 开挖实现  layerIndexs地上图层的id
   dig = (pointArr, height, layerIndexs) => {
+    const cutLayer=layerIndexs.map(item=>parseInt(item))
     //计算开挖面 对于挖，需要模仿开挖的效果
     let tileset = this.view.tilesetList.find(t => t.layerId) || this.view.tilesetList[0];
     let transform = tileset.root.transform;
     const gravity = this.getGravityPoint(pointArr);
     const clippingPlanes = this.getClippingPlane(pointArr, gravity);
     //开挖
-    const cutTilesets = layerIndexs ? this.view.tilesetList.filter(t => layerIndexs.includes(t.layerIndex)) : this.view.tilesetList;
+    const cutTilesets = cutLayer ? this.view.tilesetList.filter(t => cutLayer.includes(t.layerIndex)) : this.view.tilesetList;
     cutTilesets.map(t =>
       setTimeout(() => {
         this.startDynaCut(t, this.getCenterPoint(transform, gravity), clippingPlanes, height);
