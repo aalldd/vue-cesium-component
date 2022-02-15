@@ -448,7 +448,6 @@ class emgUtil {
       let p2 = points[nextIndex];
       //求重心点到point[i]和point[nextIndex]组成边的距离
       let distancePlane = this.getDistance(gravity, points[i], points[nextIndex]);
-      console.log(distancePlane);
       // 求经过重心点的向量 算法二 垂直加距离
       let retVec = new Cesium.Cartesian3();
       if (p2.x - p1.x !== 0.0) {

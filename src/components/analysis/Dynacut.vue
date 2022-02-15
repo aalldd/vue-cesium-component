@@ -6,7 +6,7 @@
           <span class="input-tag">开挖深度</span>
         </a-col>
         <a-col :span="10">
-          <a-slider v-model="digDistance" :min="1" :max="100" />
+          <a-slider v-model="digDistance" :min="1" :max="100"/>
         </a-col>
         <a-col :span="4">
           <a-input-number
@@ -35,7 +35,7 @@
             <a-popover>
               <template slot="content">
                 <div style="width: 130px; height: 130px">
-                  <img :src="item" style="width: 100%; height: 100%" />
+                  <img :src="item" style="width: 100%; height: 100%"/>
                 </div>
               </template>
               <div
@@ -138,13 +138,15 @@ export default {
     },
     dynacut() {
       this.emgManager.removeAll();
+      this.drawOper && this.drawOper.removeEntities();
+      window.drawElement && window.drawElement.stopDrawing();
       let tileset = this.m3ds.find((t) => t.layerId) || this.m3ds[0];
       let transform = tileset.root.transform;
-      const Cesium = this.Cesium;
       const pointArr = [];
       const pointL = [];
       if (this.drawRange?.length) {
-        this.drawRange.forEach((point) => {
+        for (let i = 0; i < this.drawRange.length - 1; i++) {
+          let point = this.drawRange[i];
           let resPoint = new Cesium.Cartesian3();
           let invserTran = new Cesium.Matrix4();
           Cesium.Matrix4.inverse(transform, invserTran);
@@ -158,9 +160,9 @@ export default {
           let lng = Cesium.Math.toDegrees(cartographic.longitude);
           let alt = cartographic.height;
           pointL.push(lng, lat, alt);
-        });
+        }
         // 获取地形最小高度
-        const { _minHeight } = this.emgManager.calMinTerrainHeight(
+        const {_minHeight} = this.emgManager.calMinTerrainHeight(
           this.drawRange
         );
         //绘制纹理
@@ -248,7 +250,6 @@ export default {
 
       this.drawElement.startDrawingExtent({
         callback: (positions, e) => {
-          console.log(positions);
           this.drawElement.stopDrawing();
 
           //获取弧度制经纬度坐标

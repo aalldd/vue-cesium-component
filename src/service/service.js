@@ -185,7 +185,6 @@ class Service {
     let svrs = [];
     const origin = location.origin;
     return axios.get("/config/config.json", {
-      params: { _ts: Date.now() },
       baseURL: origin
     }).then(({ data: { initialized, dev, servers, ...rest } }) => {
       svrs = servers || [];
