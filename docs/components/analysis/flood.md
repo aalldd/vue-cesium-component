@@ -6,7 +6,7 @@ title: 'flood-淹没分析'
 
 > municipal-flood 淹没分析组件，提供了根据地形的淹没效果，降雨效果
 
-## 基本用法
+## 基本用法ac
 
 基本的淹没分析组件用法，淹没分析组件需嵌套在图层内，不传参就全使用默认值 其中draggable,title,closeable,expandable这四个属性用来控制淹没分析的面板是否可拖动，名称，可关闭，可展开
 
