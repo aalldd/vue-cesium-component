@@ -17,7 +17,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/': {
-        target: 'http://localhost:8088',
+        target: 'http://localhost:8035',
         changeOrigin: true,
         pathRewrite: {
           '/': ''
@@ -25,7 +25,7 @@ module.exports = {
       }
     }
   },
-  configureWebpack:(config)=>{
+  configureWebpack: (config) => {
     config.module.rules.push({
       test: /\.js$/,
       loader: 'babel-loader',

@@ -5,30 +5,25 @@
 <!--*/-->
 <template>
   <m-panel :draggable="true" :title="title" :need-expand="true">
-      <template v-slot:content>
-
-      </template>
+    <template v-slot:content> </template>
   </m-panel>
 </template>
 
 <script>
-import Panel from '../common/Panel';
+import Panel from "../common/Panel";
 export default {
   name: "particular",
-  components:{
-    'm-panel':Panel
+  components: {
+    "m-panel": Panel,
   },
-  props:{
-    title:{
-      type:String,
-      default:'粒子分析'
-    }
-  }
+  props: {
+    title: {
+      type: String,
+      default: "粒子分析",
+    },
+  },
 };
 </script>
 
 <style scoped lang="scss">
-  .mapgis-ui-particular{
-
-  }
 </style>
