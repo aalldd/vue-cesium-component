@@ -91,20 +91,27 @@ export default {
       tunnelCenterHeight: 5,
       tunnelRadius: 5,
       plainOptions: ['矩形', '圆形'],
-      tunnelType: '矩形'
+      tunnelType: '矩形',
+      tunnelStyleCopy: {
+        color: '#000',
+        alpha: 0.4
+      }
     };
   },
   props: {
     ...VueOptions,
     ...PanelOpts,
-    tunnelStyle:{
-      type:Object,
-      default:()=>{
-        return {
-          color:'#000',
-          alpha:0.4
-        }
-      }
+    tunnelStyle: {
+      type: Object
+    }
+  },
+  watch: {
+    tunnelStyle: {
+      handler() {
+        this.tunnelStyleCopy = Object.assign(this.tunnelStyleCopy, this.tunnelStyle);
+      },
+      deep: true,
+      immediate: true
     }
   },
   methods: {
@@ -112,8 +119,8 @@ export default {
       this.drawOper = payload;
     },
     handleDraw(payload) {
-      this.tunnelPath = payload.map(item=>{
-        return this.emgManager.Cartesian3ToLat(item)
+      this.tunnelPath = payload.map(item => {
+        return this.emgManager.Cartesian3ToLat(item);
       });
       this.drawTunnel();
     },
@@ -148,7 +155,7 @@ export default {
         id: "test",
         polylineVolume: {
           positions: LinePositions,
-          material: new Cesium.Color(255, 255, 255, 0.4),
+          material: new Cesium.Color.fromCssColorString(this.tunnelStyleCopy.color).withAlpha(this.tunnelStyleCopy.alpha),
           shape: this.tunnelType === '圆形' ? computeCircle(this.tunnelRadius) : computeTriangle(this.tunnelWidth, this.tunnelHeight),
           cornerType: this.tunnelType === '圆形' ? 'ROUNDED' : 'MITERED'
         }

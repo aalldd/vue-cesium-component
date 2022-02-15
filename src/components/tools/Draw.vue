@@ -109,11 +109,7 @@ export default {
   watch: {
     drawStyle: {
       handler: () => {
-        const commonStyle = {
-          color: '#FF8C00',
-          opacity: 0.6
-        };
-        this.drawStyleCopy = Object.assign(commonStyle, this.drawStyle);
+        this.drawStyleCopy = Object.assign(this.drawStyleCopy, this.drawStyle);
       }
     }
   },
