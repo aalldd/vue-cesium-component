@@ -1,5 +1,6 @@
 <template>
-  <municipal-panel title="开挖分析">
+  <municipal-panel :title="title" :draggable="draggable" @close="$emit('onClose')" :closable="closable"
+                   :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
     <template v-slot:content>
       <a-row class="input-item">
         <a-col :span="6">
@@ -8,7 +9,7 @@
         <a-col :span="10">
           <a-slider v-model="digDistance" :min="1" :max="100"/>
         </a-col>
-        <a-col :span="4">
+        <a-col :span="8">
           <a-input-number
             v-model="digDistance"
             :min="1"
@@ -85,7 +86,9 @@
 
 <script>
 import VueOptions from "@/util/vueOptions";
+import PanelOpts from '@/util/panelOptions';
 import loadingM3ds from "@/util/mixins/withLoadingM3ds";
+
 
 export default {
   name: "municipal-dynacut",
@@ -93,6 +96,7 @@ export default {
   mixins: [loadingM3ds],
   props: {
     ...VueOptions,
+    ...PanelOpts,
     drawTextures: {
       type: Array,
       default: () => {
@@ -103,12 +107,16 @@ export default {
       type: Array,
       default: () => {
         return ["square", "polygon"];
-      },
+      }
     },
     //用来指定地上图层的layerIndex
     layerIndexs: {
       type: Array,
     },
+    title: {
+      type: String,
+      default: '开挖分析'
+    }
   },
   data() {
     return {
@@ -117,7 +125,7 @@ export default {
       drawRange: [],
       sArea: 0,
       fArea: 0,
-      heightRange: "",
+      heightRange: ""
     };
   },
   computed: {
@@ -137,56 +145,62 @@ export default {
       this.drawTexture = textureUrl;
     },
     dynacut() {
-      this.emgManager.removeAll();
-      this.drawOper && this.drawOper.removeEntities();
-      window.drawElement && window.drawElement.stopDrawing();
       let tileset = this.m3ds.find((t) => t.layerId) || this.m3ds[0];
       let transform = tileset.root.transform;
       const pointArr = [];
       const pointL = [];
-      if (this.drawRange?.length) {
-        for (let i = 0; i < this.drawRange.length - 1; i++) {
-          let point = this.drawRange[i];
-          let resPoint = new Cesium.Cartesian3();
-          let invserTran = new Cesium.Matrix4();
-          Cesium.Matrix4.inverse(transform, invserTran);
-          Cesium.Matrix4.multiplyByPoint(invserTran, point, resPoint);
-          pointArr.push(resPoint);
-
-          let ellipsoid = this.webGlobe.viewer.scene.globe.ellipsoid;
-          let cartesian3 = new Cesium.Cartesian3(point.x, point.y, point.z);
-          let cartographic = ellipsoid.cartesianToCartographic(cartesian3);
-          let lat = Cesium.Math.toDegrees(cartographic.latitude);
-          let lng = Cesium.Math.toDegrees(cartographic.longitude);
-          let alt = cartographic.height;
-          pointL.push(lng, lat, alt);
-        }
-        // 获取地形最小高度
-        const {_minHeight} = this.emgManager.calMinTerrainHeight(
-          this.drawRange
-        );
-        //绘制纹理
-        this.emgManager.drawTexture(
-          [...this.drawRange, this.drawRange[0]],
-          _minHeight - this.digDistance,
-          this.drawTexture
-        );
-        this.cutFillAna(this.drawRange, _minHeight);
-        const dynacut = this.emgManager.dig(
-          pointArr,
-          this.digDistance,
-          this.layerIndexs ? this.layerIndexs : null
-        );
-        const data = {
-          dynacut,
-          minHeight: _minHeight - this.digDistance,
-          positions: this.drawRange,
-        };
-        //通过回调，将所有信息回传出去，开挖实例，填挖方实例，填挖方数据，开挖深度，开挖范围
-        this.$emit("onDynacut", data);
+      if (!this.drawRange?.length) {
+        return;
       }
+      for (let i = 0; i < this.drawRange.length - 1; i++) {
+        let point = this.drawRange[i];
+        let resPoint = new Cesium.Cartesian3();
+        let invserTran = new Cesium.Matrix4();
+        Cesium.Matrix4.inverse(transform, invserTran);
+        Cesium.Matrix4.multiplyByPoint(invserTran, point, resPoint);
+        pointArr.push(resPoint);
+
+        let ellipsoid = this.webGlobe.viewer.scene.globe.ellipsoid;
+        let cartesian3 = new Cesium.Cartesian3(point.x, point.y, point.z);
+        let cartographic = ellipsoid.cartesianToCartographic(cartesian3);
+        let lat = Cesium.Math.toDegrees(cartographic.latitude);
+        let lng = Cesium.Math.toDegrees(cartographic.longitude);
+        let alt = cartographic.height;
+        pointL.push(lng, lat, alt);
+      }
+      const {_minHeight} = this.emgManager.calMinTerrainHeight(
+        this.drawRange
+      );
+      this.emgManager.drawTexture(
+        [...this.drawRange, this.drawRange[0]],
+        _minHeight - this.digDistance,
+        this.drawTexture
+      );
+      const {dynaCutList, clippingPlanes} = this.emgManager.dig(
+        pointArr,
+        this.digDistance,
+        this.layerIndexs ? this.layerIndexs : null
+      );
+      dynaCutList.forEach(item => {
+        item.planes[0].plane.plane = new Cesium.CallbackProperty(function () {
+          for (let i = 0; i < clippingPlanes.length; i++) {
+            if (i === clippingPlanes.length - 1) {
+              let plane = clippingPlanes[i];
+              console.log(this.digDistance);
+              plane.distance = -this.digDistance;
+              Cesium.Plane.transform(plane, tileset.modelMatrix, new Cesium.ClippingPlane(Cesium.Cartesian3.UNIT_X, 0.0));
+            }
+          }
+        }.bind(this), false);
+      });
+      const data = {
+        dynaCutList,
+        digDistance: this.digDistance,
+        positions: this.drawRange,
+      };
+      this.cutFillAna(this.drawRange, _minHeight, data);
     },
-    cutFillAna(positions, terrainHeight) {
+    cutFillAna(positions, terrainHeight, dynacutData) {
       const view = this.webGlobe;
       view.viewer.scene.globe.depthTestAgainstTerrain = false;
       //初始化高级分析功能管理类
@@ -214,22 +228,22 @@ export default {
             sArea: this.sArea,
             fArea: this.fArea,
           };
-          this.$emit("onCutFill", data);
+          this.$emit('onDynacut', Object.assign(data, dynacutData));
         },
       });
       //开始执行填挖方分析
       advancedAnalysisManager.startCutFill(cutFill, positions);
     },
     activeTools(tool) {
+      this.emgManager.removeAll();
+      this.drawOper && this.drawOper.removeEntities();
+      window.drawElement && window.drawElement.stopDrawing();
       switch (tool) {
         case "polygon":
           this.drawOper.enableDrawPolygon();
           return;
         case "square":
           this.activeRect();
-          return;
-        case "circle":
-          this.drawOper.enableDrawCircle();
           return;
         default:
           break;

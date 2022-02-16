@@ -82,7 +82,9 @@ module.exports = {
             title: "空间分析",
             collapsable: false
           },
-          ["/components/analysis/flood.md", "洪水淹没分析"]
+          ["/components/analysis/flood.md", "洪水淹没分析"],
+          ["/components/analysis/dynacut.md", "开挖分析"],
+          ["/components/analysis/tunnel.md", "隧道分析"]
         ]
       }
     ]

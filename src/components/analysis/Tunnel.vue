@@ -1,5 +1,6 @@
 <template>
-  <municipal-panel title="隧道分析">
+  <municipal-panel :title="title" :draggable="draggable" @close="$emit('onClose')" :closable="closable"
+                   :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
     <template v-slot:content>
       <a-row class="input-item">
         <a-col :span="6">

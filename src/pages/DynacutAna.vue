@@ -1,5 +1,5 @@
 <template>
-  <municipal-dynacut title="开挖分析" @onCutFill="getCutInfo" @onDynacut="getDynacutInfo" :drawTools="['square', 'polygon']" :drawTextures="drawTextures" :layerIndexs="[0,1]"></municipal-dynacut>
+  <municipal-dynacut title="开挖分析" @load="onLoad" @onDynacut="getDynacutInfo" :drawTools="['square', 'polygon']" :drawTextures="drawTextures" :layerIndexs="[0,1]"></municipal-dynacut>
 </template>
 
 <script>
@@ -17,8 +17,8 @@ export default {
     getDynacutInfo(info){
       console.log(info);
     },
-    getCutInfo(info){
-      console.log(info);
+    onLoad(payload){
+      console.log(payload);
     }
   }
 };

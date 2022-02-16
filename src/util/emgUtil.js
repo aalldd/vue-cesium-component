@@ -502,15 +502,15 @@ class emgUtil {
       height: -1000
     });
     // 设置开挖的动态效果
-    dynaCut.planes[0].plane.plane = new Cesium.CallbackProperty(function () {
-      for (let i = 0; i < clippingPlanes.length; i++) {
-        if (i === clippingPlanes.length - 1) {
-          let plane = clippingPlanes[i];
-          plane.distance = -height;
-          Cesium.Plane.transform(plane, tileset.modelMatrix, new Cesium.ClippingPlane(Cesium.Cartesian3.UNIT_X, 0.0));
-        }
-      }
-    }.bind(this), false);
+    // dynaCut.planes[0].plane.plane = new Cesium.CallbackProperty(function () {
+    //   for (let i = 0; i < clippingPlanes.length; i++) {
+    //     if (i === clippingPlanes.length - 1) {
+    //       let plane = clippingPlanes[i];
+    //       plane.distance = -height;
+    //       Cesium.Plane.transform(plane, tileset.modelMatrix, new Cesium.ClippingPlane(Cesium.Cartesian3.UNIT_X, 0.0));
+    //     }
+    //   }
+    // }.bind(this), false);
     this.dynaCutList.push(dynaCut);
   };
 
@@ -526,7 +526,7 @@ class emgUtil {
 
   // 开挖实现  layerIndexs地上图层的id
   dig = (pointArr, height, layerIndexs) => {
-    const cutLayer=layerIndexs.map(item=>parseInt(item))
+    const cutLayer = layerIndexs.map(item => parseInt(item));
     //计算开挖面 对于挖，需要模仿开挖的效果
     let tileset = this.view.tilesetList.find(t => t.layerId) || this.view.tilesetList[0];
     let transform = tileset.root.transform;
@@ -539,7 +539,10 @@ class emgUtil {
         this.startDynaCut(t, this.getCenterPoint(transform, gravity), clippingPlanes, height);
       })
     );
-    return this.dynaCutList
+    return {
+      dynaCutList: this.dynaCutList,
+      clippingPlanes
+    };
   };
 
   /*移除填挖方计算*/
@@ -547,20 +550,21 @@ class emgUtil {
     if (!this.analysisManager) {
       this.analysisManager = new CesiumZondy.Manager.AnalysisManager({viewer: this.view.viewer});
     }
+
     this.dynaCutList.forEach(d => this.analysisManager && this.analysisManager.deleteDynamicCutting(d));
-    this.dynaCutList = [];
+    // this.dynaCutList = [];
   };
 
-  removeAll=()=>{
-    if(!this.entityController){
+  removeAll = () => {
+    if (!this.entityController) {
       //构造几何控制对象
       this.entityController = new CesiumZondy.Manager.EntityController({
         viewer: this.view.viewer
       });
     }
+    this.stopCutFillM();
     this.entityController && this.entityController.removeAllEntities();
-    this.stopCutFillM()
-  }
+  };
 }
 
 export default emgUtil;

@@ -30,7 +30,7 @@ export default {
       m3dInfos: [
         {
           maximumMemoryUsage: 1024,
-          url: 'http://192.168.12.200:6163/igs/rest/g3d/lgzh0902',
+          url: 'http://192.168.12.200:6163/igs/rest/g3d/lgzh0701',
           layers: '',
           vueIndex: '0'
         }

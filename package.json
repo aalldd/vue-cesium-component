@@ -1,6 +1,6 @@
 {
   "name": "municipal-cesium-components",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "基于mapgis-vue-cesium的二次封装框架",
   "main": "dist/municipal-vue-cesium.umd.min.js",
   "scripts": {
