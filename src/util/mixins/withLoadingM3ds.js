@@ -21,6 +21,11 @@ const loadingM3ds = {
       this.myInterval = window.setInterval(() => {
         setTimeout(callback);
       }, 1000);
+    },
+    removeAll(){
+      this.emgManager.removeAll();
+      this.drawOper && this.drawOper.removeEntities();
+      window.drawElement && window.drawElement.stopDrawing();
     }
   },
   destroyed() {

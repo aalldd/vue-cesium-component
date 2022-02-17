@@ -6,6 +6,8 @@ export {default as MunicipalFlood} from "../components/analysis/Flood";
 export {default as MunicipalDynacut} from "../components/analysis/Dynacut";
 export {default as MunicipalRain} from '../components/analysis/Rain';
 export {default as MunicipalTunnel} from '../components/analysis/Tunnel';
+export {default as MunicipalFixRoam} from '../components/roam/FixRoam';
+export {default as MunicipalFixRoamData} from '../components/roam/FixRoamData';
 
 //ui组件
 export {default as MunicipalIcon} from "../components/common/Icon";

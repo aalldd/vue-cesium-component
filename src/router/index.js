@@ -28,6 +28,11 @@ const router=new Router({
           path: '/tunnel',
           name: 'tunnel',
           component: ()=>import('../pages/TunnelAna')
+        },
+        {
+          path: '/fixedRoam',
+          name: 'fixedRoam',
+          component: ()=>import('../pages/FixRoamAna')
         }
       ]
     }

@@ -1,14 +1,15 @@
 <template>
-  <svg class="mapgis-icon" aria-hidden="true">
+  <svg class="mapgis-icon" aria-hidden="true" @click="$emit('click')">
     <use :xlink:href="`#icon-${name}`"></use>
   </svg>
 </template>
 <script>
-import './svg'
+import './svg';
+
 export default {
-  name:'municipal-icon',
+  name: 'municipal-icon',
   props: ['name']
-}
+};
 </script>
 <style lang="scss" scoped>
 .mapgis-icon {

@@ -24,7 +24,6 @@
     <div v-else class="panel-container" :class="[panelClassName]" :style="panelStyle">
       <div class="top-wrapper">
         <div class="title" v-if="title" :style="{display:'flex',alignItems:'center'}">{{ title }}</div>
-
         <div class="right">
           <div class="extra" :style="{display:'flex',alignItems:'center'}">
             <slot name="extra"></slot>
@@ -102,10 +101,6 @@ export default {
       .right {
         @include flex(nowrap, 'center', 'space-around');
         overflow: hidden;
-
-        .extra {
-          margin: 0 $panel-padding;
-        }
 
         .expand {
           border-right: 1px solid #f0f0f0;

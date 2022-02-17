@@ -95,7 +95,7 @@ export default {
     },
     clampToGround: {
       type: Boolean,
-      default: false
+      default: true
     },
     position: {
       type: String,

@@ -67,7 +67,14 @@ export default {
         }, {
           menuName: '漫游',
           menuRoute: 'roam',
-          key: '3'
+          key: '3',
+          children: [
+            {
+              menuName: '场景漫游',
+              menuRoute: 'fixedRoam',
+              key: '3-0'
+            }
+          ]
         }, {
           menuName: '分析',
           menuRoute: 'analysis',
