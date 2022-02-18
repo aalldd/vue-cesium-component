@@ -15,4 +15,10 @@ a{
   text-decoration: none;
 }
 
+:global{
+  .vdr.active:before{
+    display: none;
+  }
+}
+
 

@@ -1,95 +1,99 @@
 <template>
-  <municipal-panel :title="title" :draggable="draggable" @close="$emit('onClose')" :closable="closable"
-                   :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
-    <template v-slot:extra>
-      <div class="tools">
-        <a-switch checked-children="显示" un-checked-children="隐藏" :checked="pathVisible" @change="showPath"/>
-      </div>
-    </template>
-    <template v-slot:content>
-      <a-row class="input-item" v-for="(item,index) in fixedRoamDataCopy" :key="index">
-        <a-col :span="8">
-          <span class="input-tag">{{ item.title }}</span>
-        </a-col>
-        <a-col :span="16" v-if="item.uniKey==='title'">
-          <a-input style="width: 100%" v-model="item.value"></a-input>
-        </a-col>
+  <div>
+    <municipal-panel v-if="!uiControlled" :title="title" :draggable="draggable" @close="$emit('onClose')"
+                     :closable="closable"
+                     :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
+      <template v-slot:extra>
+        <div class="tools">
+          <a-switch checked-children="显示" un-checked-children="隐藏" :checked="pathVisible" @change="showPath"/>
+        </div>
+      </template>
+      <template v-slot:content>
+        <a-row class="input-item" v-for="(item,index) in fixedRoamDataCopy" :key="index">
+          <a-col :span="8">
+            <span class="input-tag">{{ item.title }}</span>
+          </a-col>
+          <a-col :span="16" v-if="item.uniKey==='title'">
+            <a-input style="width: 100%" v-model="item.value"></a-input>
+          </a-col>
 
-        <a-col :span="16" style="display:flex;justify-content: flex-start"
-               v-if="item.uniKey==='model'">
-          <a-select style="width: 100%" @change="modelChange"
-                    :default-value="modelList[0].name">
-            <a-select-option v-for="(jitem,index) in modelList" :value="jitem.value"
-                             :key="index">
-              {{ jitem.name }}
-            </a-select-option>
-          </a-select>
-        </a-col>
-        <a-col :span="16" style="display:flex;justify-content: flex-start"
-               v-if="item.uniKey==='view'">
-          <a-select style="width: 100%" @change="viewChange"
-                    :default-value="viewList[0].name">
-            <a-select-option v-for="(jitem,index) in viewList" :value="jitem.value"
-                             :key="index">
-              {{ jitem.name }}
-            </a-select-option>
-          </a-select>
-        </a-col>
+          <a-col :span="16" style="display:flex;justify-content: flex-start"
+                 v-if="item.uniKey==='model'">
+            <a-select style="width: 100%" @change="modelChange"
+                      :default-value="modelList[0].name">
+              <a-select-option v-for="(jitem,index) in modelList" :value="jitem.value"
+                               :key="index">
+                {{ jitem.name }}
+              </a-select-option>
+            </a-select>
+          </a-col>
+          <a-col :span="16" style="display:flex;justify-content: flex-start"
+                 v-if="item.uniKey==='view'">
+            <a-select style="width: 100%" @change="viewChange"
+                      :default-value="viewList[0].name">
+              <a-select-option v-for="(jitem,index) in viewList" :value="jitem.value"
+                               :key="index">
+                {{ jitem.name }}
+              </a-select-option>
+            </a-select>
+          </a-col>
 
-        <a-col :span="16" v-if="['speed','pitch','heading','distance'].indexOf(item.uniKey)>=0">
-          <a-row style="align-items: center;display: flex;width: 100%">
-            <a-col :span="12">
-              <a-slider v-model="item.value" :min="-180" :max="180" style="min-width: 100px"/>
-            </a-col>
-            <a-col :span="12">
-              <a-input-number
-                v-model="item.value"
-                :min="-180"
-                :max="180"
-                style="margin-left: 4px"
-              />
-            </a-col>
-          </a-row>
-        </a-col>
+          <a-col :span="16" v-if="['speed','pitch','heading','distance'].indexOf(item.uniKey)>=0">
+            <a-row style="align-items: center;display: flex;width: 100%">
+              <a-col :span="12">
+                <a-slider v-model="item.value" :min="-180" :max="180" style="min-width: 100px"/>
+              </a-col>
+              <a-col :span="12">
+                <a-input-number
+                  v-model="item.value"
+                  :min="-180"
+                  :max="180"
+                  style="margin-left: 4px"
+                />
+              </a-col>
+            </a-row>
+          </a-col>
 
-        <a-col :span="16" style="display:flex;justify-content: flex-start" v-if="item.uniKey==='loop'">
-          <a-radio-group :options="loopOption" :default-value="item.value" @change="changeLoop"/>
-        </a-col>
+          <a-col :span="16" style="display:flex;justify-content: flex-start" v-if="item.uniKey==='loop'">
+            <a-radio-group :options="loopOption" :default-value="item.value" @change="changeLoop"/>
+          </a-col>
 
-        <a-col :span="16">
-          <div style="display: flex;justify-content: flex-start" v-if="item.uniKey==='path'">
-            <municipal-draw
-              :vueKey="vueKey"
-              :enable-menu-control="false"
-              @load="onDrawLoad"
-              @drawcreate="handleDraw"
-            >
-              <municipal-icon
-                name="-vector-polyline"
-                style="cursor: pointer"
-                @click="activeDraw"
-              ></municipal-icon>
-            </municipal-draw>
-          </div>
-        </a-col>
-      </a-row>
-      <a-row class="input-item">
-        <a-col :span="24" style="display:flex;justify-content: flex-end">
-          <div style="display: flex;justify-content: flex-start">
-            <a-button style="margin-right: 10px" @click="startRoam">
-              开始漫游
-            </a-button>
-            <a-button @click="stopRoam" style="margin-right: 10px">
-              结束漫游
-            </a-button>
-            <a-button @click="saveRoam">
-              保存漫游参数
-            </a-button>
-          </div>
-        </a-col>
-      </a-row>
-    </template>
-  </municipal-panel>
+          <a-col :span="16">
+            <div style="display: flex;justify-content: flex-start" v-if="item.uniKey==='path'">
+              <municipal-draw
+                :vueKey="vueKey"
+                :enable-menu-control="false"
+                @load="onDrawLoad"
+                @drawcreate="handleDraw"
+              >
+                <municipal-icon
+                  name="-vector-polyline"
+                  style="cursor: pointer"
+                  @click="activeDraw"
+                ></municipal-icon>
+              </municipal-draw>
+            </div>
+          </a-col>
+        </a-row>
+        <a-row class="input-item">
+          <a-col :span="24" style="display:flex;justify-content: flex-end">
+            <div style="display: flex;justify-content: flex-start">
+              <a-button style="margin-right: 10px" @click="startRoam">
+                开始漫游
+              </a-button>
+              <a-button @click="stopRoam" style="margin-right: 10px">
+                结束漫游
+              </a-button>
+              <a-button @click="saveRoam">
+                保存漫游参数
+              </a-button>
+            </div>
+          </a-col>
+        </a-row>
+      </template>
+    </municipal-panel>
+    <slot v-if="uiControlled"></slot>
+  </div>
 </template>
 
 <script>
@@ -116,7 +120,7 @@ export default {
         uniKey: 'model'
       }, {
         title: '漫游视角',
-        value: 0,
+        value: 1,
         uniKey: 'view'
       }, {
         title: '漫游速度',
@@ -151,23 +155,9 @@ export default {
     ...PanelOpts,
     modelList: {
       type: Array,
+      require: true,
       default: () => {
-        return [{
-          name: '消防车',
-          value: ''
-        }, {
-          name: '小车',
-          value: ''
-        }, {
-          name: '特警车',
-          value: ''
-        }, {
-          name: '人',
-          value: ''
-        }, {
-          name: '无人机',
-          value: ''
-        }];
+        return [];
       }
     },
     viewList: {
@@ -190,6 +180,10 @@ export default {
       default: () => {
         return [];
       }
+    },
+    uiControlled: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
@@ -245,6 +239,10 @@ export default {
       immediate: true,
       deep: true
     }
+  },
+  destroyed() {
+    this.webGlobe.viewer.trackedEntity = undefined;
+    this.stopRoam();
   },
   methods: {
     showPath() {
@@ -322,7 +320,8 @@ export default {
       this.isRoaming = false;
     },
     saveRoam() {
-      this.$emit('saveRoam', Object.assign(this.fixedRoamDataCopy, {path: this.path}));
+      this.changeFixedData(this.path, 'path');
+      this.$emit('saveRoam', this.fixedRoamDataCopy);
     }
   }
 };

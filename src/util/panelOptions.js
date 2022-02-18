@@ -20,8 +20,8 @@ export default {
       return {
         width: '400px',
         position:'absolute',
-        top:'4em',
-        right:'4em'
+        right:'4em',
+        top:'4em'
       };
     }
   }

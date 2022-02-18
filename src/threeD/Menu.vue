@@ -21,7 +21,7 @@
       </a-layout-sider>
       <a-layout>
         <a-layout-content
-          :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
+          :style="{ background: '#fff', margin: 0, minHeight: '280px' }"
         >
           <keep-alive>
             <ThreeD/>

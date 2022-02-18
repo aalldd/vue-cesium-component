@@ -1,5 +1,5 @@
 module.exports = {
-  title: 'Mapgis-Cesium-Components',
+  title: 'Municipal-Cesium-Components',
   description: '一个基于webclient-vue-cesium库二次封装的组件库',
   dest: "dist-docs",
   base:'/vue-cesium-component/',
@@ -7,7 +7,7 @@ module.exports = {
     "/": {
       lang: "zh-CN",
       title: "中地数码",
-      description: "Mapgis-Cesium-Components"
+      description: "Municipal-Cesium-Components"
     }
   },
   themeConfig: {
@@ -84,7 +84,13 @@ module.exports = {
           },
           ["/components/analysis/flood.md", "洪水淹没分析"],
           ["/components/analysis/dynacut.md", "开挖分析"],
-          ["/components/analysis/tunnel.md", "隧道分析"]
+          ["/components/analysis/tunnel.md", "隧道分析"],
+
+          {
+            title: "漫游",
+            collapsable: false
+          },
+          ["/components/roam/fixroam.md", "场景漫游"]
         ]
       }
     ]

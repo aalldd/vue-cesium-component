@@ -1,7 +1,7 @@
 <template>
-  <div class="wapper">
-    <vr v-if="draggable" :style="{height:'100%',...panelStyle}">
-      <div class="panel-container" :class="[panelClassName]" :style="panelStyle">
+  <div style="width: 100%;height: 0;position:absolute;left:0;top: 0">
+    <vue-draggable-resizable :draggable="draggable" :style="{height:'auto',...panelStyle}" :class="[panelClassName]">
+      <div class="panel-container">
         <div class="top-wrapper">
           <div class="title" v-if="title" :style="{display:'flex',alignItems:'center'}">{{ title }}</div>
           <div class="right">
@@ -9,10 +9,10 @@
               <slot name="extra"></slot>
             </div>
             <div class="expand" v-show="expandable" @click="expanded=!expanded">
-              <m-icon :name="expandIcon"></m-icon>
+              <municipal-icon :name="expandIcon"></municipal-icon>
             </div>
             <div class="close" v-show="closable" @click="$emit('onClose')">
-              <m-icon name="close"></m-icon>
+              <municipal-icon name="close"></municipal-icon>
             </div>
           </div>
         </div>
@@ -20,40 +20,15 @@
           <slot name="content"></slot>
         </div>
       </div>
-    </vr>
-    <div v-else class="panel-container" :class="[panelClassName]" :style="panelStyle">
-      <div class="top-wrapper">
-        <div class="title" v-if="title" :style="{display:'flex',alignItems:'center'}">{{ title }}</div>
-        <div class="right">
-          <div class="extra" :style="{display:'flex',alignItems:'center'}">
-            <slot name="extra"></slot>
-          </div>
-          <div class="expand" v-show="expandable" @click="expanded=!expanded">
-            <m-icon :name="expandIcon"></m-icon>
-          </div>
-          <div class="close" v-show="closable" @click="$emit('onClose')">
-            <m-icon name="close"></m-icon>
-          </div>
-        </div>
-      </div>
-      <div class="content" v-show="!expanded">
-        <slot name="content"></slot>
-      </div>
-    </div>
+    </vue-draggable-resizable>
   </div>
 </template>
 
 <script>
-import Icon from './Icon';
 import PanelOpts from '@/util/panelOptions';
-import VueDraggableResizable from 'vue-draggable-resizable';
 
 export default {
   name: 'municipal-panel',
-  components: {
-    'm-icon': Icon,
-    'vr': VueDraggableResizable
-  },
   data() {
     return {
       expanded: false
@@ -71,55 +46,56 @@ export default {
 <style lang="scss" scoped>
 @import "../var";
 
-.wapper {
-  .panel-container {
-    background-color: $panel-background;
-    pointer-events: all;
-    max-height: 100%;
-    border-radius: $panel-border-radius;
-    display: flex;
-    flex-flow: column;
+.panel-container {
+  background-color: $panel-background;
+  pointer-events: all;
+  border-radius: $panel-border-radius;
+  display: flex;
+  flex-flow: column;
+  overflow: hidden;
+  @include border();
+
+  .top-wrapper {
+    width: 100%;
     overflow: hidden;
-    @include border();
+    @include flex(nowrap, 'center', 'space-between');
+    border-bottom: 1px solid #f0f0f0;
+    border-radius: 2px 2px 0 0;
+    padding: $panel-padding;
 
-    .top-wrapper {
-      width: 100%;
+    .title {
+      flex: 1;
+      font-size: $font-size-base;
+      color: $text-color;
       overflow: hidden;
-      @include flex(nowrap, 'center', 'space-between');
-      border-bottom: 1px solid #f0f0f0;
-      border-radius: 2px 2px 0 0;
-      padding: $panel-padding;
+      pointer-events: none;
+    }
 
-      .title {
-        flex: 1;
+    .right {
+      @include flex(nowrap, 'center', 'space-around');
+      overflow: hidden;
+
+      .extra {
+        margin: 0 $panel-padding;
+      }
+
+      .expand {
+        border-right: 1px solid #f0f0f0;
         font-size: $font-size-base;
-        color: $text-color;
-        overflow: hidden;
-        pointer-events: none;
+        padding: 0 $panel-padding;
+        cursor: pointer;
       }
 
-      .right {
-        @include flex(nowrap, 'center', 'space-around');
-        overflow: hidden;
-
-        .expand {
-          border-right: 1px solid #f0f0f0;
-          font-size: $font-size-base;
-          padding: 0 $panel-padding;
-          cursor: pointer;
-        }
-
-        .close {
-          font-size: $font-size-base;
-          padding-left: $panel-padding;
-          cursor: pointer;
-        }
+      .close {
+        font-size: $font-size-base;
+        padding-left: $panel-padding;
+        cursor: pointer;
       }
     }
+  }
 
-    .content {
-      padding: $panel-padding;
-    }
+  .content {
+    padding: $panel-padding;
   }
 }
 

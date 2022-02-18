@@ -1,5 +1,8 @@
 <template>
-  <municipal-tunnel title="隧道分析"></municipal-tunnel>
+  <div>
+    <municipal-tunnel title="隧道分析"></municipal-tunnel>
+    <municipal-result title="隧道分析结果"></municipal-result>
+  </div>
 </template>
 
 <script>
