@@ -39,7 +39,17 @@ export default {
       return this.expanded ? 'up' : 'down';
     }
   },
-  props: {...PanelOpts}
+  props: {
+    ...PanelOpts,
+    panelStyle: {
+      type: Object,
+      default: () => {
+        return {
+          position: 'absolute'
+        };
+      }
+    }
+  }
 };
 </script>
 

@@ -6,7 +6,8 @@
 <template>
   <div class="flood">
     <municipal-rain :draggable="draggable" @close="$emit('onClose')" v-if="needRain" title="降雨信息"
-                    :panel-style="panelStyle" :panel-class-name="panelClassName" :rain-level="rainLevel"></municipal-rain>
+                    :panel-style="rainPanelStyle" :panel-class-name="panelClassName"
+                    :rain-level="rainLevel"></municipal-rain>
     <municipal-panel :draggable="draggable" @close="$emit('onClose')" :title="title" :closable="closable"
                      :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
       <template v-slot:content>
@@ -42,8 +43,8 @@ import {
   setDepthTestAgainstTerrainEnable,
   calMinTerrainHeight
 } from "@/util/util";
-import PanelOpts from '@/util/panelOptions'
-import VueOptions from '@/util/vueOptions'
+import PanelOpts from '@/util/panelOptions';
+import VueOptions from '@/util/vueOptions';
 
 export default {
   name: 'municipal-flood',
@@ -103,14 +104,6 @@ export default {
       type: Boolean,
       default: true
     },
-    panelStyle: {
-      type: Object,
-      default: () => {
-        return {
-          width: '400px', marginBottom: '20px'
-        };
-      }
-    },
     rainLevel: {
       type: Array,
       default: () => {
@@ -125,7 +118,29 @@ export default {
     rainTitle: {
       type: String,
       default: '降雨信息'
-    }
+    },
+    rainPanelStyle: {
+      type: String,
+      default: ()=>{
+        return {
+          width: '400px',
+          position:'absolute',
+          right:'4em',
+          top:'2em'
+        }
+      }
+    },
+    panelStyle: {
+      type: String,
+      default: ()=>{
+        return {
+          width: '400px',
+          position:'absolute',
+          right:'4em',
+          top:'16em'
+        }
+      }
+    },
   },
   data() {
     return {
