@@ -16,7 +16,6 @@
  ************************************************************************************************/
 const XLSX =require('xlsx')
 
-console.log(XLSX);
 const exportXLSX = (sheetDatas, sheetNames, fileName) => {
   // 将workbook装化成blob对象
   const workbook2blob = (workbook) => {
@@ -61,7 +60,6 @@ const exportXLSX = (sheetDatas, sheetNames, fileName) => {
     aLink.dispatchEvent(event);
   };
   /* create a new blank workbook */
-  console.log(XLSX);
   const wb = XLSX.utils.book_new();
   sheetDatas.length && sheetNames.length && sheetDatas.forEach((sheetData, index) => {
     const sheet = XLSX.utils.json_to_sheet(sheetData);

@@ -1,6 +1,6 @@
 <template>
-  <municipal-panel :title="title" :draggable="false" @close="$emit('onClose')"
-                   :closable="closable"
+  <municipal-panel :title="title" @close="$emit('onClose')"
+                   :closable="closable" :draggable="draggable"
                    :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClass">
     <template v-slot:content>
       <a-tabs
@@ -16,16 +16,16 @@
                    :scroll="scrollStyle"
                    :pagination="paginationCopy"
                    @change="handleTableChange"
+                   :customRow="customRow"
                    size="small"
                    :load="load">
-            <a slot="action" slot-scope="text">action</a>
           </a-table>
         </a-tab-pane>
       </a-tabs>
     </template>
     <template v-slot:extra>
       <div class="export">
-        <a-select :value="exportType" style="width: 120px" @change="changeExportType" size="small">
+        <a-select :value="exportType" style="width: 120px" @change="exportData" size="small">
           <a-select-option v-for="(item,index) in exportTypes" :key="index" :value="item">
             {{ item }}
           </a-select-option>
@@ -42,7 +42,7 @@ const exportTypes = [
   '导出全部', '导出当前页签', '导出当前页'
 ];
 export default {
-  name: 'municipal-result',
+  name: 'municipal-result-common',
   data() {
     return {
       panelWidth: 1000,
@@ -56,6 +56,10 @@ export default {
     title: {
       type: String,
       default: '结果面板'
+    },
+    draggable: {
+      type: Boolean,
+      default: false
     },
     closable: {
       type: Boolean,
@@ -100,7 +104,7 @@ export default {
     //导出excel的文件名称,仅用于导出全部
     exportFileName: {
       type: String,
-      default: ''
+      default: '全部数据'
     },
     pagination: {
       type: Object
@@ -141,49 +145,65 @@ export default {
     }
   },
   methods: {
+    //标签变更事件
     onTabsChange(value) {
       this.choosedTabIndex = value;
+      this.$emit('onTabsChange', this.tabs[value]);
     },
+    //切换分页
     handleTableChange(pagination, filters, sorter) {
       const pager = {...this.paginationCopy};
       pager.current = pagination.current;
       this.paginationCopy = pager;
       this.$emit('onPageChange', this.paginationCopy);
     },
-    changeExportType(value) {
+    //变更导出方式
+    exportData(value) {
       this.exportType = value;
-      switch (value) {
-        //导出全部
-        case exportTypes[0]:
-          this.exportAll();
-        // 导出当前页签
-        case exportTypes[1]:
-          this.exportTab();
-        // 导出当前页
-        case exportTypes[2]:
-          this.exportPage();
-      }
+      value === exportTypes[0] && this.exportAll();
+      value === exportTypes[1] && this.exportTab();
+      value === exportTypes[2] && this.exportPage();
+      return;
     },
+    //导出所有标签栏中的数据
     exportAll() {
       const sheetNames = this.tabs.map(item => item.tabName);
       const exportData = this.tabs.map(item => {
         return item.features;
       });
+      console.log(sheetNames);
+      console.log(exportData);
       exportExcel(exportData, sheetNames, this.exportFileName);
     },
+    //导出当前标签栏中的表格数据
     exportTab() {
       const target = this.tabs[this.choosedTabIndex];
-      const sheetName = target.tabName;
+      const sheetNames = [target.tabName];
       const exportData = [target.features];
-      exportExcel(exportData, sheetName, target.exportFileName || this.exportFileName);
+      exportExcel(exportData, sheetNames, target.exportFileName || this.exportFileName);
     },
+    //导出当前表格页
     exportPage() {
       const pageSize = this.paginationCopy.pageSize;
       const current = this.paginationCopy.current;
       const target = this.tabs[this.choosedTabIndex];
-      const sheetName = target.tabName;
+      const sheetNames = [target.tabName];
       const exportData = [target.features.slice((current - 1) * pageSize, current * pageSize)];
-      exportExcel(exportData, sheetName, target.exportFileName || this.exportFileName);
+      exportExcel(exportData, sheetNames, target.exportFileName || this.exportFileName);
+    },
+    //点击行事件
+    customRow(record, index) {
+      return {
+        on: {
+          click: () => {
+            this.$emit('onRowClick', record);
+          }
+        }
+      };
+    },
+    //关闭结果面板
+    onClose() {
+      this.$emit('onClose');
     }
   }
 };
@@ -205,14 +225,14 @@ export default {
 
 .position-left {
   position: absolute;
-  top: 4em !important;
+  top: 2em !important;
   left: 4em !important;
   width: 30% !important;
 }
 
 .position-right {
   position: absolute;
-  top: 4em !important;
+  top: 2em !important;
   right: 4em !important;
   width: 30% !important;
 }

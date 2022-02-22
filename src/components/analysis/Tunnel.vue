@@ -79,10 +79,11 @@
 import VueOptions from '@/util/vueOptions';
 import PanelOpts from '@/util/panelOptions';
 import loadingM3ds from '@/util/mixins/withLoadingM3ds';
+import MathTools from '@/util/mathTools';
 
 export default {
   name: "municipal-tunnel",
-  inject: ['Cesium', 'CesiumZondy', 'webGlobe'],
+  inject: ['Cesium', 'CesiumZondy', 'webGlobe', 'commonConfig'],
   mixins: [loadingM3ds],
   data() {
     return {
@@ -104,6 +105,10 @@ export default {
     ...PanelOpts,
     tunnelStyle: {
       type: Object
+    },
+    //需要地面图层的layerIndex用来选出管网图层中的transform
+    layerIndexs: {
+      type: Array
     }
   },
   watch: {
@@ -124,6 +129,7 @@ export default {
         return this.emgManager.Cartesian3ToLat(item);
       });
       this.drawTunnel();
+      this.calLine();
     },
     drawTunnelPath() {
       this.emgManager.removeAll();
@@ -162,6 +168,93 @@ export default {
         }
       };
       this.webGlobe.viewer.entities.add(this.tunnel);
+    },
+    calLine() {
+      const {tunnelWidth, tunnelHeight, tunnelCenterHeight, tunnelType, tunnelRadius} = this;
+      this.linePoint = [];
+      for (let i = 0; i < this.tunnelPath.length; i++) {
+        let item = this.tunnelPath[i];
+        const itemCar3 = this.emgManager.changeToCartesian3(item);
+        this.linePoint[i] = [itemCar3.x, itemCar3.y, itemCar3.z];
+      }
+
+      // 用来计算多面体的变量
+      let topBarList = [];
+      let BottomBarList = [];
+      let polygonList = [];
+
+      // 将沿线经过的区域分解为多个凸多边形 因为平台不支持凹多边形
+      if (this.linePoint.length === 1) {
+        this.$message.info('至少两点才能组成一条线，请重新画点');
+      } else if (this.linePoint.length === 2) {
+        let sp1, sp2, ep1, ep2;
+        let v1 = MathTools.Subtract(this.linePoint[1], this.linePoint[0]);
+        let v2 = MathTools.Cross(v1, [0, 0, 1]);
+        let l = MathTools.Length(v1);
+
+        sp1 = MathTools.PVL(this.linePoint[0], v2, tunnelType === '矩形' ? tunnelWidth : tunnelRadius * 2);
+        sp2 = MathTools.PVL(this.linePoint[0], v2, tunnelType === '矩形' ? -tunnelWidth : -tunnelRadius * 2);
+        ep1 = MathTools.PVL(sp1, v1, l);
+        ep2 = MathTools.PVL(sp2, v1, l);
+        topBarList = [...topBarList, sp2, ep2];
+        BottomBarList = [...BottomBarList, sp1, ep1];
+      } else {
+        this.linePoint.forEach((item, i) => {
+          let sp1, sp2, ep1, ep2;
+          if (i !== this.linePoint.length - 1) {
+            if (i === 0) {
+              let v1 = MathTools.Subtract(this.linePoint[i + 1], item);
+              let v2 = MathTools.Cross(v1, [0, 0, 1]);
+              sp1 = MathTools.PVL(item, v2, tunnelType === '矩形' ? tunnelWidth : tunnelRadius * 2);
+              sp2 = MathTools.PVL(item, v2, tunnelType === '矩形' ? -tunnelWidth : -tunnelRadius * 2);
+              const vector = MathTools.CalAngleInFace(i, this.linePoint);
+              let basic = tunnelType === '矩形' ? tunnelWidth / 2 : tunnelRadius;
+              const r = (basic) / Math.cos(vector[1]);
+              ep1 = MathTools.PVL(this.linePoint[i + 1], vector[0], r);
+              ep2 = MathTools.PVL(this.linePoint[i + 1], vector[0], -r);
+              topBarList = [...topBarList, sp2, ep2];
+              BottomBarList = [...BottomBarList, sp1, ep1];
+            } else if (i === this.linePoint.length - 2) {
+              let v1 = MathTools.Subtract(this.linePoint[i + 1], item);
+              let v2 = MathTools.Cross(v1, [0, 0, 1]);
+              ep1 = MathTools.PVL(this.linePoint[i + 1], v2, tunnelType === '矩形' ? tunnelWidth : tunnelRadius * 2);
+              ep2 = MathTools.PVL(this.linePoint[i + 1], v2, tunnelType === '矩形' ? -tunnelWidth : -tunnelRadius * 2);
+              topBarList = [...topBarList, ep2];
+              BottomBarList = [...BottomBarList, ep1];
+            } else {
+              const vector = MathTools.CalAngleInFace(i, this.linePoint); // 计算两根线之间的夹角
+              let basic = tunnelType === '矩形' ? tunnelWidth / 2 : tunnelRadius;
+              let w = (basic) / Math.cos(vector[1]); //计算宽度
+              ep1 = MathTools.PVL(this.linePoint[i + 1], vector[0], w);
+              ep2 = MathTools.PVL(this.linePoint[i + 1], vector[0], -w);
+              topBarList = [...topBarList, ep2];
+              BottomBarList = [...BottomBarList, ep1];
+            }
+          }
+
+        });
+      }
+
+      const transform = this.m3ds.find(t => !this.layerIndexs.includes(t.layerIndex)).root.transform;
+      BottomBarList = BottomBarList.reverse();
+      polygonList = [...topBarList, ...BottomBarList, topBarList[0]].map(item => {
+        let point = {x: item[0], y: item[1], z: item[2]};
+        let resPoint = new Cesium.Cartesian3;
+        let invserTran = new Cesium.Matrix4;
+        Cesium.Matrix4.inverse(transform, invserTran);
+        Cesium.Matrix4.multiplyByPoint(invserTran, point, resPoint);
+        return resPoint;
+      });
+      //从基础配置中拿取偏移坐标
+      const offset = window?.commonConfig?.globalConfig?.offset || [0, 0];
+      const geometry = polygonList.map(p => [p.x + offset[0], p.y + offset[1]]).reduce((a, b) => a.concat(b), []).join();
+      let range = [];
+      tunnelType === '矩形' ? range = [tunnelCenterHeight - tunnelHeight / 2, tunnelCenterHeight + tunnelHeight / 2] : range = [tunnelCenterHeight - tunnelRadius, tunnelCenterHeight + tunnelRadius];
+      this.$emit('sendQueryParam', {
+        'geometry': geometry,
+        'geometryType': 'polygon',
+        'range': range
+      });
     }
   }
 };
