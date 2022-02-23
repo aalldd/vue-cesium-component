@@ -7,6 +7,7 @@ import '@mapgis/webclient-vue-ui/dist-libs/webclient-vue-ui.css';
 import '@mapgis/webclient-vue-cesium/dist-libs/webclient-vue-cesium.css';
 import './assets/index.scss';
 import VueCesium from '@mapgis/webclient-vue-cesium';
+import VueDraggableResizable from 'vue-draggable-resizable';
 import MincialComs from './lib/index';
 import MapgisUi from '@mapgis/webclient-vue-ui';
 import Service from '@/service/service';
@@ -17,6 +18,7 @@ Vue.use(MapgisUi);
 Vue.use(Antd);
 Vue.use(VueCesium);
 Vue.use(MincialComs);
+Vue.component('vue-draggable-resizable', VueDraggableResizable);
 Vue.config.productionTip = false;
 Service.init().then(() => {
   Vue.prototype.$serve = Service;

@@ -15,6 +15,13 @@ export { default as MunicipalAutoSteer } from '../components/roam/AutoSteering';
 export { default as MunicipalIcon } from "../components/common/Icon";
 export { default as MunicipalCursorTip } from "../components/common/CursorTip";
 export { default as MunicipalPanel } from '../components/common/Panel';
+export { default as MunicipalFlood } from "../components/analysis/Flood";
+export { default as MunicipalDynacut } from "../components/analysis/Dynacut";
+export { default as MunicipalRain } from '../components/analysis/Rain';
+export { default as MunicipalTunnel } from '../components/analysis/Tunnel';
+export { default as MunicipalFixRoam } from '../components/roam/FixRoam';
+export { default as MunicipalResultCommon } from '../components/common/ResultCommon';
+export { default as MunicipalResultSimple } from '../components/common/ResultSimple';
 
 //地图工具
 export { default as MunicipalDraw } from "../components/tools/Draw";

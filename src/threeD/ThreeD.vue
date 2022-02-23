@@ -20,7 +20,7 @@
 export default {
   data() {
     return {
-      height: 850,
+      height: 870,
       // 天地图地址
       url: 'http://t0.tianditu.gov.cn/vec_c/wmts',
       baseUrl: 'http://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer',
