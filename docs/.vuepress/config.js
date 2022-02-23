@@ -2,7 +2,7 @@ module.exports = {
   title: 'Mapgis-Cesium-Components',
   description: '一个基于webclient-vue-cesium库二次封装的组件库',
   dest: "dist-docs",
-  base:'/vue-cesium-component/',
+  base: '/vue-cesium-component/',
   locales: {
     "/": {
       lang: "zh-CN",
@@ -42,7 +42,7 @@ module.exports = {
             text: "WebClient",
             link: "http://develop.smaryun.com"
           },
-          {text: "开源", link: "https://github.com/MapGIS/WebClient-Vue"}
+          { text: "开源", link: "https://github.com/MapGIS/WebClient-Vue" }
         ],
 
       }
@@ -85,6 +85,7 @@ module.exports = {
           ["/components/analysis/flood.md", "洪水淹没分析"],
           ["/components/analysis/dynacut.md", "开挖分析"],
           ["/components/analysis/tunnel.md", "隧道分析"]
+          //
         ]
       }
     ]
@@ -105,14 +106,14 @@ module.exports = {
           "https://cdn.jsdelivr.net/npm/react-dom@16.6.3/umd/react-dom.production.min.js"
       }
     ],
-    ["script", {src: "https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"}],
+    ["script", { src: "https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js" }],
     [
       "script",
-      {src: "https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"}
+      { src: "https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js" }
     ],
     [
       "script",
-      {src: "https://cdn.jsdelivr.net/npm/numerify/lib/index.umd.min.js"}
+      { src: "https://cdn.jsdelivr.net/npm/numerify/lib/index.umd.min.js" }
     ],
     [
       "link",
