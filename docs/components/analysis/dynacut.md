@@ -100,15 +100,11 @@ title: 'dynacut-开挖分析'
 --|:--:|:--:|:--:
 vueKey|municipal-web-scene组件的 ID，当使用多个mapgis-web-scene组件时，需要指定该值，来唯一标识mapgis-web-scene组件|String|default vueIndex|当
 vueIndex|municipal-web-scene 插槽中使用了多个相同组件时，例如多个 municipal-igs-doc-layer 组件，用来区分组件的标识符|Number|空
-title|开挖分析功能名称|String|开挖分析
 drawTextures|设置开挖分析的纹理|Array|[]
 drawTools|设置开挖分析的绘制方式|Array|["square", "polygon", "circle"]
 layerIndexs|设置开挖分析需要挖掘的图层index|Array|[0,1]
-closeable|开挖分析面板是否可以关闭|Boolean|true
-expandable|开挖分析面板是否可以折叠|Boolean|true
-draggable|开挖分析面板是否可以拖拽|Boolean|true
-panelStyle|开挖分析面板行内样式|Object|{width:'400px'}
-panelClass|开挖分析面板自定义类名|String|null
+[panelProps](https://aalldd.github.io/vue-cesium-component/components/common/panel.html#属性)|见面板工具属性说明|Attr|见面板工具说明
+
 
 ## 事件
 

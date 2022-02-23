@@ -43,15 +43,11 @@ title: 'tunnel-隧道分析'
 
 属性|说明|取值类型|默认值
 --|:--:|:--:|:--:
-vueKey|municipal-web-scene组件的 ID，当使用多个mapgis-web-scene组件时，需要指定该值，来唯一标识mapgis-web-scene组件|String|default vueIndex|当
+vueKey|municipal-web-scene组件的 ID，当使用多个municipal-web-scene组件时，需要指定该值，来唯一标识mapgis-web-scene组件|String|default vueIndex|当
 vueIndex|municipal-web-scene 插槽中使用了多个相同组件时，例如多个 municipal-igs-doc-layer 组件，用来区分组件的标识符|Number|空
-title|隧道分析功能名称|String|隧道分析
 tunnelStyle|隧道分析隧道样式|Object|{ color: '#000', alpha: 0.4 }
-closeable|隧道分析面板是否可以关闭|Boolean|true
-expandable|隧道分析面板是否可以折叠|Boolean|true
-draggable|隧道分析面板是否可以拖拽|Boolean|true
-panelStyle|隧道分析面板行内样式|Object|{width:'400px'}
-panelClass|隧道分析面板自定义类名|String|null
+[panelProps](https://aalldd.github.io/vue-cesium-component/components/common/panel.html#属性)|见面板工具属性说明|Attr|见面板工具说明
+
 
 
 ## 事件

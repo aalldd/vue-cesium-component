@@ -1,4 +1,5 @@
 // 场景
+export {default as MunicipalWebScene} from "../components/baseMap/WebScene";
 export {default as MunicipalCommonLayer} from "../components/baseMap/CommonLayer";
 
 //分析

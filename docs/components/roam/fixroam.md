@@ -211,12 +211,7 @@ path|漫游路径,开发者无需设置这里的value,保存数据的时候会�
 --|:--:|:--:|:--:
 vueKey|municipal-web-scene组件的 ID，当使用多个mapgis-web-scene组件时，需要指定该值，来唯一标识mapgis-web-scene组件|String|default vueIndex|当
 vueIndex|municipal-web-scene 插槽中使用了多个相同组件时，例如多个 municipal-igs-doc-layer 组件，用来区分组件的标识符|Number|空
-title|场景漫游功能名称|String|场景漫游
-closeable|场景漫游面板是否可以关闭|Boolean|true
-expandable|场景漫游面板是否可以折叠|Boolean|true
-draggable|场景漫游面板是否可以拖拽|Boolean|true
-panelStyle|场景漫游面板行内样式|Object|{width:'400px'}
-panelClass|场景漫游面板自定义类名|String|null
+[panelProps](https://aalldd.github.io/vue-cesium-component/components/common/panel.html#属性)|见面板工具属性说明|Attr|见面板工具说明
 modelList|设置场景漫游三维模型路径|Array|[]
 viewList|设置场景漫游视角属性,目前支持三种,value值固定为1,2,3|Array|见示例
 fixedRoamData|设置场景漫游参数名称以及默认值|Array|见示例

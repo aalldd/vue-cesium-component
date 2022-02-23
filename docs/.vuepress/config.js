@@ -62,6 +62,14 @@ module.exports = {
         collapsable: false,
         children: [
           {
+            title: "基本工具",
+            collapsable: false
+          },
+          ["/components/common/cursorTip.md", "鼠标工具"],
+          ["/components/common/panel.md", "基本面板"],
+          ["/components/common/result.md", "结果面板"],
+
+          {
             title: "场景",
             collapsable: false
           },

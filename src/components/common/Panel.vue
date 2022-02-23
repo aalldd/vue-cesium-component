@@ -1,6 +1,6 @@
 <template>
   <div style="width: 100%;height: 0;position:absolute;left:0;top: 0">
-    <vue-draggable-resizable :draggable="draggable" :style="{...panelStyle}" :class="[panelClassName]">
+    <vue-draggable-resizable :draggable="draggable" :style="{...panelStyle}" :w="width" :h="height" :class="[panelClassName]">
       <div class="panel-container">
         <div class="top-wrapper">
           <div class="title" v-if="title" :style="{display:'flex',alignItems:'center'}">{{ title }}</div>

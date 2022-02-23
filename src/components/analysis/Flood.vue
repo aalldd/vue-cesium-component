@@ -120,25 +120,23 @@ export default {
       default: '降雨信息'
     },
     rainPanelStyle: {
-      type: String,
-      default: ()=>{
+      type: Object,
+      default: () => {
         return {
-          width: '400px',
-          position:'absolute',
-          right:'4em',
-          top:'2em'
-        }
+          position: 'absolute',
+          right: '2em',
+          top: '2em'
+        };
       }
     },
     panelStyle: {
-      type: String,
-      default: ()=>{
+      type: Object,
+      default: () => {
         return {
-          width: '400px',
-          position:'absolute',
-          right:'4em',
-          top:'16em'
-        }
+          position: 'absolute',
+          right: '2em',
+          top: '16em'
+        };
       }
     },
   },
@@ -483,8 +481,8 @@ export default {
 
 .flood {
   position: absolute;
-  right: 4em;
-  top: 4em;
+  right: 0;
+  top: 0;
 }
 
 .input-item {

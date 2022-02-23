@@ -1,9 +1,34 @@
 @import "~ant-design-vue/dist/antd.css";
 
-.ant-tree li .ant-tree-node-content-wrapper{
+.ant-tree li .ant-tree-node-content-wrapper {
   width: 100%;
 }
 
-.ant-slider{
+.ant-slider {
   margin: 0;
+}
+
+//结果面板css
+.position-bottom {
+  position: absolute;
+  top: 36em;
+  left: 2em;
+}
+
+.position-left {
+  position: absolute;
+  top: 2em;
+  left: 4em;
+}
+
+.position-right {
+  position: absolute;
+  top: 2em;
+  right: 4em;
+}
+
+.resultPanel {
+  .ant-table-pagination.ant-pagination {
+    margin: 6px;
+  }
 }

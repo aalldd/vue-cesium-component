@@ -130,13 +130,8 @@ vueKey|municipal-web-scene组件的 ID，当使用多个mapgis-web-scene组件�
 vueIndex|municipal-web-scene 插槽中使用了多个相同组件时，例如多个 municipal-igs-doc-layer 组件，用来区分组件的标识符|Number|空
 components|设置淹没分析的参数名称，每个参数对应的初始值字段名需和示例保持一致，且uniqueKey不要更改|Array|见示例《控制初始淹没参数以及控制淹没参数选项》
 needRain|是否需要降雨效果|Boolean|true
-title|淹没分析功能名称|Boolean|淹没分析
-closeable|淹没分析面板是否可以关闭|Boolean|true
-expandable|淹没分析面板是否可以折叠|Boolean|true
-draggable|淹没分析面板是否可以拖拽|Boolean|true
+[panelProps](https://aalldd.github.io/vue-cesium-component/components/common/panel.html#属性)|见面板工具属性说明|Attr|见面板工具说明
 terrainMode|是否开启地形模式:具体用法见示例|Boolean|true
-panelStyle|淹没分析面板行内样式|Object|{width:'400px'}
-panelClass|淹没分析面板自定义类名|String|null
 
 ## 事件
 

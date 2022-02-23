@@ -10,7 +10,7 @@ export default {
    */
   expandable: {typs: Boolean, default: true},
   closable: {typs: Boolean, default: true},
-  title: {typs: String, default: ''},
+  title: {typs: String, default: '无标题'},
   panelClassName: {
     typs: String
   },
@@ -20,9 +20,17 @@ export default {
       return {
         width: '400px',
         position:'absolute',
-        right:'4em',
+        right:'2em',
         top:'2em'
       };
     }
+  },
+  width:{
+    typs:Number,
+    default:400
+  },
+  height:{
+    typs:Number,
+    default:400
   }
 };

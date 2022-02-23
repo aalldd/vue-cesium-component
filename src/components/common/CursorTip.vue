@@ -43,8 +43,6 @@ export default {
 
       this.floatTop = pageY + x + 'px';
       this.floatLeft = pageX + y + 'px';
-      console.log(this.floatTop);
-      console.log(this.floatLeft);
     }
   }
 };

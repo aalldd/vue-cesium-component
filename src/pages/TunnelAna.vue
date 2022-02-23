@@ -7,14 +7,6 @@
                              @onPageChange="onPageChange"
                              :exportFileName="exportFileName"
                              :tabs="tabs"></municipal-result-common>
-    <municipal-result-simple title="隧道分析结果" :panelPosition="panelSimPosition"
-                             @onRowClick="onRowClick"
-                             @onTabsChange="onTabsChange"
-                             @onPageChange="onPageChange"
-                             :exportFileName="exportFileName"
-                             :columns="columns"
-                             :dataSource="data"
-    ></municipal-result-simple>
   </div>
 </template>
 
@@ -55,7 +47,6 @@ export default {
   data() {
     return {
       panelPosition: 'left',
-      panelSimPosition: 'bottom',
       tabs,
       data,
       columns,

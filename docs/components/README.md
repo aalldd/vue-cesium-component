@@ -1,6 +1,6 @@
 # 地图场景
 
-> mapgis-web-scene
+> municipal-web-scene
 
 ## 属性
 
