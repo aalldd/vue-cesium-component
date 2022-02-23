@@ -1,25 +1,21 @@
 // 场景
 export { default as MunicipalCommonLayer } from "../components/baseMap/CommonLayer";
 
+//漫游
+export { default as MunicipalFixRoam } from '../components/roam/FixRoam';
+export { default as MunicipalAutoRoam } from '../components/roam/AutoRoam';
+export { default as MunicipalAutoSteer } from '../components/roam/AutoSteering';
+
 //分析
 export { default as MunicipalFlood } from "../components/analysis/Flood";
 export { default as MunicipalDynacut } from "../components/analysis/Dynacut";
 export { default as MunicipalRain } from '../components/analysis/Rain';
 export { default as MunicipalTunnel } from '../components/analysis/Tunnel';
-export { default as MunicipalFixRoam } from '../components/roam/FixRoam';
-export { default as MunicipalFixRoamData } from '../components/roam/FixRoamData';
-export { default as MunicipalAutoRoam } from '../components/roam/AutoRoam';
-export { default as MunicipalAutoSteer } from '../components/roam/AutoSteering';
 
 //ui组件
 export { default as MunicipalIcon } from "../components/common/Icon";
 export { default as MunicipalCursorTip } from "../components/common/CursorTip";
 export { default as MunicipalPanel } from '../components/common/Panel';
-export { default as MunicipalFlood } from "../components/analysis/Flood";
-export { default as MunicipalDynacut } from "../components/analysis/Dynacut";
-export { default as MunicipalRain } from '../components/analysis/Rain';
-export { default as MunicipalTunnel } from '../components/analysis/Tunnel';
-export { default as MunicipalFixRoam } from '../components/roam/FixRoam';
 export { default as MunicipalResultCommon } from '../components/common/ResultCommon';
 export { default as MunicipalResultSimple } from '../components/common/ResultSimple';
 
