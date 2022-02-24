@@ -94,6 +94,11 @@ export default {
               menuName: '隧道分析',
               menuRoute: 'tunnel',
               key: '4-2'
+            },
+            {
+              menuName: '流向分析',
+              menuRoute: 'flow',
+              key: '4-3'
             }
           ]
         }

@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import VueOptions from '@/util/vueOptions';
+import VueOptions from '@/util/options/vueOptions';
 
 export default {
   name: "municipal-rain",

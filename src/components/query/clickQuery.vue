@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import PanelOpts from '@/util/panelOptions';
+import PanelOpts from '@/util/options/panelOptions';
 
 export default {
   name: "clickQuery",

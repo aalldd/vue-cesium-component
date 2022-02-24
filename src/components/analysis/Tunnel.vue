@@ -76,10 +76,10 @@
 </template>
 
 <script>
-import VueOptions from '@/util/vueOptions';
-import PanelOpts from '@/util/panelOptions';
+import VueOptions from '@/util/options/vueOptions';
+import PanelOpts from '@/util/options/panelOptions';
 import loadingM3ds from '@/util/mixins/withLoadingM3ds';
-import MathTools from '@/util/mathTools';
+import MathTools from '@/util/helpers/mathTools';
 
 export default {
   name: "municipal-tunnel",

@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import PanelOpts from '@/util/panelOptions';
+import PanelOpts from '@/util/options/panelOptions';
 const columns = [
   {
     dataIndex: 'name',

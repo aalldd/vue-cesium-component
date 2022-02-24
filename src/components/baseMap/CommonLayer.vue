@@ -4,6 +4,7 @@
     :libPath="libPath"
     :pluginPath="pluginPath"
     :height="height"
+    :keyEventEnable="keyEventEnable"
     @load="handleLoad"
   >
     <mapgis-3d-igs-m3d v-for="item in m3dInfos"
@@ -70,6 +71,10 @@ export default {
     },
     commonConfig: {
       type: Object
+    },
+    keyEventEnable: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {

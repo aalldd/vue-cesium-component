@@ -1,4 +1,4 @@
-import emgUtil from "@/util/emgUtil";
+import emgUtil from "@/util/helpers/emgUtil";
 
 const loadingM3ds = {
   inject: ['Cesium', 'CesiumZondy', 'webGlobe'],

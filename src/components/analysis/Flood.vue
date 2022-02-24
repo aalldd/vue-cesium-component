@@ -42,9 +42,9 @@ import {
   isDepthTestAgainstTerrainEnable,
   setDepthTestAgainstTerrainEnable,
   calMinTerrainHeight
-} from "@/util/util";
-import PanelOpts from '@/util/panelOptions';
-import VueOptions from '@/util/vueOptions';
+} from "@/util/helpers/util";
+import PanelOpts from '@/util/options/panelOptions';
+import VueOptions from '@/util/options/vueOptions';
 
 export default {
   name: 'municipal-flood',

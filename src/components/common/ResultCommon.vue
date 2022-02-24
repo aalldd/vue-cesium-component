@@ -36,7 +36,7 @@
   </municipal-panel>
 </template>
 <script>
-import exportExcel from '@/util/exportExcel';
+import exportExcel from '@/util/operators/exportExcel';
 import resultMixin from "@/util/mixins/resultMixin";
 import _ from 'lodash';
 
