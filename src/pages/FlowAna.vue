@@ -1,13 +1,15 @@
 <template>
-  <municipal-flow @checked="checked" :layerGroup="layerGroup" :flowData="flowData" :cacheData="cacheData">
-    <a-button type="info" @click="query">请求数据</a-button>
-    <a-button type="primary">开始分析</a-button>
+  <municipal-flow @query="query"
+                  :layerGroup="layerGroup"
+                  :flowData="flowData"
+                  :cacheData="cacheData"
+                  @load="onLoad">
   </municipal-flow>
 </template>
 
 <script>
 import Store from '@/store/store';
-
+const outFields = '流向,起点地面高程,终点地面高程,管长,管径';
 export default {
   name: "FlowAna",
   data(){
@@ -15,25 +17,25 @@ export default {
       //流向管网信息
       layerGroup: {
         '给水管网': {
-          layerIndexs:[52, 53, 54],
+          layerIndexs:[52],
           textrue:''
         }
       },
       //流向数据信息
-      flowData:{},
+      flowData:[],
       //是否需要浏览器缓存流向数据信息
       cacheData:true
     }
   },
   methods: {
-    async checked(params) {
-      this.queryParam = params;
-    },
-    async query() {
+    async query(params) {
       const store = new Store();
-      const {mapServerName, layerIds, outFields} = this.queryParam;
-      const {data} = await store.queryFlow(mapServerName, layerIds, {outFields});
-      this.flowData=data
+      const data = await store.queryFlow(params.mapServerName, params.layerIds, {outFields});
+      console.log(data);
+      this.flowData=data.map(item=>item.data)
+    },
+    onLoad(payload){
+      this.flowVm=payload
     }
   }
 };

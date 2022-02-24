@@ -45,7 +45,7 @@ class Store {
       result = data;
     } catch (err) {
       message.error('所选图层没有流向信息');
-      result = {};
+      result = [];
     }
     return result;
   }

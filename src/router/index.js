@@ -38,6 +38,11 @@ const router=new Router({
           path: '/autoRoam',
           name: 'autoRoam',
           component: ()=>import('../pages/AutoRoamAna')
+        },
+        {
+          path: '/flow',
+          name: 'flow',
+          component: ()=>import('../pages/FlowAna')
         }
       ]
     }

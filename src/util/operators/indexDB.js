@@ -97,7 +97,7 @@ export default class indexedDBHelper {
         count === 0 && cb(cursor.value);
         // cursor.continue();
       } else {
-        console.log('没有更多数据了！');
+        message.warn('没有更多数据了！');
       }
     };
   };
@@ -109,15 +109,17 @@ export default class indexedDBHelper {
       .delete(key); //删除主键为key的数据
 
     request.onsuccess = (event) => {
-      console.log('数据删除成功');
+      message.success('数据删除成功');
     };
   };
 
   Clear = (tableName) => {
     ///清空数据
-    let transaction = this.db.transaction([tableName], 'readwrite');
-    let store = transaction.objectStore(tableName);
-    store.clear();
+    if(this.db){
+      let transaction = this.db.transaction([tableName], 'readwrite');
+      let store = transaction.objectStore(tableName);
+      store.clear();
+    }
   };
 
   DelObjectStore = (tableName) => {
