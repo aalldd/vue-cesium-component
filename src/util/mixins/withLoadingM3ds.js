@@ -10,6 +10,7 @@ const loadingM3ds = {
         this.m3ds = window.m3ds;
         this.view.tilesetList = this.m3ds;
         this.emgManager = new emgUtil(this.view);
+        this.sceneManager = new CesiumZondy.Manager.SceneManager({ viewer:this.view.viewer });
         this.$emit('load', this);
         window.clearInterval(this.myInterval);
       }

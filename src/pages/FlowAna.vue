@@ -16,9 +16,9 @@ export default {
     return {
       //流向管网信息
       layerGroup: {
-        '给水管网': {
-          layerIndexs:[52],
-          textrue:''
+        '给水': {
+          layerIndexs:[84],
+          url:'/static/cesium/Assets/Images/arrow.png'
         }
       },
       //流向数据信息
