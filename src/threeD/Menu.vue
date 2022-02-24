@@ -73,6 +73,11 @@ export default {
               menuName: '场景漫游',
               menuRoute: 'fixedRoam',
               key: '3-0'
+            },
+            {
+              menuName: '自主漫游',
+              menuRoute: 'autoRoam',
+              key: '3-1'
             }
           ]
         }, {

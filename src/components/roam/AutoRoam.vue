@@ -124,8 +124,8 @@
 </template>
 
 <script>
-import VueOptions from "@/util/vueOptions";
-import PanelOpts from "@/util/panelOptions";
+import VueOptions from '@/util/options/vueOptions'
+import PanelOpts from "@/util/options/panelOptions";
 import loadingM3ds from "@/util/mixins/withLoadingM3ds";
 export default {
   name: "municipal-auto-roam",
@@ -586,7 +586,6 @@ export default {
       let x = heightDis / (speed / (3.6 * 5));
       x >= 1 ? (x = 1) : (x = x);
       let angle = (Math.asin(x) * 180) / Math.PI;
-      console.log(angle);
       // 平滑处理，太小的角度就不变
       if (angle < 30 || angle >= 80) {
         angle = 0;
@@ -718,9 +717,9 @@ export default {
       document.removeEventListener("keyup", this.keyUpCallback);
       this.webGlobe.viewer.clock.onTick.removeEventListener();
       this.webGlobe.viewer.clock.shouldAnimate = false;
-      if (Window?.commonConfig.minimumZoomDistance) {
+      if (window?.commonConfig.globalConfig?.minimumZoomDistance) {
         this.webGlobe.viewer.scene.screenSpaceCameraController.minimumZoomDistance =
-          Window?.commonConfig.minimumZoomDistance; //相机的高度的最小值
+          window?.commonConfig.globalConfig?.minimumZoomDistance || 0; //相机的高度的最小值
       }
       this.timer = null;
       window.clearTimeout(this.timer);
