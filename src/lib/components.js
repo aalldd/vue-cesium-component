@@ -1,5 +1,4 @@
 // 场景
-export {default as MunicipalWebScene} from "../components/baseMap/WebScene";
 export {default as MunicipalCommonLayer} from "../components/baseMap/CommonLayer";
 
 //分析
@@ -7,9 +6,7 @@ export {default as MunicipalFlood} from "../components/analysis/Flood";
 export {default as MunicipalDynacut} from "../components/analysis/Dynacut";
 export {default as MunicipalRain} from '../components/analysis/Rain';
 export {default as MunicipalTunnel} from '../components/analysis/Tunnel';
-export {default as MunicipalFlow} from '../components/analysis/Flow';
 export {default as MunicipalFixRoam} from '../components/roam/FixRoam';
-
 
 //ui组件
 export {default as MunicipalIcon} from "../components/common/Icon";
@@ -17,7 +14,6 @@ export {default as MunicipalCursorTip} from "../components/common/CursorTip";
 export {default as MunicipalPanel} from '../components/common/Panel';
 export {default as MunicipalResultCommon} from '../components/common/ResultCommon';
 export {default as MunicipalResultSimple} from '../components/common/ResultSimple';
-export {default as MunicipalLayer} from '../components/common/Layer';
 
 //地图工具
 export {default as MunicipalDraw} from "../components/tools/Draw";

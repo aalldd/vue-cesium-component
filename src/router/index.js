@@ -33,11 +33,6 @@ const router=new Router({
           path: '/fixedRoam',
           name: 'fixedRoam',
           component: ()=>import('../pages/FixRoamAna')
-        },
-        {
-          path: '/flow',
-          name: 'flow',
-          component: ()=>import('../pages/FlowAna')
         }
       ]
     }
