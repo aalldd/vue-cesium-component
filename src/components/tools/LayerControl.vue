@@ -24,49 +24,9 @@
 </template>
 
 
-
 <script>
 import {treeUtil} from '@/util/helpers/helper';
-//data的数据结构
-// {
-// name: '全部图层',
-//   key: '-1',
-//   opacity: 1,
-//   children: [
-//   {
-//     name: '地上图层', key: '1', opacity: 1, children: [{
-//       name: '倾斜摄影',
-//       key: '1-1',
-//       opacity: 1,
-//       children: [
-//         {name: "Data1-15-0", layerIndex: 0, key: '1-1-1', opacity: 1, visible: false},
-//         {name: "Data1-15-2", layerIndex: 1, key: '1-1-2', opacity: 1, visible: false},
-//         {name: "Data1-15-4", layerIndex: 2, key: '1-1-3', opacity: 1, visible: false},
-//         {name: "Data1-15-7", layerIndex: 3, key: '1-1-4', opacity: 1, visible: false},
-//       ]
-//     },
-//       {
-//         name: '地上模型',
-//         key: '1-2',
-//         opacity: 1,
-//         children: [
-//           {name: "floor", layerIndex: 4, key: '1-2-1', opacity: 1, visible: true},
-//           {name: "model", layerIndex: 5, key: '1-2-2', opacity: 1, visible: true}
-//         ]
-//       }]
-//   },
-//   {
-//     name: '地下图层', key: '2', opacity: 1, children: [
-//       {
-//         name: '供电管网', key: '2-1', opacity: 1, children: [
-//           {name: '供电管网_上杆', layerIndex: 6, key: '2-1-1', opacity: 1, visible: true},
-//           {name: '供电管网_交叉点', layerIndex: 7, key: '2-1-2', opacity: 1, visible: true}
-//         ]
-//       }
-//     ]
-//   }
-// ]
-// }
+
 export default {
   name: "municipal-layer-control",
   inject: ['Cesium', 'CesiumZondy', 'webGlobe', 'commonConfig'],
@@ -156,13 +116,13 @@ export default {
     },
     onLayerVisibleChange() {
       const itemFlatten = treeUtil.flatten(this.treeData).filter(item => this.checkedKeys.indexOf(item.key) >= 0).map(ch => {
-        return ch.layerIndex;
+        return ch.name;
       });//找到对应的layerIndex
       if (this.m3ds?.length) {
-        this.m3ds.filter((t, index) => itemFlatten.includes(index)).forEach(layer => {
+        this.m3ds.filter((t, index) => itemFlatten.includes(t.name)).forEach(layer => {
           layer.show = true;
         });
-        this.m3ds.filter((t, index) => !itemFlatten.includes(index)).forEach(layer => {
+        this.m3ds.filter((t, index) => !itemFlatten.includes(t.name)).forEach(layer => {
           layer.show = false;
         });
       }

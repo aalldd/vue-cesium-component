@@ -229,12 +229,12 @@ class emgUtil {
 
     let minY = _.min([pos1[1], pos2[1]]);
     let maxY = _.max([pos1[1], pos2[1]]);
-
+    const offset = window?.commonConfig?.globalConfig?.offset;
     let geometry = {
-      xmin: Number(minX) + Number(AppStore?.D3ConfigGlobal?.offset[0]),
-      ymin: Number(minY) + Number(AppStore?.D3ConfigGlobal?.offset[1]),
-      xmax: Number(maxX) + Number(AppStore?.D3ConfigGlobal?.offset[0]),
-      ymax: Number(maxY) + Number(AppStore?.D3ConfigGlobal?.offset[1])
+      xmin: Number(minX) + Number(offset[0]),
+      ymin: Number(minY) + Number(offset[1]),
+      xmax: Number(maxX) + Number(offset[0]),
+      ymax: Number(maxY) + Number(offset[1])
     };
 
     return {

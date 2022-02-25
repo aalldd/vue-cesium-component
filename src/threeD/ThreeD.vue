@@ -61,19 +61,19 @@ export default {
           roll: 0.0002114284469649675
         }
       },
-      globalConfig:null
+      globalConfig: null
     };
   },
   async mounted() {
     const sysConfig = await this.getSystemConfig('threeD');
-    let mapSolution
+    let mapSolution;
     //获取地图配置
     if (sysConfig) {
       if (sysConfig.mapConfigID >= 0) {
         const ms = await this.getMapSolution(sysConfig.mapConfigID);
         mapSolution = ms;
       }
-      this.globalConfig=mapSolution?.configJSON?.config3d
+      this.globalConfig = mapSolution?.configJSON?.config3d;
     }
   },
   methods: {
@@ -95,7 +95,7 @@ export default {
             if (layer) {
               m3d.layerId = layer.id;
               m3d.civFeatureType = layer.civFeatureType;
-
+              m3d.name = name;
               let pLayer = layers.find(l => l.id === layer.parentLayerId);
               if (pLayer)
                 m3d.gdbp = gdbp + pLayer.name + '/sfcls/' + layer.name;
@@ -107,7 +107,7 @@ export default {
     getWmtsInfo(payload) {
       this.wmtsMap = payload;
     },
-    async getMapSolution(id){
+    async getMapSolution(id) {
       try {
         const {
           data
