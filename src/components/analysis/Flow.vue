@@ -257,65 +257,67 @@ export default {
       this.arrListener && window.clearInterval(this.arrListener);
       this.view.viewer.camera.changed.removeEventListener(this.motivation, this);
     },
-    createFlowLines(pointsData) {
-      pointsData.forEach((item) => {
-        const materialUrl = item.url;
-        let options = {
-          image: materialUrl,
-          color: Cesium.Color.YELLOW,
-          duration: 800,
-          direction: 1.0,
-          repeat: new Cesium.Cartesian2(1.0, 1.0)
+    createFlowLines(pointData) {
+      //pointData {url,points,layerId,layerName} 每个图层对应的流向数据
+      const layerName = pointData.layerName;
+      const materialUrl = pointData.url;
+      let options = {
+        image: materialUrl,
+        color: Cesium.Color.YELLOW,
+        duration: 800,
+        direction: 1.0,
+        repeat: new Cesium.Cartesian2(1.0, 1.0)
+      };
+      const points = pointData.points;
+      const flowLines = points.map((pointInfo, index) => {
+        const point = pointInfo.point;
+        const direction = pointInfo.direction;
+        const long = Number(pointInfo.long) / 2;
+        const radius = pointInfo.radius;
+        const startHeight = point[2];
+        const endHeight = point[5];
+        options.repeat = new Cesium.Cartesian2(Math.ceil(long / 2), 1.0);
+        if (direction === 1) {
+          options.direction = 1.0;
+        } else {
+          options.direction = 2.0;
+        }
+        //解决平台的bug，每个颜色都要不一样，要不然箭头就流不动
+        const i = index / 1000000 + 64;
+        options.color = new Cesium.Color(245 / 255, 245 / 255, i / 255, 1);
+        const offset = window.commonConfig?.globalConfig?.offset;
+        let pointStandard = [point[0] - offset[0], point[1] - offset[1], 0,
+          (point[3] - offset[0]), (point[4] - offset[1]), 0];
+        const {lng: lng1, lat: lat1} = this.emgManager.changeToLat([pointStandard[0], pointStandard[1]]);
+        const {lng: lng2, lat: lat2} = this.emgManager.changeToLat([pointStandard[3], pointStandard[4]]);
+        let position = [lng1, lat1, startHeight, lng2, lat2, endHeight];
+        if (index === 0) {
+          this.sceneManager.flyTo(lng1, lat1, 100, 2);
+        }
+        const material = new Cesium.PolylineTrailLinkMaterialProperty(
+          options
+        );
+        const flowLine = {
+          name: `line-${layerName}-${index}`,
+          id: `line-${layerName}-${index}`,
+          polyline:
+            new Cesium.PolylineGraphics({
+              show: true,
+              positions: Cesium.Cartesian3.fromDegreesArrayHeights(position),
+              width: this.arrowWidth,
+              material: material
+            })
         };
-        const points = item.points;
-        points.length !== 0 && points.forEach((pointInfo, index) => {
-          const point = pointInfo.point;
-          const direction = pointInfo.direction;
-          const long = Number(pointInfo.long) / 2;
-          const radius = pointInfo.radius;
-          const startHeight = point[2];
-          const endHeight = point[5];
-          options.repeat = new Cesium.Cartesian2(Math.ceil(long / 2), 1.0);
-          if (direction === 1) {
-            options.direction = 1.0;
-          } else {
-            options.direction = 2.0;
-          }
-          //解决平台的bug，每个颜色都要不一样，要不然箭头就流不动
-          const i = index / 1000000 + 64;
-          options.color = new Cesium.Color(245 / 255, 245 / 255, i / 255, 1);
-          const offset = window.commonConfig?.globalConfig?.offset;
-          let pointStandard = [point[0] - offset[0], point[1] - offset[1], 0,
-            (point[3] - offset[0]), (point[4] - offset[1]), 0];
-          const {lng: lng1, lat: lat1} = this.emgManager.changeToLat([pointStandard[0], pointStandard[1]]);
-          const {lng: lng2, lat: lat2} = this.emgManager.changeToLat([pointStandard[3], pointStandard[4]]);
-          let position = [lng1, lat1, startHeight, lng2, lat2, endHeight];
-          if (index === 0) {
-            this.sceneManager.flyTo(lng1, lat1, 100, 2);
-          }
-          const material = new Cesium.PolylineTrailLinkMaterialProperty(
-            options
-          );
-          const flowLine = {
-            name: `line${index}`,
-            id: `line${index}`,
-            polyline:
-              new Cesium.PolylineGraphics({
-                show: true,
-                positions: Cesium.Cartesian3.fromDegreesArrayHeights(position),
-                width: this.arrowWidth,
-                material: material
-              })
-          };
-          flowLine.radius = radius;
-          flowLine.repeatX = Math.ceil(long / 2);
-          flowLine.position = {
-            position3: {lng: lng1, lat: lat1, height: startHeight},
-            position4: {lng: lng2, lat: lat2, height: endHeight}
-          };
-          this.flowEntities.push(flowLine);
-        });
+        flowLine.radius = radius;
+        flowLine.repeatX = Math.ceil(long / 2);
+        flowLine.position = {
+          position3: {lng: lng1, lat: lat1, height: startHeight},
+          position4: {lng: lng2, lat: lat2, height: endHeight}
+        };
+        // this.flowEntities.push(flowLine);
+        return flowLine;
       });
+      return flowLines;
     },
     arrowListener() {
       this.arrListener = setInterval(() => {
@@ -336,25 +338,32 @@ export default {
           const distance = Cesium.Cartesian3.distance(target, cameraPos);
           return distance;
         };
-        this.flowEntities.length && this.flowEntities.forEach((item, index) => {
-          const {position3, position4} = item.position;
-          const {lng: lng1, lat: lat1, height: startHeight} = position3;
-          const {lng: lng2, lat: lat2, height: endHeight} = position4;
-          const center = {lng: (lng1 + lng2) / 2, lat: (lat1 + lat2) / 2, height: (startHeight + endHeight) / 2};
-          const arrowId = this.webGlobe.viewer.entities.getById(`line${index}`);
-          // 筛选出管道两端在屏幕范围内的，防止出现屏幕离管道过近导致的管道在屏幕内而端点不在的情况，限制显示距离相机2000m范围内的管道，优化性能
-          if (((pointInRange(position3) || pointInRange(position4)) || (nearCamera(center) <= 500)) && (nearCamera(center) <= 2000)) {
-            if (!arrowId) {
-              this.webGlobe.viewer.entities.add(item);
+        this.flowEntities.length && this.flowEntities.forEach((item) => {
+          //this.flowEntities 结构[{layerName,layerId,flowLines}]
+          const flowLines = item.flowLines;
+          item.visible && flowLines.forEach((flowLine, index) => {
+            const {position3, position4} = flowLine.position;
+            const {lng: lng1, lat: lat1, height: startHeight} = position3;
+            const {lng: lng2, lat: lat2, height: endHeight} = position4;
+            const center = {lng: (lng1 + lng2) / 2, lat: (lat1 + lat2) / 2, height: (startHeight + endHeight) / 2};
+            const arrowId = this.webGlobe.viewer.entities.getById(`line-${item.layerName}-${index}`);
+            // 筛选出管道两端在屏幕范围内的，防止出现屏幕离管道过近导致的管道在屏幕内而端点不在的情况，限制显示距离相机2000m范围内的管道，优化性能
+            if (((pointInRange(position3) || pointInRange(position4)) || (nearCamera(center) <= 500)) && (nearCamera(center) <= 2000)) {
+              if (!arrowId) {
+                this.webGlobe.viewer.entities.add(flowLine);
+              } else {
+                return;
+              }
+            } else {
+              arrowId && this.webGlobe.viewer.entities.remove(arrowId);
             }
-          } else {
-            arrowId && this.webGlobe.viewer.entities.remove(arrowId);
-          }
+          });
         });
-      }, 1000);
+      }, 3000);
     },
     startFlow() {
       //如果需要缓存数据,就从缓存数据中获取流向信息
+      this.flowEntities = [];
       let count = 0;
       if (this.cacheData) {
         this.indexDbHelper.ReadAllData('flowData', count, async (data) => {
@@ -363,13 +372,31 @@ export default {
             return;
           }
           const pointsData = JSON.parse(unescape(data));
-          this.createFlowLines(pointsData);
+          pointsData.forEach(pointData => {
+            const {layerName, layerId} = pointData;
+            const flowLines = this.createFlowLines(pointData);
+            this.flowEntities.push({
+              layerId,
+              layerName,
+              flowLines,
+              visible: true
+            });
+          });
           this.arrowListener();
           this.cameraListener();
         });
       } else {
         const pointsData = this.createPoints();
-        this.createFlowLines(pointsData);
+        pointsData.forEach(pointData => {
+          const {layerName, layerId} = pointData;
+          const flowLines = this.createFlowLines(pointData);
+          this.flowEntities.push({
+            layerId,
+            layerName,
+            flowLines,
+            visible: true
+          });
+        });
         this.arrowListener();
         this.cameraListener();
       }
@@ -392,10 +419,13 @@ export default {
           const repeatXRate = this.heightMapRepeat[currentLevel].repeatRate;
           this.arrowWidth = this.heightMapRepeat[currentLevel].arrowWidth;
           this.flowEntities.forEach(item => {
-            let currentRepeatX = item?.repeatX;
-            let currentRepeatY = item?.polyline?.material?._repeat?.y;
-            currentRepeatX = Math.ceil(currentRepeatX * repeatXRate);
-            item.polyline.material._repeat = {x: currentRepeatX, y: currentRepeatY};
+            //this.flowEntities 结构[{layerName,layerId,flowLines,visible}]
+            item.visible && item.flowLines.forEach(flowLine => {
+              let currentRepeatX = flowLine?.repeatX;
+              let currentRepeatY = flowLine?.polyline?.material?._repeat?.y;
+              currentRepeatX = Math.ceil(currentRepeatX * repeatXRate);
+              flowLine.polyline.material._repeat = {x: currentRepeatX, y: currentRepeatY};
+            });
           });
         }
       }, 300);
