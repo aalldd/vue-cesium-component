@@ -1,5 +1,18 @@
 // 场景
 export {default as MunicipalCommonLayer} from "../components/baseMap/CommonLayer";
+export {default as MunicipalArcgisTileLayer} from "../components/baseMap/ArcgisTileLayer";
+export {default as MunicipalArcgisMap} from "../components/baseMap/ArcgisMap";
+export {default as MunicipalEchartsLayer} from "../components/baseMap/EchartsLayer";
+export {default as MunicipalIgsM3d} from "../components/baseMap/IgsM3d";
+export {default as MunicipalIgsTileLayer} from "../components/baseMap/IgsTileLayer";
+export {default as MunicipalIgsTerrain} from "../components/baseMap/IgsTerrain";
+export {default as MunicipalIgsVectorlayer} from "../components/baseMap/IgsVectorlayer";
+export {default as MunicipalMapvLayer} from "../components/baseMap/MapvLayer";
+export {default as MunicipalOgcWmsLayer} from "../components/baseMap/OgcWmsLayer";
+export {default as MunicipalVectortileLayer} from "../components/baseMap/VectortileLayer";
+export {default as MunicipalWebScene} from "../components/baseMap/WebScene";
+export {default as MunicipalWmtsDocLayer} from "../components/baseMap/WmtsDocLayer";
+
 
 //分析
 export {default as MunicipalFlood} from "../components/analysis/Flood";

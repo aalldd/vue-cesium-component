@@ -1,7 +1,7 @@
 <script>
 const {Mapgis3dOgcWmsLayer} = window.Mapgis3d;
 export default {
-  name: "municipal-ogcWmsLayer",
+  name: "municipal-ogc-wms-layer",
   extends: Mapgis3dOgcWmsLayer
 };
 </script>

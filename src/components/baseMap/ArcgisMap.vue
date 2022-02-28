@@ -1,7 +1,7 @@
 <script>
 import {Mapgis3dArcgisMapLayer} from '@mapgis/webclient-vue-cesium'
 export default {
-  name: "municipal-arcgisMap",
+  name: "municipal-arcgis-map",
   extends: Mapgis3dArcgisMapLayer
 };
 </script>

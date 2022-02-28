@@ -1,7 +1,7 @@
 <script>
 const {Mapgis3dMapvLayer} = window.Mapgis3d;
 export default {
-  name: "municipal-mapvLayer",
+  name: "municipal-mapv-layer",
   extends: Mapgis3dMapvLayer
 };
 </script>

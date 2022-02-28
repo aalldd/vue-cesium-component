@@ -12,17 +12,19 @@
                    @check="check"
                    @load="onLayerLoad"
                    :panel-class-name="panelClassName">
-    <div style="display: flex;align-items: center;justify-content: flex-end">
+    <div style="display: flex;align-items: center;justify-content: flex-end" v-if="!uiControlled">
       <a-button type="primary" @click="queryData" style="margin-right: 10px">请求数据</a-button>
       <a-button @click="startFlow" style="margin-right: 10px">开始分析</a-button>
       <a-button @click="cancelFlow">结束分析</a-button>
     </div>
+    <slot v-else></slot>
   </municipal-layer>
 </template>
 
 <script>
 import {treeUtil} from "@/util/helpers/helper";
 import panelOptions from "@/util/options/panelOptions";
+import VueOptions from '@/util/options/vueOptions';
 import indexedDBHelper from "@/util/operators/indexDB";
 import loadingM3ds from "@/util/mixins/withLoadingM3ds";
 import _ from "lodash";
@@ -39,6 +41,7 @@ export default {
   },
   props: {
     ...panelOptions,
+    ...VueOptions,
     layerData: {
       type: Array
     },
@@ -114,6 +117,10 @@ export default {
           }
         };
       }
+    },
+    uiControlled: {
+      type: Boolean,
+      default: false
     }
   },
   watch: {
@@ -146,6 +153,9 @@ export default {
       // 如果没有就会新建一个表
       this.indexDbHelper.CreateTable('flowData', {autoIncrement: false});
     }
+  },
+  destroyed() {
+    this.cancelFlow();
   },
   methods: {
     reAskM3ds(callback) {

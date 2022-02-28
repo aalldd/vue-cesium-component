@@ -3,7 +3,6 @@
                   :layerGroup="layerGroup"
                   :flowData="flowData"
                   :cacheData="cacheData"
-                  :outFields="outFields"
                   @load="onLoad">
   </municipal-flow>
 </template>

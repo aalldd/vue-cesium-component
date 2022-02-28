@@ -68,6 +68,7 @@ module.exports = {
           ["/components/common/cursorTip.md", "鼠标工具"],
           ["/components/common/panel.md", "基本面板"],
           ["/components/common/result.md", "结果面板"],
+          ["/components/common/layer.md", "基本图层树"],
 
           {
             title: "场景",
@@ -93,6 +94,7 @@ module.exports = {
           ["/components/analysis/flood.md", "洪水淹没分析"],
           ["/components/analysis/dynacut.md", "开挖分析"],
           ["/components/analysis/tunnel.md", "隧道分析"],
+          ["/components/analysis/flow.md", "流向分析"],
 
           {
             title: "漫游",

@@ -1,7 +1,7 @@
 <script>
 const {Mapgis3dIgsVectorLayer} = window.Mapgis3d;
 export default {
-  name: "municipal-igsVectorlayer",
+  name: "municipal-igs-vector-layer",
   extends: Mapgis3dIgsVectorLayer
 };
 </script>

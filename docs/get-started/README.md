@@ -2,7 +2,7 @@
 
 ``` vue
 <template>
-  <municipal-commonLayer :height="mapHeight"
+  <municipal-common-layer :height="mapHeight"
                          class="mapWrapper"
                          :plugin-path="pluginPath"
                          :lib-path="libPath"
@@ -11,7 +11,7 @@
   >
     <municipal-tool :wmtsMap="wmtsMap" :cameraView="cameraView"></municipal-tool>
     <municipal-flood></municipal-flood>
-  </municipal-commonLayer>
+  </municipal-common-layer>
 </template>
 
 <script>
@@ -141,14 +141,14 @@ municipal-cesium-components 组件使用以上两个文件的方式如下所示:
 
 ```vue
 <template>
-  <municipal-commonLayer :height="mapHeight"
+  <municipal-common-layer :height="mapHeight"
                          class="mapWrapper"
                          :plugin-path="pluginPath"
                          :lib-path="libPath"
                          :load="handleLoad"
                          :m3dInfos="m3dInfos"
   >
-  </municipal-commonLayer>
+  </municipal-common-layer>
 </template>
 ```
 
@@ -176,7 +176,3 @@ module.exports = {
   }
 };
 ```
-
-::: warning
-~ 纯浏览器端建议还是使用 Cesium 原生的方式，而不是 Vue 组件的方式，真心建议
-:::

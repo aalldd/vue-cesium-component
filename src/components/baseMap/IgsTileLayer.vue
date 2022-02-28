@@ -1,7 +1,7 @@
 <script>
 const {Mapgis3dIgsTileLayer}=window.Mapgis3d
 export default {
-  name: "municipal-igsTileLayer",
+  name: "municipal-igs-tile-layer",
   extends:Mapgis3dIgsTileLayer
 };
 </script>

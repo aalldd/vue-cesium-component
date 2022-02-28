@@ -3,8 +3,8 @@
                    :closable="closable"
                    :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
     <template v-slot:content>
-      <a-input-search style="margin-bottom: 8px" placeholder="Search" @change="onChange"/>
-      <a-spin :spinning="loadingCopy" style="min-height: 300px;overflow-y: scroll;overflow-x:hidden;max-height: 600px">
+      <a-input-search style="margin-bottom: 8px" placeholder="Search" @change="onChange" v-if="needSearch"/>
+      <a-spin :spinning="loadingCopy" style="min-height: 200px;overflow-y: scroll;overflow-x:hidden;max-height: 600px">
         <a-tree
           :expanded-keys="expandedKeys"
           :checkedKeys="checkedKeysCopy"
@@ -31,6 +31,7 @@
 
 <script>
 import panelOptions from "@/util/options/panelOptions";
+import VueOptions from '@/util/options/vueOptions'
 import {treeUtil} from "@/util/helpers/helper";
 
 const getParentKey = (key, tree) => {
@@ -92,6 +93,7 @@ export default {
   },
   props: {
     ...panelOptions,
+    ...VueOptions,
     //生成树的数据
     layerData: {
       type: Array,
@@ -125,6 +127,10 @@ export default {
       default: () => {
         return {};
       }
+    },
+    needSearch: {
+      type: Boolean,
+      default: true
     }
   },
   mounted() {
@@ -184,7 +190,7 @@ export default {
               return getParentKey(item.key, this.layerData);
             });
           this.layerIds = window.m3ds.filter((item, index) => layers.indexOf(item.name) >= 0).map(item => item.layerId);
-          this.$emit('load',this)
+          this.$emit('load', this);
           window.clearInterval(this.myInterval);
         }
       };
@@ -200,6 +206,7 @@ export default {
     onExpand(expandedKeys) {
       this.expandedKeys = expandedKeys;
       this.autoExpandParent = false;
+      this.$emit('onExpand', expandedKeys);
     },
     checked(checkedKeys) {
       this.checkedKeysCopy = checkedKeys;

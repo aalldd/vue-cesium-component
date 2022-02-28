@@ -24,7 +24,7 @@
 import Vue from 'vue';
 
 export default {
-  name: "municipal-commonLayer",
+  name: "municipal-common-layer",
   provide() {
     return {
       get Cesium() {

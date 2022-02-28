@@ -1,5 +1,5 @@
 <template>
-  <municipal-commonLayer :height="height"
+  <municipal-common-layer :height="height"
                          class="mapWrapper"
                          :plugin-path="pluginPath"
                          :lib-path="libPath"
@@ -10,7 +10,7 @@
   >
     <router-view></router-view>
     <municipal-tool :wmtsMap="wmtsMap" :cameraView="cameraView"></municipal-tool>
-  </municipal-commonLayer>
+  </municipal-common-layer>
 </template>
 
 <style lang="scss" scoped>

@@ -51,7 +51,7 @@ Vue.use(MapgisUi);
 
 ```vue
 <template>
-  <municipal-commonLayer :height="mapHeight"
+  <municipal-common-layer :height="mapHeight"
                          class="mapWrapper"
                          :plugin-path="pluginPath"
                          :lib-path="libPath"
@@ -60,7 +60,7 @@ Vue.use(MapgisUi);
   >
     <municipal-tool :wmtsMap="wmtsMap" :cameraView="cameraView"></municipal-tool>
     <municipal-flood></municipal-flood>
-  </municipal-commonLayer>
+  </municipal-common-layer>
 </template>
 
 <script>
