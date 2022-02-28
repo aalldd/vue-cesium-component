@@ -1,14 +1,16 @@
 <template>
-  <municipal-layer :loading="loading"
-                   :layerData="layerData"
+  <municipal-layer :customTreeData="customTreeData"
                    :checkedKeys="checkedKeys"
                    :title="title"
+                   :layerDataCopy="layerDataCopy"
+                   :layerGroup="layerGroup"
                    :draggable="draggable"
                    @onClose="$emit('onClose')"
                    :closable="closable"
                    :need-expand="expandable"
                    :panel-style="panelStyle"
                    @check="check"
+                   @load="onLayerLoad"
                    :panel-class-name="panelClassName">
     <div style="display: flex;align-items: center;justify-content: flex-end">
       <a-button type="primary" @click="queryData" style="margin-right: 10px">请求数据</a-button>
@@ -25,54 +27,21 @@ import indexedDBHelper from "@/util/operators/indexDB";
 import loadingM3ds from "@/util/mixins/withLoadingM3ds";
 import _ from "lodash";
 
-let flowEntities = [];
-//到时候通过这个索引来拿数据
-const outFields = '流向,起点地面高程,终点地面高程,管长,管径';
 export default {
   name: "municipal-flow",
   mixins: [loadingM3ds],
   data() {
     return {
       checkedKeys: [],
-      layerData: [],
-      loading: false,
-      arrowWidth: 15,
-      heightMapRepeat: {
-        level0: {
-          height: 70,
-          repeatRate: 1.5,
-          arrowWidth: 30
-        },
-        level1: {
-          height: 100,
-          repeatRate: 1,
-          arrowWidth: 30
-        },
-        level2: {
-          height: 300,
-          repeatRate: 0.7,
-          arrowWidth: 20
-        },
-        level3: {
-          height: 500,
-          repeatRate: 0.5,
-          arrowWidth: 15
-        },
-        level4: {
-          height: 800,
-          repeatRate: 0.2,
-          arrowWidth: 10
-        },
-        level5: {
-          height: 1200,
-          repeatRate: 0.1,
-          arrowWidth: 5
-        }
-      }
+      layerDataCopy: [],
+      loading: false
     };
   },
   props: {
     ...panelOptions,
+    layerData: {
+      type: Array
+    },
     //需要提供哪些管网需要展示，配置格式 管网分组名称+子管网图层名称+流动的绘制纹理图片,如果不配置，将显示全部图层，如果只配置管网分组名称，将显示该分组下的全部图层
     //如果需要指定的单独的管网图层，每个管网名称下面必须含有subLayers和url字段
     layerGroup: {
@@ -102,6 +71,49 @@ export default {
     cacheData: {
       type: Boolean,
       default: true
+    },
+    //是否需要自定义树的数据，如果不需要，就会从commonConfig中自动的获取到全部的树数据，然后根据传入的筛选规则进行筛选
+    customTreeData: {
+      type: Boolean,
+      default: false
+    },
+    //视角高度与管道上箭头数量，箭头宽度的关系，用于抽晰
+    heightMapRepeat: {
+      type: Object,
+      default: () => {
+        return {
+          level0: {
+            height: 70,
+            repeatRate: 1.5,
+            arrowWidth: 30
+          },
+          level1: {
+            height: 100,
+            repeatRate: 1,
+            arrowWidth: 30
+          },
+          level2: {
+            height: 300,
+            repeatRate: 0.7,
+            arrowWidth: 20
+          },
+          level3: {
+            height: 500,
+            repeatRate: 0.5,
+            arrowWidth: 15
+          },
+          level4: {
+            height: 800,
+            repeatRate: 0.2,
+            arrowWidth: 10
+          },
+          level5: {
+            height: 1200,
+            repeatRate: 0.1,
+            arrowWidth: 5
+          }
+        };
+      }
     }
   },
   watch: {
@@ -111,78 +123,41 @@ export default {
           this.cacheDataToDB();
         }
       }
+    },
+    layerData: {
+      handler() {
+        //只有当自定义树数据为true且传入了正确的树数据时，允许用户自定义树的数据
+        if (this.layerData?.length > 0 && this.customTreeData === true) {
+          this.layerDataCopy = this.layerData;
+        }
+      },
+      immediate: true
     }
   },
   mounted() {
-    this.loading = true;
-    const scopedSlots = {title: 'title'};
-    const reaskedData = () => {
-      if (window.commonConfig && window.m3ds) {
-        //从commonConfig里面可以拿到完整的图层树
-        const layerGroupNamesTree = [window.commonConfig?.globalConfig?.layerGroupNamesTree] || this.layerData;
-        let treeData;
-        let treeDataTotal = treeUtil.map(layerGroupNamesTree, (item) => {
-          const {title, Id, opacity, ...rest} = item;
-          return {
-            ...rest,
-            title,
-            scopedSlots,
-            name: title
-          };
-        });
-        const keys = Object.keys(this.layerGroup);
-        if (!keys) {
-          treeData = treeDataTotal;
-        } else {
-          //从完整的图层树中筛选出用户传入的图层分组以及分组下的子图层
-          treeData = treeUtil.filter(treeDataTotal, (item) => {
-            //找到对应的管网 如果用户指定了layerIds,也就是需要具体的一些图层,就从m3ds中找到该图层添加进去
-            if (keys.indexOf(item.title) >= 0) {
-              const subLayers = this.layerGroup[item.title].subLayers;
-              if (subLayers && subLayers.length > 0 && item.children) {
-                const target = item.children.filter(jItem => subLayers.indexOf(jItem.title) >= 0);
-                item.children = target;
-                return item;
-              } else {
-                return item;
-              }
-            } else {
-              return false;
-            }
-          });
-        }
-
-        const checkedKeys = [];
-        const layers = [];
-        //默认勾选全部
-        treeUtil.forEach(treeData, (item) => {
-          checkedKeys.push(item.key);
-          item.name && layers.push(item.name);
-        });
-        this.layerIds = this.m3ds.filter((item, index) => layers.indexOf(item.name) >= 0).map(item => item.layerId);
-        this.mapServerName = window.commonConfig?.globalConfig?.mapServerName || "";
-        this.layerData = treeData;
-        this.checkedKeys = checkedKeys;
-        this.loading = false;
-        this.arrListener = null;
-        this.motivation = null;
-        if (this.cacheData) {
-          this.indexDbHelper = new indexedDBHelper();
-          this.indexDbHelper.OpenDB('flow', 'flowData');
-          // 如果没有就会新建一个表
-          this.indexDbHelper.CreateTable('flowData', {autoIncrement: false});
-        }
-        this.$emit('load', this);
-        window.clearInterval(this.myInterval);
-      }
-    };
-    this.reAskM3ds(reaskedData);
+    this.arrowWidth = 15;
+    this.mapServerName = window.commonConfig?.globalConfig?.mapServerName || "";
+    this.arrListener = null;
+    this.motivation = null;
+    this.flowEntities = [];
+    if (this.cacheData) {
+      this.indexDbHelper = new indexedDBHelper();
+      this.indexDbHelper.OpenDB('flow', 'flowData');
+      // 如果没有就会新建一个表
+      this.indexDbHelper.CreateTable('flowData', {autoIncrement: false});
+    }
   },
   methods: {
     reAskM3ds(callback) {
       this.myInterval = window.setInterval(() => {
         setTimeout(callback);
       }, 3000);
+    },
+    onLayerLoad(payload) {
+      console.log(payload);
+      this.layerIds = payload.layerIds;
+      this.checkedKeys = payload.checkedKeysCopy;
+      this.layerDataCopy = payload.layerDataCopy;
     },
     //将流向数据缓存至indexDB中的方法
     cacheDataToDB() {
@@ -236,12 +211,12 @@ export default {
     },
     check(checkedKeys) {
       //通过找与m3ds中匹配的图层名进行筛选
-      this.checkedKeys=checkedKeys
-      const choosedLayer = treeUtil.filter(this.layerData, (item) => checkedKeys.indexOf(item.key) >= 0).map(item => item.name);
+      this.checkedKeys = checkedKeys;
+      const choosedLayer = treeUtil.filter(this.layerDataCopy, (item) => checkedKeys.indexOf(item.key) >= 0).map(item => item.name);
       const choosedM3d = this.m3ds.filter((item, index) => choosedLayer.indexOf(item.name) >= 0);
       this.layerIds = choosedM3d.map(item => item.layerId);
       this.mapServerName = window.commonConfig?.globalConfig?.mapServerName || "";
-      flowEntities.length > 0 && flowEntities.forEach(item => {
+      this.flowEntities.length > 0 && this.flowEntities.forEach(item => {
         const layerName = item.layerName;
         if (choosedLayer.indexOf(layerName) >= 0) {
           item.visible = true;
@@ -268,6 +243,9 @@ export default {
       this.emgManager.removeAll();
       this.arrListener && window.clearInterval(this.arrListener);
       this.view.viewer.camera.changed.removeEventListener(this.motivation, this);
+    },
+    getWidth() {
+      return this.arrowWidth;
     },
     createFlowLines(pointData) {
       //pointData {url,points,layerId,layerName} 每个图层对应的流向数据
@@ -316,7 +294,7 @@ export default {
             new Cesium.PolylineGraphics({
               show: true,
               positions: Cesium.Cartesian3.fromDegreesArrayHeights(position),
-              width: this.arrowWidth,
+              width: new Cesium.CallbackProperty(this.getWidth, false),
               material: material
             })
         };
@@ -349,8 +327,8 @@ export default {
           const distance = Cesium.Cartesian3.distance(target, cameraPos);
           return distance;
         };
-        flowEntities.length && flowEntities.forEach((item) => {
-          //flowEntities 结构[{layerName,layerId,flowLines}]
+        this.flowEntities.length && this.flowEntities.forEach((item) => {
+          //this.flowEntities 结构[{layerName,layerId,flowLines}]
           const flowLines = item.flowLines;
           item.visible && flowLines.forEach((flowLine, index) => {
             const {position3, position4} = flowLine.position;
@@ -375,8 +353,8 @@ export default {
     startFlow() {
       //如果需要缓存数据,就从缓存数据中获取流向信息
       //通过找与m3ds中匹配的图层名进行筛选
-      const choosedLayer = treeUtil.filter(this.layerData, (item) => this.checkedKeys.indexOf(item.key) >= 0).map(item => item.name);
-      flowEntities = [];
+      const choosedLayer = treeUtil.filter(this.layerDataCopy, (item) => this.checkedKeys.indexOf(item.key) >= 0).map(item => item.name);
+      this.flowEntities = [];
       let count = 0;
       if (this.cacheData) {
         this.indexDbHelper.ReadAllData('flowData', count, async (data) => {
@@ -388,7 +366,7 @@ export default {
           pointsData.forEach(pointData => {
             const {layerName, layerId} = pointData;
             const flowLines = this.createFlowLines(pointData);
-            flowEntities.push({
+            this.flowEntities.push({
               layerId,
               layerName,
               flowLines,
@@ -403,7 +381,7 @@ export default {
         pointsData.forEach(pointData => {
           const {layerName, layerId} = pointData;
           const flowLines = this.createFlowLines(pointData);
-          flowEntities.push({
+          this.flowEntities.push({
             layerId,
             layerName,
             flowLines,
@@ -431,8 +409,8 @@ export default {
         } else {
           const repeatXRate = this.heightMapRepeat[currentLevel].repeatRate;
           this.arrowWidth = this.heightMapRepeat[currentLevel].arrowWidth;
-          flowEntities.forEach(item => {
-            //this.flowEntities 结构[{layerName,layerId,flowLines,visible}]
+          this.flowEntities.forEach(item => {
+            //this.this.flowEntities 结构[{layerName,layerId,flowLines,visible}]
             item.visible && item.flowLines.forEach(flowLine => {
               let currentRepeatX = flowLine?.repeatX;
               let currentRepeatY = flowLine?.polyline?.material?._repeat?.y;
