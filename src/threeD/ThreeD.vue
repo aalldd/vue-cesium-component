@@ -1,12 +1,12 @@
 <template>
   <municipal-common-layer :height="height"
-                         class="mapWrapper"
-                         :plugin-path="pluginPath"
-                         :lib-path="libPath"
-                         @load="handleLoad"
-                         @onM3dLoad="onM3dLoad"
-                         :m3dInfos="m3dInfos"
-                         :commonConfig="globalConfig"
+                          class="mapWrapper"
+                          :plugin-path="pluginPath"
+                          :lib-path="libPath"
+                          @load="handleLoad"
+                          @onM3dLoad="onM3dLoad"
+                          :m3dInfos="m3dInfos"
+                          :commonConfig="globalConfig"
   >
     <router-view></router-view>
     <municipal-tool :wmtsMap="wmtsMap" :cameraView="cameraView"></municipal-tool>
@@ -30,7 +30,7 @@ export default {
       m3dInfos: [
         {
           maximumMemoryUsage: 1024,
-          url: 'http://192.168.12.200:6163/igs/rest/g3d/lgzh0701',
+          url: 'http://192.168.12.66:6163/igs/rest/g3d/lgzh0114',
           layers: '',
           vueIndex: '0'
         }
@@ -82,7 +82,7 @@ export default {
     },
     onM3dLoad(payload) {
       const m3ds = payload.m3ds;
-      const gdbp = 'gdbp://sa:sasa@192.168.12.200/龙城街道/ds/';
+      const gdbp = 'gdbp://sa:sasa@192.168.12.66/龙城街道/ds/';
       this.$nextTick(async () => {
         const mapServer = this.$serve.City.Plugin("MapServer");
         const {data: {layers}} = await mapServer.get(`/lgzh?f=json`, {params: {udt: Date.now()}});
@@ -95,12 +95,13 @@ export default {
             if (layer) {
               m3d.layerId = layer.id;
               m3d.civFeatureType = layer.civFeatureType;
-              m3d.name = name;
+              m3d.name = decodeURI(name);
               let pLayer = layers.find(l => l.id === layer.parentLayerId);
               if (pLayer)
                 m3d.gdbp = gdbp + pLayer.name + '/sfcls/' + layer.name;
             }
           });
+          window.m3ds = m3ds;
         }
       });
     },

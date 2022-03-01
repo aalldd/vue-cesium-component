@@ -119,13 +119,17 @@ export default {
         return ch.name;
       });//找到对应的layerIndex
       if (this.m3ds?.length) {
-        this.m3ds.filter((t, index) => itemFlatten.includes(t.name)).forEach(layer => {
+        this.m3ds.filter((t, index) => itemFlatten.includes(this.findName(t))).forEach(layer => {
           layer.show = true;
         });
-        this.m3ds.filter((t, index) => !itemFlatten.includes(t.name)).forEach(layer => {
+        this.m3ds.filter((t, index) => !itemFlatten.includes(this.findName(t))).forEach(layer => {
           layer.show = false;
         });
       }
+    },
+    findName(t){
+      let gdbpUrl = t.gdbpUrl.split('\\');
+      return gdbpUrl[gdbpUrl.length - 1].split('.')[0];
     },
     onLayerOpacityChange(value, item) {
       const key = item.key;
@@ -142,9 +146,9 @@ export default {
     },
     changeLayerOpacity(value, item) {
       const itemFlatten = treeUtil.flatten([item]).map(ch => {
-        return ch.layerIndex;
+        return ch.name;
       });//找到对应的layerIndex
-      const tilesetList = this.m3ds.filter((t, index) => itemFlatten.includes(index));
+      const tilesetList = this.m3ds.filter((t, index) => itemFlatten.includes(this.findName(t)));
       tilesetList.forEach(tileset => {
         if (value === 100) {
           tileset.style = new Cesium.Cesium3DTileStyle();

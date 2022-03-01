@@ -104,6 +104,11 @@ export default {
               menuName: '流向分析',
               menuRoute: 'flow',
               key: '4-3'
+            },
+            {
+              menuName: '爆管分析',
+              menuRoute: 'squib',
+              key: '4-4'
             }
           ]
         }

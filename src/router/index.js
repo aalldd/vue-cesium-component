@@ -43,6 +43,11 @@ const router=new Router({
           path: '/flow',
           name: 'flow',
           component: ()=>import('../pages/FlowAna')
+        },
+        {
+          path: '/squib',
+          name: 'squib',
+          component: ()=>import('../pages/SquibAna')
         }
       ]
     }

@@ -10,6 +10,80 @@ class emgUtil {
     this.dynaCutList = [];
   }
 
+  //三维效果方法
+  // 高亮
+  highlight(currentPicked, color, layerList, idList) {
+    if (!this.analysisManager) {
+      this.analysisManager = new CesiumZondy.Manager.AnalysisManager({ viewer: this.view.viewer });
+    }
+
+    const options = {
+      color: color || new Cesium.Color(1, 1, 0, 0.6),
+      colorBlendMode: Cesium.Cesium3DTileColorBlendMode.REPLACE
+    };
+    if (currentPicked) {
+      const propertys = currentPicked.getPropertyNames();
+      let oid = '';
+      if (propertys.includes('name')) {
+        oid = currentPicked.getProperty('name').split('_')[2];
+      } else if (propertys.includes('OID')) {
+        oid = currentPicked.getProperty('OID');
+      } else {
+        return;
+      }
+
+      this.analysisManager.startCustomDisplay([currentPicked], [parseInt(oid)], options);
+      this.view.highlight = [currentPicked.tileset];
+    } else if (layerList && idList) {
+      this.analysisManager.startCustomDisplay(layerList, idList, options);
+      this.view.highlight = layerList;
+    }
+  }
+
+  //停止高亮
+  stopHighlight(layerList, idList) {
+    if (!this.analysisManager) {
+      this.analysisManager = new CesiumZondy.Manager.AnalysisManager({ viewer: this.view.viewer });
+    }
+
+    if (layerList && idList) { //根据ID停止高亮
+      this.analysisManager.stopCustomDisplayByIds(layerList, idList);
+    } else if (layerList) { //停止所有高亮
+      this.analysisManager.stopCustomDisplay(layerList);
+    } else {
+      this.view.highlight && this.analysisManager.stopCustomDisplay(this.view.highlight);
+    }
+  }
+
+  binkPipe = (layerList, oidList, currentPicked) => {
+    currentPicked ? this.highlight(currentPicked, new Cesium.Color(0.55, 0.05, 0.62, 1)) : this.highlight(null, new Cesium.Color(0.55, 0.05, 0.62, 1), layerList, oidList);
+
+    setTimeout(() => {
+      currentPicked ? this.highlight(currentPicked, new Cesium.Color(1.0, 0, 0, 0.8)) : this.highlight(null, new Cesium.Color(1.0, 0, 0, 0.8), layerList, oidList);
+    }, 1500);
+
+    setTimeout(() => {
+      currentPicked ? this.highlight(currentPicked, new Cesium.Color(0, 1.0, 0, 0.8)) : this.highlight(null, new Cesium.Color(0, 1.0, 0, 0.8), layerList, oidList);
+    }, 1800);
+
+    setTimeout(() => {
+      currentPicked ? this.highlight(currentPicked, new Cesium.Color(0, 0, 1.0, 0.8)) : this.highlight(null, new Cesium.Color(0, 0, 1.0, 0.8), layerList, oidList);
+    }, 2100);
+
+    setTimeout(() => {
+      currentPicked ? this.highlight(currentPicked, new Cesium.Color(0, 1.0, 0, 0.8)) : this.highlight(null, new Cesium.Color(0, 1.0, 0, 0.8), layerList, oidList);
+    }, 2400);
+
+    setTimeout(() => {
+      currentPicked ? this.highlight(currentPicked, new Cesium.Color(1.0, 0, 1.0, 0.8)) : this.highlight(null, new Cesium.Color(1.0, 0, 1.0, 0.8), layerList, oidList);
+    }, 2700);
+
+    setTimeout(() => {
+      currentPicked ? this.highlight(currentPicked, new Cesium.Color(0.55, 0.05, 0.62, 1)) : this.highlight(null, new Cesium.Color(0.55, 0.05, 0.62, 1), layerList, oidList);
+    }, 3000);
+  };
+
+
   // 坐标转换类方法
 
   //获取经纬度

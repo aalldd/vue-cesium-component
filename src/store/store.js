@@ -9,6 +9,7 @@ class Store {
     this.GPServer = Service.City.Plugin("GPServer");
     this.ScadaServer = Service.City.Plugin('ScadaServer');
     this.MapServer = Service.City.Plugin('MapServer');
+    this.AuxDataServer = Service.City.Plugin("AuxDataServer");
   }
 
   async query(params, url) {
@@ -48,6 +49,36 @@ class Store {
       result = [];
     }
     return result;
+  }
+
+  //查询爆管信息
+  //funcName : 供水：IncidentOperNew，燃气：MidPressOperEx
+  async IncidentOperNew(mapServiceName, funcName, params) {
+    try {
+      const {data} = await this.GPServer.get(`/${mapServiceName}/${funcName}`, {params});
+      return data;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  async GetRelationshipList(mapServiceName) {
+    try {
+      const {data} = await this.AuxDataServer.get(`/${mapServiceName}/GetRelationshipList`);
+      return data;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  async QueryObjectIds(mapServiceName, layerId, params) {
+    try {
+      //QueryByObjectIds
+      const { data } = await this.AuxDataServer.post(`/${mapServiceName}/${layerId}/QueryObjectIds`, params);
+      return data;
+    } catch (error) {
+      return [];
+    }
   }
 }
 

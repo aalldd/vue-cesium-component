@@ -20,6 +20,8 @@ export {default as MunicipalDynacut} from "../components/analysis/Dynacut";
 export {default as MunicipalRain} from '../components/analysis/Rain';
 export {default as MunicipalTunnel} from '../components/analysis/Tunnel';
 export {default as MunicipalFlow} from '../components/analysis/Flow';
+export {default as MunicipalSquib} from '../components/analysis/Squib';
+export {default as MunicipalSquibRes} from '../components/analysis/SquibRes';
 export {default as MunicipalFixRoam} from '../components/roam/FixRoam';
 export {default as MunicipalAutoRoam} from '../components/roam/AutoRoam';
 export {default as MunicipalAutoSteering} from '../components/roam/AutoSteering';
