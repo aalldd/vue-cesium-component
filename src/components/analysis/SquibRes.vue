@@ -52,6 +52,7 @@
 <script>
 import panelOptions from "@/util/options/panelOptions";
 import loadingM3ds from "@/util/mixins/withLoadingM3ds";
+import {treeUtil} from "@/util/helpers/helper";
 
 const SQUIB_RESULT_TYPES = {
   SQUIBPOINT: "civFeatureMetaTypeIncidentPoint", //爆管发生点
@@ -87,7 +88,7 @@ export default {
     ...panelOptions,
     title: {
       type: String,
-      default: '爆管分析结果'
+      default: "爆管分析结果"
     },
     squibResults: {
       type: Array,
@@ -120,11 +121,11 @@ export default {
               result.disabled = true;
             } else if (type === SQUIB_RESULT_TYPES.EFFECTEDUSER) {
               result.scopedSlots = {
-                title: 'user'
+                title: "user"
               };
             } else {
               result.scopedSlots = {
-                title: 'badge'
+                title: "badge"
               };
             }
             if (layerItems.length > 0) {
@@ -134,7 +135,7 @@ export default {
                 layerItem.total = layerItem.objectIds.length;
                 layerItem.img = this.SQUIB_ICONS.list;
                 layerItem.scopedSlots = {
-                  title: 'subItems'
+                  title: "subItems"
                 };
                 return layerItem;
               });
@@ -159,15 +160,29 @@ export default {
   methods: {
     tabsChange(key) {
       if (key === 2) {
-        this.$emit('goBack');
+        this.$emit("goBack");
       }
     },
     choosedLayer(checkedKeys) {
       this.checkedKeys = checkedKeys;
+      const result=treeUtil.map(this.squibRes,(item)=>{
+        if(checkedKeys.indexOf(item.key)>=0){
+          return {
+            type:item.type,
+            checked:true
+          }
+        }else{
+          return {
+            type:item.type,
+            checked:false
+          }
+        }
+      })
+      this.$emit('onCheck',result)
     },
     handleMenuClick(e){
       //用户点击扩大关阀按钮
-      e.key==='0' && this.$emit('valvesExpand')
+      e.key==="0" && this.$emit("valvesExpand")
     },
     //点击设备详情
     detailClick(item){
@@ -177,7 +192,7 @@ export default {
         title: item.typeName + " - " + item.layerName,
         type: item.type,
       }
-      this.$emit('detailClick',detailParam)
+      this.$emit("detailClick",detailParam)
     }
   }
 };

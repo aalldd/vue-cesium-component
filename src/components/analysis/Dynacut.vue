@@ -14,7 +14,7 @@
             v-model="digDistance"
             :min="1"
             :max="100"
-            style="marginleft: 16px"
+            style="margin-left: 16px"
           />
         </a-col>
       </a-row>

@@ -1,6 +1,6 @@
 <template>
-  <municipal-squib @query="querySquibPoint" @queryRelationships="queryRelationships"
-                   :squibData="squibData" :SQUIB_ICONS="SQUIB_ICONS"></municipal-squib>
+  <municipal-squib @query="querySquibPoint" @queryRelationships="queryRelationships" @queryFeatures="queryFeatures"
+                   :squibData="squibData" :SQUIB_ICONS="SQUIB_ICONS" :featureData="featuresData" :loading="loading"></municipal-squib>
 </template>
 
 <script>
@@ -11,8 +11,10 @@ export default {
   data() {
     return {
       squibData: [],
-      SQUIB_ICONS:{
-        list:"/static/images/analysisimgs/list.png",
+      SQUIB_ICONS: {
+        fireImg: "/static/cesium/model/fire.png",
+        fountainImg: "/static/cesium/model/fountain.png",
+        list: "/static/images/analysisimgs/list.png",
         highlight: "/static/images/squib/高亮.png",
         civFeatureMetaTypeIncidentPoint: "/static/images/squib/爆管点.png", //爆管发生点
         civFeatureMetaTypeSwitch: "/static/images/squib/需关闭阀门.png", //需关断设备
@@ -25,7 +27,10 @@ export default {
         civFeatureMetaTypeRegionResult: "/static/images/squib/受影响区域.png", //受影响区域
         civFeatureMetaTypeResstop: "/static/images/squib/资源装卸点.png", //资源装卸点
         civFeatureMetaTypeRescenter: "/static/images/squib/资源中心.png" //受影响水源
-      }
+      },
+      //设备信息
+      featuresData: [],
+      loading:false
     };
   },
   mounted() {
@@ -35,8 +40,10 @@ export default {
     async querySquibPoint(params) {
       const funcName = 'IncidentOperNew';
       const {mapServerName, ...rest} = params;
+      this.loading=true
       const res = await this.store.IncidentOperNew(mapServerName, funcName, rest);//获取爆管点的所有分析结果
       this.squibData = res;
+      this.loading=false
     },
     async queryRelationships(params) {
       const {userItem, serverName} = params;
@@ -44,7 +51,6 @@ export default {
       if (response) {
         this.relationships = response;
         this.userItem = userItem;
-        console.log(userItem);
         this.serverName = serverName;
         await this.queryUserCount();
       }
@@ -77,6 +83,24 @@ export default {
           await this.queryUserCount();
         }
       }
+    },
+    async queryFeatures(params) {
+      const promises = [];
+      params.forEach(layerItems => {
+        layerItems.forEach(item => {
+          const {layerId, objectIds, cacheBust, mapServerName, type} = item;
+          const promise = this.store.query(mapServerName, layerId, {objectIds, cacheBust});
+          promises.push({promise, type});
+        });
+      });
+      //注意这里要将type回传，要不然组件无法知道哪个三维效果对应哪种管段
+      const data = await Promise.all(promises.map(item => item.promise));
+      this.featuresData = data.map((item, index) => {
+        return {
+          type: promises[index].type,
+          data: item
+        };
+      });
     }
   }
 };

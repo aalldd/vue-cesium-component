@@ -11,10 +11,141 @@ class emgUtil {
   }
 
   //三维效果方法
+  //添加粒子特效
+  // 添加拉伸区 默认平面，可以指定stereoscopic,多边形相对地球表面高度，默认0
+  addPolyon(pointArr, fillColor, outLineColor, type = 'plane', extrudeHeight = 0) {
+    //填充颜色
+    let fColor = fillColor || new Cesium.Color(255 / 255, 255 / 255, 0 / 255, 1);
+    //边线颜色
+    let oColor = outLineColor || new Cesium.Color(255 / 255, 0 / 255, 0 / 255, 1);
+    //构造几何绘制控制对象
+    this.entityController = new CesiumZondy.Manager.EntityController({
+      viewer: this.view.viewer
+    });
+    // 如果是平面
+    if (type === 'plane') {
+      this.polygon = this.entityController.appendPolygon(
+        '三维区',
+        pointArr,
+        fColor,
+        oColor,
+        false, {
+          show: true
+        }
+      );
+      return this.polygon;
+    } else if (type === 'stereoscopic') {
+      this.polygon = this.entityController.appendGraphics({
+        name: "矩形",
+        polygon: {
+          //坐标点
+          hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights(pointArr),
+          //是否指定各点高度
+          perPositionHeight: true,
+          //颜色
+          material: fillColor,
+          extrudedHeight: extrudeHeight,
+          //轮廓线是否显示
+          outline: true,
+          //轮廓线颜色
+          outlineColor: outLineColor
+        }
+      });
+      return this.polygon;
+    }
+  }
+
+  addBillboard(lon, lat, height, name, imageUrl, imageWidth, imageHeight, optionsParam){
+    const options = Cesium.defaultValue(optionsParam, {});
+    const lScaleByDistance = Cesium.defaultValue(options.scaleByDistance, new Cesium.NearFarScalar(1.5e2, 3.0, 1.5e7, 0.5));
+    const lTransparentByDistance = Cesium.defaultValue(options.transparentByDistance, new Cesium.NearFarScalar(1.5e5, 1.0, 1.5e7, 0.0));
+    const lHeightReference = Cesium.defaultValue(options.heightReference, Cesium.HeightReference.NONE);
+    const para = {
+      name,
+      position: Cesium.Cartesian3.fromDegrees(lon, lat, height),
+      billboard: {
+        // 图标
+        image: imageUrl,
+        width: imageWidth,
+        height: imageHeight,
+        heightReference: lHeightReference,
+        // 随远近缩放
+        pixelOffsetScaleByDistance: lScaleByDistance, // new NearFarScalar(1.5e2, 3.0, 1.5e7, 0.5),
+        // 随远近隐藏
+        translucencyByDistance: lTransparentByDistance, // new NearFarScalar(1.5e5, 1.0, 1.5e7, 0.0),
+        // 定位点
+        verticalOrigin: Cesium.VerticalOrigin.BOTTOM
+      },
+      description: Cesium.defaultValue(options.description, '这是一个公告板的描述')
+    };
+    if (Cesium.defined(options)) {
+      Object.extend(para, options);
+    }
+    const billBoard = this.view.viewer.entities.add(para);
+    return billBoard;
+  }
+
+  addParticular(lng, lat, height, options, imageUrl, type = 'fountain') {
+    //初始化高级分析功能管理类
+    if (!this.advancedAnalysisManager)
+      this.advancedAnalysisManager = new CesiumZondy.Manager.AdvancedAnalysisManager({
+        viewer: this.view.viewer
+      });
+    const viewer = this.view.viewer;
+    //开启计时
+    viewer.clock.shouldAnimate = true;
+    const scene = viewer.scene;
+    //开启对数深度缓冲区
+    scene.logarithmicDepthBuffer = true;
+    //关闭HDR
+    scene.highDynamicRange = false;
+
+    //位置点
+    let position = [lng, lat, height];
+    const optionsParam = Cesium.defaultValue(options, {});
+    const viewModel = {
+      modelUrl: optionsParam.modelUrl,
+      minimumPixelSize: Cesium.defaultValue(optionsParam.minimumPixelSize, 2.0),
+      startColor: Cesium.defaultValue(optionsParam.startColor, Cesium.Color.WHITE.withAlpha(0.7)),
+      endColor: Cesium.defaultValue(optionsParam.endColor, Cesium.Color.WHITE.withAlpha(0.0)),
+      startScale: Cesium.defaultValue(optionsParam.startScale, 1.0),
+      endScale: Cesium.defaultValue(optionsParam.endScale, 10.0),
+      minimumParticleLife: Cesium.defaultValue(optionsParam.minimumParticleLife, 1),
+      maximumParticleLife: Cesium.defaultValue(optionsParam.maximumParticleLife, 3),
+      minimumSpeed: Cesium.defaultValue(optionsParam.minimumSpeed, 24),
+      maximumSpeed: Cesium.defaultValue(optionsParam.maximumSpeed, 30),
+      imageSize: Cesium.defaultValue(optionsParam.imageSize, new Cesium.Cartesian2(1.0, 1.0)),
+      emissionRate: Cesium.defaultValue(optionsParam.emissionRate, 200),
+      minimumImageSize: Cesium.defaultValue(optionsParam.minimumImageSize, new Cesium.Cartesian2(1.0, 1.0)),
+      maximumImageSize: Cesium.defaultValue(optionsParam.maximumImageSize, new Cesium.Cartesian2(1.0, 1.0)),
+      lifetime: Cesium.defaultValue(optionsParam.lifetime, 6),
+      emitter: Cesium.defaultValue(optionsParam.emitter, new Cesium.ConeEmitter(Cesium.Math.toRadians(25.0))),
+      gravity: Cesium.defaultValue(optionsParam.gravity, -10),
+      viewHeight: Cesium.defaultValue(optionsParam.viewHeight, -1),
+      heading: Cesium.defaultValue(optionsParam.heading, 0.0),
+      pitch: Cesium.defaultValue(optionsParam.pitch, 0.0),
+      roll: Cesium.defaultValue(optionsParam.roll, 0.0)
+    };
+    //添加火焰粒子特效
+    this.fireobj = this.advancedAnalysisManager.createStableParticle(imageUrl, position, viewModel);
+    //火焰参数设置绑定UI
+    Cesium.knockout.track(viewModel);
+
+    //防止添加特效后视点跳转
+    this.view.viewer.trackedEntity = undefined;
+    return this.fireobj
+  }
+
+  removeParticular(particuar) {
+    let target=particuar || this.fireobj
+    if (this.advancedAnalysisManager)
+      this.advancedAnalysisManager.removeStableParticle(target);
+  }
+
   // 高亮
   highlight(currentPicked, color, layerList, idList) {
     if (!this.analysisManager) {
-      this.analysisManager = new CesiumZondy.Manager.AnalysisManager({ viewer: this.view.viewer });
+      this.analysisManager = new CesiumZondy.Manager.AnalysisManager({viewer: this.view.viewer});
     }
 
     const options = {
@@ -43,7 +174,7 @@ class emgUtil {
   //停止高亮
   stopHighlight(layerList, idList) {
     if (!this.analysisManager) {
-      this.analysisManager = new CesiumZondy.Manager.AnalysisManager({ viewer: this.view.viewer });
+      this.analysisManager = new CesiumZondy.Manager.AnalysisManager({viewer: this.view.viewer});
     }
 
     if (layerList && idList) { //根据ID停止高亮
@@ -636,7 +767,9 @@ class emgUtil {
         viewer: this.view.viewer
       });
     }
+    this.stopHighlight();
     this.stopCutFillM();
+    this.removeParticular();
     this.entityController && this.entityController.removeAllEntities();
   };
 }

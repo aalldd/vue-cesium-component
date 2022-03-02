@@ -11,6 +11,7 @@ const loadingM3ds = {
         this.view.tilesetList = this.m3ds;
         this.emgManager = new emgUtil(this.view);
         this.commonConfig = window.commonConfig;
+        this.mapServerName = this.commonConfig?.globalConfig?.mapServerName;
         this.offset = this.commonConfig?.globalConfig?.offset;
         this.sceneManager = new CesiumZondy.Manager.SceneManager({viewer: this.view.viewer});
         this.$emit('load', this);

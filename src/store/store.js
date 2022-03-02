@@ -74,7 +74,16 @@ class Store {
   async QueryObjectIds(mapServiceName, layerId, params) {
     try {
       //QueryByObjectIds
-      const { data } = await this.AuxDataServer.post(`/${mapServiceName}/${layerId}/QueryObjectIds`, params);
+      const {data} = await this.AuxDataServer.post(`/${mapServiceName}/${layerId}/QueryObjectIds`, params);
+      return data;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  async query(mapServiceName, layerId, params) {
+    try {
+      const {data} = await this.MapServer.post(`/${mapServiceName}/${layerId}/query`, params);
       return data;
     } catch (error) {
       return [];
