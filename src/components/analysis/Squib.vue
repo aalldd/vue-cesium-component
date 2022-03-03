@@ -45,7 +45,7 @@
                              panelPosition="left"
                              :columns="invalidColunm"
                              :dataSource="invalidDataS"
-                             :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange,columnTitle:'是否失效',columnWidth:140 }"
+                             :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange,columnTitle:'是否失效',columnWidth:120 }"
                              :needExport="false">
 
     </municipal-result-simple>

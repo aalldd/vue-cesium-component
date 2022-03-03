@@ -75,7 +75,7 @@ const resultMixin = {
           if (this.width) {
             this.panelWidthCopy = this.width;
           } else {
-            this.panelWidthCopy = 500;
+            this.panelWidthCopy = 450;
           }
         }
       },
