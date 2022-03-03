@@ -59,8 +59,6 @@ export default {
   },
   methods: {
     async getQueryParam(param) {
-      console.log(param);
-      console.log(window.m3ds);
       const m3ds = window.m3ds;
       const promises = m3ds.filter((t, index) => [12].indexOf(index) >= 0).map(t => {
         if (t.gdbp && t.civFeatureType) {

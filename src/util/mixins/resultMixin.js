@@ -50,6 +50,13 @@ const resultMixin = {
     },
     pagination: {
       type: Object
+    },
+    rowSelection:{
+      type:Object
+    },
+    needExport:{
+      type:Boolean,
+      default:true
     }
   },
   watch: {
@@ -101,7 +108,6 @@ const resultMixin = {
     },
     //点击行事件
     customRow(record, index) {
-      console.log(record);
       return {
         on: {
           click: () => {

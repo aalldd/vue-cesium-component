@@ -16,6 +16,7 @@
                    :data-source="item.features"
                    :scroll="scrollStyle"
                    :pagination="paginationCopy"
+                   :row-selection="rowSelection"
                    @change="handleTableChange"
                    :customRow="customRow"
                    size="small"
@@ -25,7 +26,7 @@
       </a-tabs>
     </template>
     <template v-slot:extra>
-      <div class="export">
+      <div class="export" v-if="needExport">
         <a-select :value="exportType" style="width: 120px" @change="exportData" size="small">
           <a-select-option v-for="(item,index) in exportTypes" :key="index" :value="item">
             {{ item }}

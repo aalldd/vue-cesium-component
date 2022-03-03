@@ -36,9 +36,19 @@
                         :SQUIB_ICONS="SQUIB_ICONS"
                         @goBack="goBack"
                         @onCheck="onCheck"
+                        @valvesExpand="valvesExpand"
     >
 
     </municipal-squibres>
+    <municipal-result-simple v-if="invalidVisible"
+                             title="选择失效关联设备"
+                             panelPosition="left"
+                             :columns="invalidColunm"
+                             :dataSource="invalidDataS"
+                             :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange,columnTitle:'是否失效',columnWidth:140 }"
+                             :needExport="false">
+
+    </municipal-result-simple>
   </div>
 </template>
 
@@ -82,7 +92,18 @@ export default {
       isOpenFlg: true,
       expbtnFlag: false,
       state: 'init',
-      squibResults: []
+      squibResults: [],
+      switchLayerItems: [],
+      //失效关断设备面板
+      invalidVisible: false,
+      invalidDataS: [],
+      invalidColunm: [
+        {
+          title: '设备',
+          dataIndex: '__equip'
+        }
+      ],
+      selectedRowKeys: []
     };
   },
   props: {
@@ -120,6 +141,7 @@ export default {
         };
       }
     },
+    //爆管分析粒子特效自定义参数
     FountainParam: {
       type: Object,
       default: () => {
@@ -129,6 +151,13 @@ export default {
           gravity: -40,
           emissionRate: 30
         };
+      }
+    },
+    //失效设备数据
+    invalidData: {
+      type: Array,
+      default: () => {
+        return [];
       }
     }
   },
@@ -152,8 +181,14 @@ export default {
         if (this.featureData?.length > 0) {
           this.renderThreeD();
         }
-      },
-      immediate: true
+      }
+    },
+    invalidData: {
+      handler() {
+        if (this.invalidData?.length > 0) {
+          this.dealWithInvalidData();
+        }
+      }
     }
   },
   methods: {
@@ -262,6 +297,7 @@ export default {
       }, this).reduce(function (a, b) {
         return a.concat(b);
       }, []);
+      //如果没有扩大关阀设备，
       this.expbtnFlag = this.switchLayerItems.length !== 0;
       //受影响用户
       this.userItems = this.squibResults.map(function (item) {
@@ -550,7 +586,7 @@ export default {
       this.effectedLineHeights.push(HeightCenter);
     },
     //查询附属数据关联信息
-    async queryRelationships() {
+    queryRelationships() {
       this.$emit('queryRelationships', {
         serverName: this.commonConfig.globalConfig.mapServerName,
         userItem: this.userItem
@@ -611,6 +647,74 @@ export default {
         });
       });
       return layerItems;
+    },
+    //点击扩大关阀
+    valvesExpand() {
+      if (this.expbtnFlag) {
+        this.queryEquips(this.switchLayerItems);
+      } else {
+        this.invalidVisible = true;
+      }
+    },
+    //查询失效设备,提供参数
+    queryEquips(layerItems) {
+      const params = [];
+      layerItems.forEach(layerItem => {
+        if (layerItem.objectIds.length > 0) {
+          const param = {
+            returnGeometry: false,
+            returnDistinctValues: false,
+            objectIds: layerItem.objectIds.join(','),
+            spatialRel: "civSpatialRelIntersects",
+            cacheBust: true,
+            layerId: layerItem.layerId,
+            mapServerName: this.mapServerName,
+            layerItem
+          };
+          params.push(param);
+        }
+      });
+      this.$emit('queryInvalid', params);
+    },
+    //  处理失效设备数据
+    dealWithInvalidData() {
+      const result = [];
+      this.invalidData.forEach(item => {
+        const layerItem = item.layerItem;
+        const data = item.data;
+        data.features.forEach((feature, index) => {
+          const checked = this.isInvalidEquip(layerItem.type);
+          checked && this.invalidElemIDs.push(feature.attributes.ElemID);
+          feature.attributes.newParam = '__checked';
+          feature.attributes.__checked = checked;
+          feature.attributes.newParam = '__equip';
+          feature.attributes.__equip = [layerItem.layerName, feature.attributes.OID].join(" - ");
+          feature.attributes.newParam = '__type';
+          feature.attributes.__type = layerItem.type;
+          feature.attributes.newParam = '__geometry';
+          feature.attributes.__geometry = feature.geometry;
+          feature.attributes.newParam = '__layerId';
+          feature.attributes.__layerId = layerItem.layerId;
+          feature.attributes.newParam = 'key';
+          feature.attributes.key = index;
+          result.push(feature.attributes);
+        });
+      });
+      this.invalidDataS = result;
+      result.forEach(item => {
+        if (item.__checked) {
+          this.selectedRowKeys.push(item.key);
+        }
+      });
+      this.invalidVisible = true;
+    },
+    //是否为失效设备
+    isInvalidEquip(type) {
+      return type === SQUIB_RESULT_TYPES.INVALIDATESWITCH;
+    },
+    //选择失效关断设备
+    onSelectChange(selectedRowKeys) {
+      this.selectedRowKeys = selectedRowKeys;
     }
   }
 };

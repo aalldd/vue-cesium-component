@@ -1,6 +1,13 @@
 <template>
-  <municipal-squib @query="querySquibPoint" @queryRelationships="queryRelationships" @queryFeatures="queryFeatures"
-                   :squibData="squibData" :SQUIB_ICONS="SQUIB_ICONS" :featureData="featuresData" :loading="loading"></municipal-squib>
+  <municipal-squib @query="querySquibPoint"
+                   @queryRelationships="queryRelationships"
+                   @queryFeatures="queryFeatures"
+                   @queryInvalid="queryInvalid"
+                   :squibData="squibData"
+                   :invalidData="invalidData"
+                   :SQUIB_ICONS="SQUIB_ICONS"
+                   :featureData="featuresData"
+                   :loading="loading"></municipal-squib>
 </template>
 
 <script>
@@ -30,7 +37,9 @@ export default {
       },
       //设备信息
       featuresData: [],
-      loading:false
+      //失效设备
+      invalidData:[],
+      loading: false
     };
   },
   mounted() {
@@ -40,10 +49,11 @@ export default {
     async querySquibPoint(params) {
       const funcName = 'IncidentOperNew';
       const {mapServerName, ...rest} = params;
-      this.loading=true
+      this.loading = true;
+      this.mapServerName = mapServerName;
       const res = await this.store.IncidentOperNew(mapServerName, funcName, rest);//获取爆管点的所有分析结果
       this.squibData = res;
-      this.loading=false
+      this.loading = false;
     },
     async queryRelationships(params) {
       const {userItem, serverName} = params;
@@ -101,6 +111,20 @@ export default {
           data: item
         };
       });
+    },
+    async queryInvalid(params) {
+      const promises = params.map(param => {
+        const {layerId, mapServerName,layerItem, ...rest} = param;
+        return this.store.query(mapServerName, layerId, rest);
+      });
+      const dataS = await Promise.all(promises);
+      //回传的时候需要将layerItem回传回来
+      this.invalidData=dataS.map((data,index)=>{
+        return {
+          data:data,
+          layerItem:params[index].layerItem
+        }
+      })
     }
   }
 };

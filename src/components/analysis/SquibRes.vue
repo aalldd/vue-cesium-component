@@ -182,7 +182,7 @@ export default {
     },
     handleMenuClick(e){
       //用户点击扩大关阀按钮
-      e.key==="0" && this.$emit("valvesExpand")
+      e.key==="item_0" && this.$emit("valvesExpand")
     },
     //点击设备详情
     detailClick(item){
