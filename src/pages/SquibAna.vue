@@ -3,10 +3,12 @@
                    @queryRelationships="queryRelationships"
                    @queryFeatures="queryFeatures"
                    @queryInvalid="queryInvalid"
+                   @queryDetail="queryDetail"
                    :squibData="squibData"
                    :invalidData="invalidData"
                    :SQUIB_ICONS="SQUIB_ICONS"
                    :featureData="featuresData"
+                   :detailData="detailData"
                    :loading="loading"></municipal-squib>
 </template>
 
@@ -17,6 +19,7 @@ export default {
   name: "SquibAna",
   data() {
     return {
+      //爆管信息
       squibData: [],
       SQUIB_ICONS: {
         fireImg: "/static/cesium/model/fire.png",
@@ -38,7 +41,9 @@ export default {
       //设备信息
       featuresData: [],
       //失效设备
-      invalidData:[],
+      invalidData: [],
+      //设备详细信息
+      detailData: {},
       loading: false
     };
   },
@@ -114,17 +119,22 @@ export default {
     },
     async queryInvalid(params) {
       const promises = params.map(param => {
-        const {layerId, mapServerName,layerItem, ...rest} = param;
+        const {layerId, mapServerName, layerItem, ...rest} = param;
         return this.store.query(mapServerName, layerId, rest);
       });
       const dataS = await Promise.all(promises);
       //回传的时候需要将layerItem回传回来
-      this.invalidData=dataS.map((data,index)=>{
+      this.invalidData = dataS.map((data, index) => {
         return {
-          data:data,
-          layerItem:params[index].layerItem
-        }
-      })
+          data: data,
+          layerItem: params[index].layerItem
+        };
+      });
+    },
+    async queryDetail(params) {
+      const {mapServerName, layerId, ...rest} = params;
+      const data = await this.store.query(mapServerName, layerId, rest);
+      this.detailData = data;
     }
   }
 };

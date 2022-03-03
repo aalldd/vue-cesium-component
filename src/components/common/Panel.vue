@@ -1,6 +1,7 @@
 <template>
-  <div style="width: 100%;height: 0;position:absolute;left:0;top: 0">
-    <vue-draggable-resizable :draggable="draggable" :style="{...panelStyle}" :w="width" :h="height" :class="[panelClassName]">
+  <div style="width: 100%;height: 100%;position:absolute;left:0;top: 0;pointer-events:none">
+    <vue-draggable-resizable :draggable="draggable" v-if="draggable" :style="{...panelStyle}" :w="width" :h="height"
+                             :class="[panelClassName]">
       <div class="panel-container">
         <div class="top-wrapper">
           <div class="title" v-if="title" :style="{display:'flex',alignItems:'center'}">{{ title }}</div>
@@ -11,7 +12,7 @@
             <div class="expand" v-show="expandable" @click="expanded=!expanded">
               <municipal-icon :name="expandIcon"></municipal-icon>
             </div>
-            <div class="close" v-show="closable" @click="$emit('onClose')">
+            <div class="close" v-show="closable" @click="onClose">
               <municipal-icon name="close"></municipal-icon>
             </div>
           </div>
@@ -21,6 +22,25 @@
         </div>
       </div>
     </vue-draggable-resizable>
+    <div class="panel-container" v-if="!draggable" :style="{...panelStyle}" :class="[panelClassName]">
+      <div class="top-wrapper">
+        <div class="title" v-if="title" :style="{display:'flex',alignItems:'center'}">{{ title }}</div>
+        <div class="right">
+          <div class="extra" :style="{display:'flex',alignItems:'center'}">
+            <slot name="extra"></slot>
+          </div>
+          <div class="expand" v-show="expandable" @click="expanded=!expanded">
+            <municipal-icon :name="expandIcon"></municipal-icon>
+          </div>
+          <div class="close" v-show="closable" @click="onClose">
+            <municipal-icon name="close"></municipal-icon>
+          </div>
+        </div>
+      </div>
+      <div class="content" v-show="!expanded">
+        <slot name="content"></slot>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -48,6 +68,11 @@ export default {
           position: 'absolute'
         };
       }
+    }
+  },
+  methods: {
+    onClose() {
+      this.$emit('onClose');
     }
   }
 };

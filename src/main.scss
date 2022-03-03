@@ -11,12 +11,14 @@
 //结果面板css
 .position-bottom {
   position: absolute;
-  top: 36em;
+  width: 1600px;
+  bottom: 2em;
   left: 2em;
 }
 
 .position-left {
   position: absolute;
+  width: 450px;
   top: 2em;
   left: 4em;
 }
@@ -31,4 +33,12 @@
   .ant-table-pagination.ant-pagination {
     margin: 6px;
   }
+}
+
+.ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-body > table > .ant-table-tbody > tr > td{
+  text-align: center;
+}
+
+.ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-header > table > .ant-table-thead > tr > th{
+  text-align: center;
 }

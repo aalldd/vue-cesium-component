@@ -26,11 +26,9 @@ export default {
     }
   },
   width:{
-    typs:Number,
-    default:400
+    typs:Number
   },
   height:{
-    typs:Number,
-    default:400
+    typs:Number
   }
 };

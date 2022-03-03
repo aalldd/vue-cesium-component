@@ -27,9 +27,15 @@
               <!--              对于子项，需显示详情按钮-->
               <template slot="subItems" slot-scope="item">
                 <span style="width: 160px;display: inline-block">{{ item.title }}}</span>
-                <span @click="detailClick(item)"> <img style="width: 16px;height: 16px" :src="item.img"/>({{ item.total }})</span>
+                <a-dropdown>
+                  <span @click="detailClick(item)"> <img style="width: 16px;height: 16px" :src="item.img"/>({{ item.total }})</span>
+                  <a-menu slot="overlay" @click="handleDetailClick(item)">
+                    <a-menu-item>
+                      <span>设备详情</span>
+                    </a-menu-item>
+                  </a-menu>
+                </a-dropdown>>
               </template>
-
             </a-tree>
           </div>
           <template slot="tab" v-if="index===1">
@@ -183,6 +189,15 @@ export default {
     handleMenuClick(e){
       //用户点击扩大关阀按钮
       e.key==="item_0" && this.$emit("valvesExpand")
+    },
+    handleDetailClick(item){
+      const detailParam={
+        layerId: item.layerId,
+        objectsId: item.objectIds,
+        title: item.typeName + " - " + item.layerName,
+        type: item.type,
+      }
+      this.$emit("detailClick",detailParam)
     },
     //点击设备详情
     detailClick(item){

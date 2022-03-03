@@ -1,7 +1,8 @@
 <template>
-  <municipal-panel :title="title" @close="$emit('onClose')"
+  <municipal-panel :title="title" @onClose="onClose"
                    :closable="closable" :draggable="draggable"
                    :width="panelWidthCopy"
+                   :height="height"
                    :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClass">
     <template v-slot:content>
       <a-table :columns="columns"

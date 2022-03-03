@@ -34,6 +34,7 @@
                         :panel-class-name="panelClassName"
                         :squibResults="squibResults"
                         :SQUIB_ICONS="SQUIB_ICONS"
+                        @detailClick="detailClick"
                         @goBack="goBack"
                         @onCheck="onCheck"
                         @valvesExpand="valvesExpand"
@@ -44,10 +45,26 @@
                              title="选择失效关联设备"
                              panelPosition="left"
                              :columns="invalidColunm"
+                             @onRowClick="onRowClick"
+                             :width="400"
+                             :pagination="false"
                              :dataSource="invalidDataS"
+                             @onClose="()=>{this.invalidVisible=false}"
                              :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange,columnTitle:'是否失效',columnWidth:120 }"
                              :needExport="false">
-
+      <div class="invalidContent">
+        <a-button type="primary" @click="queryParam">开始分析</a-button>
+      </div>
+    </municipal-result-simple>
+    <municipal-result-simple v-if="detailVisible"
+                             :title="detailTitle"
+                             panelPosition="bottom"
+                             :columns="detailColunm"
+                             @onRowClick="onRowClick"
+                             :height="300"
+                             @onClose="()=>{this.detailVisible=false}"
+                             :exportFileName="exportFileName"
+                             :dataSource="detailDataS">
     </municipal-result-simple>
   </div>
 </template>
@@ -96,14 +113,25 @@ export default {
       switchLayerItems: [],
       //失效关断设备面板
       invalidVisible: false,
+      //失效设备数据
       invalidDataS: [],
+      //失效设备数据列
       invalidColunm: [
         {
           title: '设备',
           dataIndex: '__equip'
         }
       ],
-      selectedRowKeys: []
+      //设备详细信息数据列
+      detailColunm: [],
+      //设备详细信息数据
+      detailDataS: [],
+      detailVisible: false,
+      //设备详细信息标题
+      detailTitle: '',
+      selectedRowKeys: [],
+      //导出的excel文件名
+      exportFileName: ''
     };
   },
   props: {
@@ -159,12 +187,20 @@ export default {
       default: () => {
         return [];
       }
+    },
+    //设备详细信息数据
+    detailData: {
+      type: Object,
+      default: () => {
+        return {};
+      }
     }
   },
   mounted() {
     this.initEntitiesCache();
   },
   destroyed() {
+    this.initEntitiesCache();
     this.emgManager.removeAll();
   },
   watch: {
@@ -187,6 +223,13 @@ export default {
       handler() {
         if (this.invalidData?.length > 0) {
           this.dealWithInvalidData();
+        }
+      }
+    },
+    detailData: {
+      handler() {
+        if (Object.keys(this.detailData)?.length > 0) {
+          this.dealWithDetailData();
         }
       }
     }
@@ -234,7 +277,6 @@ export default {
       const pickedFeature = this.webGlobe.scene.pick(movement.position);
       if (!Cesium.defined(pickedFeature)) {
         this.$message.warn('请点击管道！');
-        this.emgManager.removeAll();
         this.tipVisible = false;
         return;
       }
@@ -250,6 +292,10 @@ export default {
       this.tipVisible = false;
     },
     queryParam() {
+      this.invalidVisible = false;
+      this.initEntitiesCache();
+      this.emgManager.removeAll();
+      this.state = 'init';
       let squibPoint = {
         x: Number(this.loc[0]) + Number(this.offset[0]),
         y: Number(this.loc[1]) + Number(this.offset[1])
@@ -265,7 +311,7 @@ export default {
         geometry: JSON.stringify(squibPoint),
         mapExtent: JSON.stringify(this.getCurrentView()),
         cacheBust: true,
-        mapServerName: this.commonConfig.globalConfig.mapServerName
+        mapServerName: this.mapServerName
       };
       this.$emit('query', params);
     },
@@ -314,6 +360,7 @@ export default {
       //暂时没有用户数据
       if (this.userItems.length > 0) {
         this.queryRelationships();
+        this.showResultOnMap();
       } else {
         this.showResultOnMap();
       }
@@ -696,7 +743,7 @@ export default {
           feature.attributes.newParam = '__layerId';
           feature.attributes.__layerId = layerItem.layerId;
           feature.attributes.newParam = 'key';
-          feature.attributes.key = index;
+          feature.attributes.key = feature.attributes.ElemID;
           result.push(feature.attributes);
         });
       });
@@ -715,6 +762,88 @@ export default {
     //选择失效关断设备
     onSelectChange(selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys;
+      //找到所有失效关断设备
+      const checkedEquips = this.invalidDataS.filter(item => this.selectedRowKeys.indexOf(item.key) >= 0).map(item => item.ElemID);
+      this.invalidElemIDs = checkedEquips;
+    },
+    detailClick(params) {
+      const param = {
+        returnGeometry: true,
+        returnDistinctValues: false,
+        spatialRel: "civSpatialRelIntersects",
+        objectIds: params.objectsId.join(),
+        layerId: params.layerId,
+        mapServerName: this.mapServerName
+      };
+      this.exportFileName = params.title;
+      this.detailTitle = params.title;
+      this.$emit('queryDetail', param);
+    },
+    onRowClick(record) {
+      this.emgManager.stopHighlight();
+      const oid = Number(record.OID);
+      const geometry = record.__geometry;
+      const layerId = Number(record.__layerId);
+      const tile = this.m3ds.find(item => item.layerId === layerId);
+      let height = 0;
+      for (let key in record) {
+        if (key.includes('高程')) {
+          height = Math.max(Number(record[key]), height);
+        }
+      }
+      if (geometry.paths) {
+        const paths = geometry.paths;
+        const startPoint = paths[0][0];
+        const endPoint = paths[0][1];
+        // 视线跳转到管道中心点
+        const standardStartPoint = [Number(startPoint[0]) - Number(this.offset[0]), Number(startPoint[1]) - Number(this.offset[1])];
+        const standardEndPoint = [endPoint[0] - Number(this.offset[0]), endPoint[1] - Number(this.offset[1])];
+        const centerPoint = [(standardStartPoint[0] + standardEndPoint[0]) / 2, (standardStartPoint[1] + standardEndPoint[1]) / 2];
+        const {lng, lat} = this.emgManager.changeToLat(centerPoint);
+        this.emgManager.flyToEx(lng, lat, height);
+      } else {
+        // 如果不存在paths，就说明是一个点
+        if (geometry.x && geometry.y) {
+          const standardPoint = [Number(geometry.x) - Number(this.offset[0]), Number(geometry.y) - Number(this.offset[1])];
+          const {lng, lat} = this.emgManager.changeToLat(standardPoint);
+          this.emgManager.flyToEx(lng, lat, height);
+        }
+      }
+      // 高亮管段
+      this.emgManager.binkPipe([tile], [oid]);
+    },
+    dealWithDetailData() {
+      let tabCol = [];
+      this.detailData.fields.forEach(item => {
+        if (item.visible) {
+          tabCol.push(
+            {
+              title: item.name,
+              dataIndex: item.name,
+              key: item.name,
+            }
+          );
+        }
+      });
+      this.detailDataS = this.tabResShow(this.detailData);
+      this.detailVisible = true;
+      this.detailColunm = tabCol;
+    },
+    //查看表格  结果结构
+    tabResShow(element) {
+      let tabres = [];
+      // for (var i = 0; i < element.features.length; i++) {
+      element.features.forEach((item, index) => {
+        let data = {key: index};
+        for (let j in item.attributes) {
+          data[j] = item.attributes[j];
+        }
+        data.__geometry = item.geometry;
+        data.__layerId = element.layerId;
+        tabres.push(data);
+      });
+      // }
+      return tabres;
     }
   }
 };
@@ -736,5 +865,12 @@ export default {
   &:hover {
     background-color: $active-background;
   }
+}
+
+.invalidContent {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 10px;
 }
 </style>

@@ -11,7 +11,16 @@ class emgUtil {
   }
 
   //三维效果方法
-  //添加粒子特效
+  //视点跳转
+  flyToEx = (lng, lat, height) => {
+    //跳转
+    const sceneManager = new CesiumZondy.Manager.SceneManager({
+      viewer: this.view.viewer
+    });
+
+    sceneManager.flyTo(lng, lat, height + 20, 1);
+  };
+
   // 添加拉伸区 默认平面，可以指定stereoscopic,多边形相对地球表面高度，默认0
   addPolyon(pointArr, fillColor, outLineColor, type = 'plane', extrudeHeight = 0) {
     //填充颜色
@@ -55,7 +64,8 @@ class emgUtil {
     }
   }
 
-  addBillboard(lon, lat, height, name, imageUrl, imageWidth, imageHeight, optionsParam){
+  //添加图标
+  addBillboard(lon, lat, height, name, imageUrl, imageWidth, imageHeight, optionsParam) {
     const options = Cesium.defaultValue(optionsParam, {});
     const lScaleByDistance = Cesium.defaultValue(options.scaleByDistance, new Cesium.NearFarScalar(1.5e2, 3.0, 1.5e7, 0.5));
     const lTransparentByDistance = Cesium.defaultValue(options.transparentByDistance, new Cesium.NearFarScalar(1.5e5, 1.0, 1.5e7, 0.0));
@@ -85,6 +95,7 @@ class emgUtil {
     return billBoard;
   }
 
+  //添加粒子特效
   addParticular(lng, lat, height, options, imageUrl, type = 'fountain') {
     //初始化高级分析功能管理类
     if (!this.advancedAnalysisManager)
@@ -133,11 +144,11 @@ class emgUtil {
 
     //防止添加特效后视点跳转
     this.view.viewer.trackedEntity = undefined;
-    return this.fireobj
+    return this.fireobj;
   }
 
   removeParticular(particuar) {
-    let target=particuar || this.fireobj
+    let target = particuar || this.fireobj;
     if (this.advancedAnalysisManager)
       this.advancedAnalysisManager.removeStableParticle(target);
   }

@@ -32,6 +32,9 @@ const resultMixin = {
     width: {
       type: Number
     },
+    height:{
+      type: Number
+    },
     panelPosition: {
       type: String,
       default: 'bottom',
@@ -49,23 +52,25 @@ const resultMixin = {
       default: '全部数据'
     },
     pagination: {
+      default: () => {
+        return {
+          pageSize: 10,
+          current: 1
+        };
+      }
+    },
+    rowSelection: {
       type: Object
     },
-    rowSelection:{
-      type:Object
-    },
-    needExport:{
-      type:Boolean,
-      default:true
+    needExport: {
+      type: Boolean,
+      default: true
     }
   },
   watch: {
     pagination: {
       handler() {
-        this.paginationCopy = Object.assign({
-          pageSize: 10,
-          current: 1
-        }, this.pagination);
+        this.paginationCopy = this.pagination;
       },
       immediate: true
     },
@@ -92,9 +97,9 @@ const resultMixin = {
     },
     scrollStyle() {
       if (this.panelPosition === 'bottom') {
-        return {x: 400, y: 150};
+        return {x: 10000, y: 150};
       } else {
-        return {x: 400, y: 300};
+        return {y: 300};
       }
     }
   },
