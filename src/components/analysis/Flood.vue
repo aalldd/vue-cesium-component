@@ -123,6 +123,7 @@ export default {
       type: Object,
       default: () => {
         return {
+          width: '400px',
           position: 'absolute',
           right: '2em',
           top: '2em'
@@ -133,6 +134,7 @@ export default {
       type: Object,
       default: () => {
         return {
+          width: '400px',
           position: 'absolute',
           right: '2em',
           top: '16em'
