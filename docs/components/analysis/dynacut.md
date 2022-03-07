@@ -6,6 +6,11 @@ title: 'dynacut-开挖分析'
 
 > municipal-dynacut 开挖分析组件，提供了基于三维绘制工具，进行地形开挖的功能，并计算挖掘的相关数据
 
+##效果一览
+
+![效果一览](../../assets/dynacut1.png)
+
+
 ## 基本用法
 
 > 基本的开挖分析组件用法，开挖分析组件需嵌套在m3d图层内，不传参就全使用默认值 其中draggable,title,closeable,expandable这四个属性用来控制开挖分析的面板是否可拖动，名称，可关闭，可展开

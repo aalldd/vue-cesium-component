@@ -95,6 +95,7 @@ module.exports = {
           ["/components/analysis/dynacut.md", "开挖分析"],
           ["/components/analysis/tunnel.md", "隧道分析"],
           ["/components/analysis/flow.md", "流向分析"],
+          ["/components/analysis/squib.md", "爆管分析"],
 
           {
             title: "漫游",

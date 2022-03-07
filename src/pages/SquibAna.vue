@@ -7,6 +7,9 @@
                    :squibData="squibData"
                    :invalidData="invalidData"
                    :SQUIB_ICONS="SQUIB_ICONS"
+                   :SQUIB_RESULT_TYPES="SQUIB_RESULT_TYPES"
+                   :DEFUALT_SELECTED_TYPES="DEFUALT_SELECTED_TYPES"
+                   :EXLUDE_TYPES="EXLUDE_TYPES"
                    :featureData="featuresData"
                    :detailData="detailData"
                    :loading="loading"></municipal-squib>
@@ -44,7 +47,31 @@ export default {
       invalidData: [],
       //设备详细信息
       detailData: {},
-      loading: false
+      loading: false,
+      SQUIB_RESULT_TYPES:{
+        SQUIBPOINT: "civFeatureMetaTypeIncidentPoint", //爆管发生点
+        SHOULDCLOSEDSWITCH: "civFeatureMetaTypeSwitch", //需关断设备
+        CLOSEDSWITCH: "civFeatureMetaTypeClosedSwitch", //已关断设备
+        SHOULDOPENSWITCH: "civFeatureMetaTypeShouldOpenSwitch", //需开启设备
+        INVALIDATESWITCH: "civFeatureMetaTypeInvalidateSwitch", //失效关断设备
+        ASSISTSWITCH: "civFeatureMetaTypeAssistSwitch", //辅助关断设备
+        EFFECTEDUSER: "civFeatureMetaTypeSwieffect", //受影响用户
+        EFFECTEDPIPELINE: "civFeatureMetaTypePipeLine", //受影响管段
+        EFFECTEDREGION: "civFeatureMetaTypeRegionResult", //受影响区域
+        EFFECTEDRECENTER: "civFeatureMetaTypeRescenter", //受影响水源
+        RESSTOP: "civFeatureMetaTypeResstop" //资源装卸点
+      },
+      DEFUALT_SELECTED_TYPES:[ //默认显示的类型
+        "civFeatureMetaTypeIncidentPoint",
+        "civFeatureMetaTypeSwitch",
+        "civFeatureMetaTypeSwieffect",
+        "civFeatureMetaTypePipeLine",
+        "civFeatureMetaTypeRegionResult"
+      ],
+      EXLUDE_TYPES:[ //排除在外的类型
+        "civFeatureMetaTypeRescenter",
+        "civFeatureMetaTypeResstop"
+      ]
     };
   },
   mounted() {

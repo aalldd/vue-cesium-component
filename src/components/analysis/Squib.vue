@@ -73,31 +73,6 @@
 import panelOptions from "@/util/options/panelOptions";
 import loadingM3ds from "@/util/mixins/withLoadingM3ds";
 
-const SQUIB_RESULT_TYPES = {
-  SQUIBPOINT: "civFeatureMetaTypeIncidentPoint", //爆管发生点
-  SHOULDCLOSEDSWITCH: "civFeatureMetaTypeSwitch", //需关断设备
-  CLOSEDSWITCH: "civFeatureMetaTypeClosedSwitch", //已关断设备
-  SHOULDOPENSWITCH: "civFeatureMetaTypeShouldOpenSwitch", //需开启设备
-  INVALIDATESWITCH: "civFeatureMetaTypeInvalidateSwitch", //失效关断设备
-  ASSISTSWITCH: "civFeatureMetaTypeAssistSwitch", //辅助关断设备
-  EFFECTEDUSER: "civFeatureMetaTypeSwieffect", //受影响用户
-  EFFECTEDPIPELINE: "civFeatureMetaTypePipeLine", //受影响管段
-  EFFECTEDREGION: "civFeatureMetaTypeRegionResult", //受影响区域
-  EFFECTEDRECENTER: "civFeatureMetaTypeRescenter", //受影响水源
-  RESSTOP: "civFeatureMetaTypeResstop" //资源装卸点
-};
-const DEFUALT_SELECTED_TYPES = [ //默认显示的类型
-  "civFeatureMetaTypeIncidentPoint",
-  "civFeatureMetaTypeSwitch",
-  "civFeatureMetaTypeSwieffect",
-  "civFeatureMetaTypePipeLine",
-  "civFeatureMetaTypeRegionResult"
-];
-const EXLUDE_TYPES = [ //排除在外的类型
-  "civFeatureMetaTypeRescenter",
-  "civFeatureMetaTypeResstop"
-];
-
 export default {
   name: "municipal-squib",
   mixins: [loadingM3ds],
@@ -193,6 +168,24 @@ export default {
       type: Object,
       default: () => {
         return {};
+      }
+    },
+    SQUIB_RESULT_TYPES:{
+      type:Object,
+      default:()=>{
+        return {}
+      }
+    },
+    DEFUALT_SELECTED_TYPES:{
+      type:Array,
+      default:()=>{
+        return []
+      }
+    },
+    EXLUDE_TYPES:{
+      type:Array,
+      default:()=>{
+        return []
       }
     }
   },
@@ -350,7 +343,7 @@ export default {
       this.expbtnFlag = this.switchLayerItems.length !== 0;
       //受影响用户
       this.userItems = this.squibResults.map(function (item) {
-        if (item.type === SQUIB_RESULT_TYPES.EFFECTEDUSER) {
+        if (item.type === this.SQUIB_RESULT_TYPES.EFFECTEDUSER) {
           return item.layerItems.filter(function (l) {
             return l.objectIds.length > 0;
           });
@@ -372,7 +365,7 @@ export default {
     showResultOnMap() {
       this.pendingLayerItems = [];
       this.squibResults.forEach(item => {
-        if (item.type === SQUIB_RESULT_TYPES.EFFECTEDUSER) {
+        if (item.type === this.SQUIB_RESULT_TYPES.EFFECTEDUSER) {
           item.totalUser = item.layerItems.reduce(function (a, b) {
             return a += (b.totalUser || 0);
           }, 0);
@@ -449,34 +442,34 @@ export default {
           let HeightCenter = (Number(startHeight) + Number(endHeight)) / 2 || feature.attributes.地面高程 || (feature.attributes.起点管顶高程 + feature.attributes.终点管顶高程) / 2 || 0;
           switch (type) {
             //爆管点
-            case SQUIB_RESULT_TYPES.SQUIBPOINT:
+            case this.SQUIB_RESULT_TYPES.SQUIBPOINT:
               // 爆管点添加喷泉特效
               this.squibParam = {geometry, HeightCenter};
               this.particular = this.addFountain(geometry, HeightCenter);
               const squibSwitch = this.showSquibPoint(geometry, HeightCenter, type);
-              this.threeDEntites[SQUIB_RESULT_TYPES.SQUIBPOINT] = this.threeDEntites[SQUIB_RESULT_TYPES.SQUIBPOINT] || [];
-              this.threeDEntites[SQUIB_RESULT_TYPES.SQUIBPOINT].push(squibSwitch);
-              this.threeDEntites[SQUIB_RESULT_TYPES.SQUIBPOINT].push(this.particular);
+              this.threeDEntites[this.SQUIB_RESULT_TYPES.SQUIBPOINT] = this.threeDEntites[this.SQUIB_RESULT_TYPES.SQUIBPOINT] || [];
+              this.threeDEntites[this.SQUIB_RESULT_TYPES.SQUIBPOINT].push(squibSwitch);
+              this.threeDEntites[this.SQUIB_RESULT_TYPES.SQUIBPOINT].push(this.particular);
               break;
             // 需关断设备
-            case SQUIB_RESULT_TYPES.SHOULDCLOSEDSWITCH:
+            case this.SQUIB_RESULT_TYPES.SHOULDCLOSEDSWITCH:
               //拿到关断设备的实体信息
               const ShouldCloseSwitch = this.showSquibPoint(geometry, HeightCenter, type);
-              this.threeDEntites[SQUIB_RESULT_TYPES.SHOULDCLOSEDSWITCH] = this.threeDEntites[SQUIB_RESULT_TYPES.SHOULDCLOSEDSWITCH] || [];
-              this.threeDEntites[SQUIB_RESULT_TYPES.SHOULDCLOSEDSWITCH].push(ShouldCloseSwitch);
+              this.threeDEntites[this.SQUIB_RESULT_TYPES.SHOULDCLOSEDSWITCH] = this.threeDEntites[this.SQUIB_RESULT_TYPES.SHOULDCLOSEDSWITCH] || [];
+              this.threeDEntites[this.SQUIB_RESULT_TYPES.SHOULDCLOSEDSWITCH].push(ShouldCloseSwitch);
               break;
             // 受影响管段
-            case SQUIB_RESULT_TYPES.EFFECTEDPIPELINE:
+            case this.SQUIB_RESULT_TYPES.EFFECTEDPIPELINE:
               if (geometry.paths) {
                 //受影响管段不使用实体类完成效果
                 this.showSEffectedPipeLine(layerId, oid, geometry, HeightCenter);
               }
               break;
             // 失效关断设备
-            case SQUIB_RESULT_TYPES.INVALIDATESWITCH:
+            case this.SQUIB_RESULT_TYPES.INVALIDATESWITCH:
               const invalidSwitch = this.showSquibPoint(geometry, HeightCenter, type);
-              this.threeDEntites[SQUIB_RESULT_TYPES.INVALIDATESWITCH] = this.threeDEntites[SQUIB_RESULT_TYPES.INVALIDATESWITCH] || [];
-              this.threeDEntites[SQUIB_RESULT_TYPES.INVALIDATESWITCH].push(invalidSwitch);
+              this.threeDEntites[this.SQUIB_RESULT_TYPES.INVALIDATESWITCH] = this.threeDEntites[this.SQUIB_RESULT_TYPES.INVALIDATESWITCH] || [];
+              this.threeDEntites[this.SQUIB_RESULT_TYPES.INVALIDATESWITCH].push(invalidSwitch);
               break;
           }
         });
@@ -487,10 +480,10 @@ export default {
         //渲染受影响管段
         this.highLightPipe();
         //添加受影响区域实体至集合
-        this.threeDEntites[SQUIB_RESULT_TYPES.EFFECTEDREGION] = this.threeDEntites[SQUIB_RESULT_TYPES.EFFECTEDREGION] || [];
-        this.threeDEntites[SQUIB_RESULT_TYPES.EFFECTEDREGION].push(effectedRegion);
+        this.threeDEntites[this.SQUIB_RESULT_TYPES.EFFECTEDREGION] = this.threeDEntites[this.SQUIB_RESULT_TYPES.EFFECTEDREGION] || [];
+        this.threeDEntites[this.SQUIB_RESULT_TYPES.EFFECTEDREGION].push(effectedRegion);
         //添加受影响管段至集合，由于没有实体，给一个标识
-        this.threeDEntites[SQUIB_RESULT_TYPES.EFFECTEDPIPELINE] = this.threeDEntites[SQUIB_RESULT_TYPES.EFFECTEDPIPELINE] || 'highlight';
+        this.threeDEntites[this.SQUIB_RESULT_TYPES.EFFECTEDPIPELINE] = this.threeDEntites[this.SQUIB_RESULT_TYPES.EFFECTEDPIPELINE] || 'highlight';
       });
     },
     getLng(geometry) {
@@ -594,14 +587,14 @@ export default {
         let checked = item.checked;
         const entities = this.threeDEntites[type];
         //对于受影响管段 直接使用高亮方法
-        if (type === SQUIB_RESULT_TYPES.EFFECTEDPIPELINE) {
+        if (type === this.SQUIB_RESULT_TYPES.EFFECTEDPIPELINE) {
           if (checked) {
             this.highLightPipe();
           } else {
             this.emgManager.stopHighlight();
           }
           //  对于爆管发生点，需要循环entity，并使用其他方法清除
-        } else if (type === SQUIB_RESULT_TYPES.SQUIBPOINT) {
+        } else if (type === this.SQUIB_RESULT_TYPES.SQUIBPOINT) {
           this.emgManager.removeParticular();
           entities?.length && entities.forEach(entity => {
             entity.show = checked;
@@ -644,16 +637,16 @@ export default {
     },
     //是否为可启闭设备
     isSwitchEquip(type) {
-      return type === SQUIB_RESULT_TYPES.SHOULDCLOSEDSWITCH ||
-        type === SQUIB_RESULT_TYPES.INVALIDATESWITCH;
+      return type === this.SQUIB_RESULT_TYPES.SHOULDCLOSEDSWITCH ||
+        type === this.SQUIB_RESULT_TYPES.INVALIDATESWITCH;
     },
     //data create methods
     toSquibResults(data) {
       let results = [];
       data.forEach(function (r) {
         r.resultList == null && (r.resultList = []);
-        if (EXLUDE_TYPES.indexOf(r.civFeatureMetaType) === -1) {
-          let checked = DEFUALT_SELECTED_TYPES.indexOf(r.civFeatureMetaType) !== -1,
+        if (this.EXLUDE_TYPES.indexOf(r.civFeatureMetaType) === -1) {
+          let checked = this.DEFUALT_SELECTED_TYPES.indexOf(r.civFeatureMetaType) !== -1,
             total = r.resultList.reduce(function (a, b) {
               return a += (!!b.objectIds ? b.objectIds.length : 0);
             }, 0); //总设备数
@@ -674,10 +667,10 @@ export default {
       }, this);
       //受影响区域与受影响管段关联
       let region = results.filter(function (r) {
-          return r.type === SQUIB_RESULT_TYPES.EFFECTEDREGION;
+          return r.type === this.SQUIB_RESULT_TYPES.EFFECTEDREGION;
         }, this)[0],
         pipe = results.filter(function (r) {
-          return r.type === SQUIB_RESULT_TYPES.EFFECTEDPIPELINE;
+          return r.type === this.SQUIB_RESULT_TYPES.EFFECTEDPIPELINE;
         }, this)[0];
       if (region) {
         region.checked = pipe ? pipe.checked : false;
@@ -760,7 +753,7 @@ export default {
     },
     //是否为失效设备
     isInvalidEquip(type) {
-      return type === SQUIB_RESULT_TYPES.INVALIDATESWITCH;
+      return type === this.SQUIB_RESULT_TYPES.INVALIDATESWITCH;
     },
     //选择失效关断设备
     onSelectChange(selectedRowKeys) {

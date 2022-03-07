@@ -6,6 +6,10 @@ title: 'tunnel-隧道分析'
 
 > municipal-tunnel 隧道分析组件，能够通过画线的形式，生成一条沿该路径的管道
 
+##效果一览
+
+![效果一览](../../assets/tunnel1.png)
+
 ## 基本用法
 
 > 基本的隧道分析组件用法，隧道分析组件需嵌套在图层内，不传参就全使用默认值 其中draggable,title,closeable,expandable这四个属性用来控制隧道分析组件的面板是否可拖动，名称，可关闭，可展开
