@@ -5,7 +5,7 @@
                    :height="height"
                    :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClass">
     <template v-slot:content>
-      <a-table :columns="columns"
+      <a-table :columns="columnsCopy"
                :data-source="dataSource"
                :scroll="scrollStyle"
                :row-selection="rowSelection"
@@ -13,18 +13,32 @@
                @change="handleTableChange"
                :customRow="customRow"
                size="small"
+               :bordered="true"
                :load="load">
       </a-table>
       <slot></slot>
     </template>
     <template v-slot:extra>
       <div class="export" v-if="needExport">
-        <a-select :value="exportType" style="width: 120px" @change="exportData" size="small">
+        <a-select style="width: 120px" @change="exportData" :default-value="exportTypes[0]" size="small">
           <a-select-option v-for="(item,index) in exportTypes" :key="index" :value="item">
             {{ item }}
           </a-select-option>
         </a-select>
       </div>
+    </template>
+<!--    表格的弹出框-->
+    <template slot="popover" slot-scope="record">
+      <a-popover>
+        <template slot="content">
+          <div>
+            {{ record.title }}
+          </div>
+        </template>
+        <div>
+          {{ record.title }}
+        </div>
+      </a-popover>
     </template>
   </municipal-panel>
 </template>
@@ -37,11 +51,12 @@ const exportTypes = [
 ];
 export default {
   name: 'municipal-result-simple',
-  mixins:[resultMixin],
+  mixins: [resultMixin],
   data() {
     return {
       exportType: exportTypes[0],
-      exportTypes: exportTypes
+      exportTypes: exportTypes,
+      columnsCopy: []
     };
   },
   props: {
@@ -56,6 +71,25 @@ export default {
       default: () => {
         return [];
       }
+    }
+  },
+  watch: {
+    columns: {
+      handler() {
+        if (this.columns?.length > 0) {
+          const extraOption = {
+            ellipsis: true,
+            scopedSlots: {customRender: 'popover'}
+          };
+          this.columnsCopy = this.columns.map(item => {
+            return {
+              ...extraOption,
+              ...item
+            };
+          });
+        }
+      },
+      immediate:true
     }
   },
   methods: {

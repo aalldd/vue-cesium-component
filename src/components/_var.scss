@@ -10,16 +10,14 @@ $font-size-lg:2em;
 $panel-padding:.7em;
 $active-background:#269ff0;
 $highlight-color:#4f95b4;
+$border-color-base:#ddd;
 
 //mixins
 
 //控制文本溢出，传参，最多显示几行文本
-@mixin ellipsisBasic($clamp:2) {
+@mixin ellipsisBasic() {
   overflow: hidden;
   text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: $clamp;
 }
 
 @mixin nowrap() {

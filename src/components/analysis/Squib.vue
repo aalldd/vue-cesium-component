@@ -61,7 +61,7 @@
                              panelPosition="bottom"
                              :columns="detailColunm"
                              @onRowClick="onRowClick"
-                             :height="300"
+                             :height="400"
                              @onClose="()=>{this.detailVisible=false}"
                              :exportFileName="exportFileName"
                              :dataSource="detailDataS">
@@ -271,6 +271,8 @@ export default {
       this.state = 'init';
       this.emgManager.removeAll();
       this.initEntitiesCache();
+      this.detailVisible = false;
+      this.invalidVisible = false;
     },
     leftClick(movement) {
       this.mouseEventManager.unRegisterMouseEvent('LEFT_CLICK');
@@ -293,6 +295,7 @@ export default {
     },
     queryParam() {
       this.invalidVisible = false;
+      this.detailVisible = false;
       this.initEntitiesCache();
       this.emgManager.removeAll();
       this.state = 'init';

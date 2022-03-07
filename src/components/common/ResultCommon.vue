@@ -12,7 +12,7 @@
         size="small"
         @change="onTabsChange"
       >
-        <a-tab-pane v-for="(item,index) in tabs" :key="index" :tab="item.tabName">
+        <a-tab-pane v-for="(item,index) in tabsCopy" :key="index" :tab="item.tabName">
           <a-table :columns="item.columns"
                    :data-source="item.features"
                    :scroll="scrollStyle"
@@ -21,6 +21,7 @@
                    @change="handleTableChange"
                    :customRow="customRow"
                    size="small"
+                   :bordered="true"
                    :load="load">
           </a-table>
         </a-tab-pane>
@@ -34,6 +35,18 @@
           </a-select-option>
         </a-select>
       </div>
+    </template>
+    <template slot="popover" slot-scope="record">
+      <a-popover>
+        <template slot="content">
+          <div>
+            {{ record.title }}
+          </div>
+        </template>
+        <div>
+          {{ record.title }}
+        </div>
+      </a-popover>
     </template>
   </municipal-panel>
 </template>
@@ -52,7 +65,8 @@ export default {
     return {
       exportType: exportTypes[0],
       exportTypes: exportTypes,
-      choosedTabIndex: 0
+      choosedTabIndex: 0,
+      tabsCopy:[]
     };
   },
   props: {
@@ -69,6 +83,30 @@ export default {
         });
         return !results.includes(false);
       }
+    }
+  },
+  watch:{
+    tabs:{
+      handler(){
+        if(this.tabs?.length>0){
+          const extraOption = {
+            ellipsis: true,
+            scopedSlots: {customRender: 'popover'}
+          };
+          this.tabsCopy=this.tabs.map(tab=>{
+            if(tab.columns){
+              tab.columns=tab.columns.map(item=>{
+                return {
+                  ...extraOption,
+                  ...item
+                }
+              })
+            }
+            return tab
+          })
+        }
+      },
+      immediate:true
     }
   },
   methods: {

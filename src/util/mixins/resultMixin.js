@@ -1,7 +1,7 @@
 const resultMixin = {
   data() {
     return {
-      panelWidthCopy: 1600,
+      panelWidthCopy: Number(window.getComputedStyle(document.body).width.replace('px',''))*0.95,
       paginationCopy: {}
     };
   },
@@ -97,7 +97,7 @@ const resultMixin = {
     },
     scrollStyle() {
       if (this.panelPosition === 'bottom') {
-        return {x: 10000, y: 150};
+        return {x: 10000, y: 200};
       } else {
         return {y: 300};
       }

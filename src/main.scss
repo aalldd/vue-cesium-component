@@ -1,11 +1,36 @@
 @import "~ant-design-vue/dist/antd.css";
+@import "components/var";
 
+// antd样式变更
 .ant-tree li .ant-tree-node-content-wrapper {
   width: 100%;
 }
 
 .ant-slider {
   margin: 0;
+}
+
+.ant-table-body > table > .ant-table-tbody > tr > td {
+  margin: 0;
+  padding: 4px 8px!important;
+  max-width: 120px;
+}
+
+.ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab-active {
+  color: $highlight-color !important;
+}
+
+.ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab {
+  padding: 0 10px;
+}
+
+.ant-select-selection-selected-value {
+  color: rgba(255, 255, 255, 0.7);
+  padding-top: 1px;
+}
+
+.ant-select-sm {
+  width: 100px !important;
 }
 
 //结果面板css
@@ -35,10 +60,23 @@
   }
 }
 
-.ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-body > table > .ant-table-tbody > tr > td{
+.ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-body > table > .ant-table-tbody > tr > td {
   text-align: center;
 }
 
-.ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-header > table > .ant-table-thead > tr > th{
+.ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-header > table > .ant-table-thead > tr > th {
   text-align: center;
+}
+
+.ant-table-small > .ant-table-content > .ant-table-body {
+  margin: 0;
+}
+
+.ant-collapse > .ant-collapse-item {
+  &.ant-collapse-item-active {
+    margin-bottom: 0;
+  }
+
+  border-bottom: none !important;
+  margin-bottom: 10px;
 }
