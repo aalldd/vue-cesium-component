@@ -1,9 +1,0 @@
-@import "./_themes.scss";
-
-@mixin base-background(){
-  @each $themename , $theme in $themes {
-    [data-theme = '#{$themename}'] & {
-      background: map-get($map: $theme, $key: base-color )
-    }
-  }
-}

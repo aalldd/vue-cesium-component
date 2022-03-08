@@ -26,6 +26,7 @@
           </a-select-option>
         </a-select>
       </div>
+      <slot name="extra"></slot>
     </template>
 <!--    表格的弹出框-->
     <template slot="popover" slot-scope="record">

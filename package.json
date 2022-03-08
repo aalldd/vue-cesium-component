@@ -1,6 +1,6 @@
 {
   "name": "municipal-cesium-components",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "基于mapgis-vue-cesium的二次封装框架",
   "main": "dist/municipal-vue-cesium.umd.min.js",
   "scripts": {
@@ -9,7 +9,8 @@
     "expand": "node --max_old_space_size=8196 ./node_modules/@vue/cli-service/bin/vue-cli-service serve",
     "build": "node ./node_modules/@vue/cli-service/bin/vue-cli-service build --target lib --name municipal-vue-cesium src/lib/index.js",
     "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs"
+    "docs:build": "vuepress build docs",
+    "color": "node color.js"
   },
   "dependencies": {
     "@mapgis/webclient-vue-cesium": "^10.5.5-3",
@@ -18,12 +19,14 @@
     "@vue/babel-helper-vue-jsx-merge-props": "^1.2.1",
     "@vue/babel-preset-jsx": "^1.2.4",
     "ant-design-vue": "^1.7.8",
+    "antd-theme-generator": "^1.2.4",
     "axios": "^0.25.0",
     "compression-webpack-plugin": "^9.2.0",
     "core-js": "^3.6.5",
     "dart-sass": "^1.25.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "less-loader": "^10.2.0",
+    "less": "^2.7.2",
+    "less-loader": "^5.0.0",
     "lodash": "^4.17.21",
     "process": "^0.11.10",
     "sass": "^1.45.2",
@@ -56,6 +59,7 @@
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-standard": "^5.0.0",
     "eslint-plugin-vue": "^6.2.2",
+    "parcel-bundler": "^1.12.4",
     "rollup-plugin-esbuild": "^2.6.0",
     "rollup-plugin-scss": "^2.6.1",
     "rollup-plugin-terser": "^7.0.2",
@@ -63,7 +67,6 @@
     "sass-loader": "^10.1.1",
     "style-loader": "^3.3.1",
     "vue-template-compiler": "^2.6.11",
-    "parcel-bundler": "^1.12.4",
     "vuepress": "^1.8.2",
     "vuepress-plugin-demo-block": "^0.7.2",
     "vuepress-theme-antdocs": "^1.2.2"

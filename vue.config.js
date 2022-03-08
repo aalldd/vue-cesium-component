@@ -1,4 +1,6 @@
 const path = require('path');
+require('./color')
+
 
 function resolve(dir) {
   return path.join(__dirname, dir);
@@ -17,7 +19,7 @@ module.exports = {
   devServer: {
     proxy: {
       '/': {
-        target: 'http://localhost:8035',
+        target: 'http://localhost:8088',
         changeOrigin: true,
         pathRewrite: {
           '/': ''
@@ -25,17 +27,7 @@ module.exports = {
       }
     }
   },
-  configureWebpack: (config) => {
-    config.module.rules.push({
-      test: /\.js$/,
-      loader: 'babel-loader',
-      exclude: /node_modules/, //排除掉node_modules下的js文件，即不解析这个文件夹下的js文件
-      query: {
-        //presets: ["env"]
-        presets: ["@babel/preset-env"]
-      }
-    })
-  },
+  configureWebpack: {},
   chainWebpack: (config) => {
     config.resolve.alias
       .set('@', resolve('./src'));

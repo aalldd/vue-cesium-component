@@ -48,6 +48,11 @@ const router=new Router({
           path: '/squib',
           name: 'squib',
           component: ()=>import('../pages/SquibAna')
+        },
+        {
+          path: '/roll',
+          name: 'roll',
+          component: ()=>import('../pages/RollingAna')
         }
       ]
     }

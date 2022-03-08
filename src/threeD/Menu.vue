@@ -109,6 +109,11 @@ export default {
               menuName: '爆管分析',
               menuRoute: 'squib',
               key: '4-4'
+            },
+            {
+              menuName: '卷帘分析',
+              menuRoute: 'roll',
+              key: '4-5'
             }
           ]
         }

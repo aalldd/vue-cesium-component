@@ -1,94 +1,127 @@
 <template>
-  <municipal-panel :title="title" :draggable="draggable" @close="$emit('onClose')" :closable="closable"
+  <municipal-panel :title="title" @onClose="onClose"
+                   :closable="closable" :draggable="draggable"
+                   :width="width"
+                   :height="height"
                    :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
-    <a-table :columns="columns" :data-source="data">
-      <a slot="name" slot-scope="text">{{ text }}</a>
-      <span slot="customTitle"><a-icon type="smile-o" /> Name</span>
-      <span slot="tags" slot-scope="tags">
-      <a-tag
-        v-for="tag in tags"
-        :key="tag"
-        :color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'"
+    <template v-slot:extra>
+      <a-button type="primary" size="small" @click="addRoamPlan">
+        <a-icon type="plus" style="margin-right: 5px"></a-icon>
+        <span>新增</span>
+      </a-button>
+    </template>
+    <template v-slot:content>
+      <a-table :bordered="true" :columns="columns"
+               :data-source="dataSourceCopy"
+               :scroll="{y: 300}"
+               :customRow="customRow"
+               :load="loading"
       >
-        {{ tag.toUpperCase() }}
-      </a-tag>
-    </span>
-      <span slot="action" slot-scope="text, record">
-      <a>Invite 一 {{ record.name }}</a>
-      <a-divider type="vertical" />
-      <a>Delete</a>
-      <a-divider type="vertical" />
-      <a class="ant-dropdown-link"> More actions <a-icon type="down" /> </a>
-    </span>
-    </a-table>
+        <template slot="action" slot-scope="text, record">
+          <div style="display: flex;justify-content: space-around;align-items: center">
+            <a-icon style="color: #1e6ceb" @click.stop="modify(record)" type="edit"></a-icon>
+            <a-popconfirm title="是否删除" ok-text="是" cancel-text="否" @confirm="confirm(record)">
+              <a-icon style="color: #1e6ceb" type="delete"></a-icon>
+            </a-popconfirm>
+          </div>
+        </template>
+      </a-table>
+    </template>
   </municipal-panel>
 </template>
 
 <script>
-import PanelOpts from '@/util/options/panelOptions';
-const columns = [
-  {
-    dataIndex: 'name',
-    key: 'name',
-    slots: { title: 'customTitle' },
-    scopedSlots: { customRender: 'name' },
-  },
-  {
-    title: 'Age',
-    dataIndex: 'age',
-    key: 'age',
-  },
-  {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address',
-  },
-  {
-    title: 'Tags',
-    key: 'tags',
-    dataIndex: 'tags',
-    scopedSlots: { customRender: 'tags' },
-  },
-  {
-    title: 'Action',
-    key: 'action',
-    scopedSlots: { customRender: 'action' },
-  },
-];
+import panelOptions from "@/util/options/panelOptions";
 
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
-];
 export default {
-  name: "municipal-fix-roam-data",
+  name: "municipal-fixroam-data",
   data() {
     return {
-      data,
-      columns,
+      columns: [
+        {
+          title: '序号',
+          dataIndex: 'index',
+          key: 'index',
+          align: 'center',
+          width:80,
+          customRender: (text, record, index) => `${index + 1}`,
+        },
+        {
+          title: '方案名称',
+          dataIndex: 'planName', align: 'center', ellipsis: true
+        },
+        {
+          title: '操作',
+          dataIndex: 'action',
+          align: 'center',
+          width:80,
+          scopedSlots: {customRender: 'action'}
+        }
+      ],
+      dataSourceCopy: []
     };
   },
   props: {
-    ...PanelOpts
+    ...panelOptions,
+    title: {
+      type: String,
+      default: '漫游方案管理'
+    },
+    dataSource: {
+      type: Array,
+      default: () => {
+        return [];
+      }
+    },
+    panelStyle: {
+      type: Object,
+      default: () => {
+        return {
+          width: '400px',
+          position: 'absolute',
+          left: '2em',
+          top: '2em'
+        };
+      }
+    },
+    loading:{
+      type:Boolean,
+      default:false
+    }
+  },
+  watch: {
+    dataSource: {
+      handler() {
+        if (this.dataSource?.length > 0) {
+          console.log(this.dataSource);
+          this.dataSourceCopy = this.dataSource;
+        }
+      }
+    }
+  },
+  methods: {
+    onClose() {
+      this.$emit('close');
+    },
+    addRoamPlan(){
+      this.$emit('addRoamPlan')
+    },
+    modify(record){
+      this.$emit('modifyRoamPlan',record)
+    },
+    confirm(record){
+      this.$emit('deleteRoamPlan',record)
+    },
+    //点击行事件
+    customRow(record, index) {
+      return {
+        on: {
+          click: () => {
+            this.$emit('onRowClick', record);
+          }
+        }
+      };
+    }
   }
 };
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <municipal-panel v-if="!uiControlled" :title="title" :draggable="draggable" @close="$emit('onClose')"
+    <municipal-panel v-if="detailVisibleCopy" :title="title" :draggable="draggable" @close="$emit('onClose')"
                      :closable="closable"
                      :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
       <template v-slot:extra>
@@ -13,7 +13,7 @@
           <a-col :span="8">
             <span class="input-tag">{{ item.title }}</span>
           </a-col>
-          <a-col :span="16" v-if="item.uniKey==='title'">
+          <a-col :span="16" v-if="item.uniKey==='planName'">
             <a-input style="width: 100%" v-model="item.value"></a-input>
           </a-col>
 
@@ -21,24 +21,24 @@
                  v-if="item.uniKey==='model'">
             <a-select style="width: 100%" @change="modelChange"
                       :default-value="modelList[0].name">
-              <a-select-option v-for="(jitem,index) in modelList" :value="jitem.value"
+              <a-select-option v-for="(jitem,index) in modelList" :value="jitem.name"
                                :key="index">
                 {{ jitem.name }}
               </a-select-option>
             </a-select>
           </a-col>
           <a-col :span="16" style="display:flex;justify-content: flex-start"
-                 v-if="item.uniKey==='view'">
+                 v-if="item.uniKey==='angel'">
             <a-select style="width: 100%" @change="viewChange"
                       :default-value="viewList[0].name">
-              <a-select-option v-for="(jitem,index) in viewList" :value="jitem.value"
+              <a-select-option v-for="(jitem,index) in viewList" :value="jitem.name"
                                :key="index">
                 {{ jitem.name }}
               </a-select-option>
             </a-select>
           </a-col>
 
-          <a-col :span="16" v-if="['speed','pitch','heading','distance'].indexOf(item.uniKey)>=0">
+          <a-col :span="16" v-if="['speed','pitch','heading','range'].indexOf(item.uniKey)>=0">
             <a-row style="align-items: center;display: flex;width: 100%">
               <a-col :span="12">
                 <a-slider v-model="item.value" :min="-180" :max="180" style="min-width: 100px"/>
@@ -59,7 +59,7 @@
           </a-col>
 
           <a-col :span="16">
-            <div style="display: flex;justify-content: flex-start" v-if="item.uniKey==='path'">
+            <div style="display: flex;justify-content: flex-start" v-if="item.uniKey==='route'">
               <municipal-draw
                 :vueKey="vueKey"
                 :enable-menu-control="false"
@@ -92,7 +92,15 @@
         </a-row>
       </template>
     </municipal-panel>
-    <slot v-if="uiControlled"></slot>
+    <municipal-fixroam-data v-if="planVisible" :title="title" :draggable="draggable" @close="$emit('onPlanClose')"
+                            :closable="closable" :dataSource="roamPlanData"
+                            @addRoamPlan="addRoamPlan"
+                            @onRowClick="modifyRoamPlan"
+                            @deleteRoamPlan="deleteRoamPlan"
+                            :loading="loading"
+                            :need-expand="expandable" :panel-class-name="panelClassName">
+
+    </municipal-fixroam-data>
   </div>
 </template>
 
@@ -110,18 +118,20 @@ export default {
       pathVisible: true,
       isRoaming: false,
       loopOption: ['是', '否'],
+      showRoamDetail: true,
+      //用来渲染界面的数据，可以由外部决定，不传就用默认的
       fixedRoamDataCopy: [{
         title: '漫游方案名称',
         value: '场景漫游方案',
-        uniKey: 'title'
+        uniKey: 'planName'
       }, {
         title: '漫游模型',
         value: '',
         uniKey: 'model'
       }, {
         title: '漫游视角',
-        value: 1,
-        uniKey: 'view'
+        value: '',
+        uniKey: 'angel'
       }, {
         title: '漫游速度',
         value: 30,
@@ -137,7 +147,7 @@ export default {
       }, {
         title: '视角距离',
         value: 16,
-        uniKey: 'distance'
+        uniKey: 'range'
       }, {
         title: '循环漫游',
         value: '是',
@@ -145,9 +155,10 @@ export default {
       }, {
         title: '绘制路径',
         value: null,
-        uniKey: 'path'
+        uniKey: 'route'
       }],
-      path: []
+      path: [],
+      detailVisibleCopy: false
     };
   },
   props: {
@@ -181,7 +192,22 @@ export default {
         return [];
       }
     },
-    uiControlled: {
+    //外部通过服务获取的漫游方案数据
+    roamPlanData: {
+      type: Array,
+      default: () => {
+        return [];
+      }
+    },
+    detailVisible: {
+      type: Boolean,
+      default: false
+    },
+    planVisible: {
+      type: Boolean,
+      default: true
+    },
+    loading: {
       type: Boolean,
       default: false
     }
@@ -238,6 +264,12 @@ export default {
       },
       immediate: true,
       deep: true
+    },
+    detailVisible: {
+      handler() {
+        this.detailVisibleCopy = this.detailVisible;
+      },
+      immediate: true
     }
   },
   destroyed() {
@@ -290,14 +322,17 @@ export default {
       //防止视点跳转
       this.webGlobe.viewer.trackedEntity = undefined;
       this.removeAll();
+      console.log(this.fixedRoamDataCopy);
       !!this.animationAnalyse && this.animationAnalyse.stop();
       const loop = this.findValue('loop') === '是' ? true : false;
-      const modelUrl = this.findValue('model');
-      const view = this.findValue('view');
+      const model = this.findValue('model');
+      const angle = this.findValue('angel');
       const speed = this.findValue('speed');
       const heading = this.findValue('heading');
       const pitch = this.findValue('pitch');
-      const range = this.findValue('distance');
+      const range = this.findValue('range');
+      const modelUrl = this.modelList.find(item => item.name === model).value;
+      const view = this.viewList.find(item => item.name === angle).value;
 
       this.animationAnalyse = new Cesium.AnimationAnalyse(this.webGlobe.viewer, {
         exHeight: 1,
@@ -320,8 +355,45 @@ export default {
       this.isRoaming = false;
     },
     saveRoam() {
-      this.changeFixedData(this.path, 'path');
-      this.$emit('saveRoam', this.fixedRoamDataCopy);
+      this.changeFixedData("'" + this.path.join() + "'", 'path');
+      const planData = {isVisible: this.pathVisible ? '是' : '否'};
+      this.fixedRoamDataCopy.forEach(item => {
+        planData[item.uniKey] = item.value;
+      });
+      this.$emit('saveRoam', planData);
+    },
+    addRoamPlan() {
+      this.stopRoam()
+      this.detailVisibleCopy = true;
+    },
+    modifyRoamPlan(record) {
+      //消除antd的props数据校验错误
+      for(let key in record){
+        if(['range','heading','pitch','speed'].indexOf(key)>=0){
+          record[key]=Number(record[key])
+        }
+      }
+
+      this.detailVisibleCopy = true;
+      this.fixedRoamDataCopy = this.fixedRoamDataCopy.map(item => {
+        if (Object.keys(record).indexOf(item.uniKey) >= 0) {
+          item.value = record[item.uniKey];
+        }
+        if (record?.isVisible === '是') {
+          this.pathVisible = true;
+        } else {
+          this.pathVisible = false;
+        }
+        if (record?.route !== '') {
+          this.path = record.route.split(',').map(item => Number(item));
+        }
+        return item;
+      });
+      this.startRoam()
+    },
+    deleteRoamPlan(record){
+      this.stopRoam()
+      this.$emit('deleteRoamPlan',record)
     }
   }
 };

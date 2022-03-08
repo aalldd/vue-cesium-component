@@ -20,6 +20,7 @@
         <div class="content" v-show="!expanded">
           <slot name="content"></slot>
         </div>
+        <slot></slot>
       </div>
     </vue-draggable-resizable>
     <div class="panel-container" v-if="!draggable" :style="{...panelStyle}" :class="[panelClassName]">
@@ -40,6 +41,7 @@
       <div class="content" v-show="!expanded">
         <slot name="content"></slot>
       </div>
+      <slot></slot>
     </div>
   </div>
 </template>

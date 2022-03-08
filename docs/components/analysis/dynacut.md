@@ -6,7 +6,7 @@ title: 'dynacut-开挖分析'
 
 > municipal-dynacut 开挖分析组件，提供了基于三维绘制工具，进行地形开挖的功能，并计算挖掘的相关数据
 
-##效果一览
+## 效果一览
 
 ![效果一览](../../assets/dynacut1.png)
 

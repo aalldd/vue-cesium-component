@@ -29,6 +29,30 @@ class Store {
     }
   }
 
+  //获取漫游信息
+  async getRoamData(params) {
+    const { data } = await this.IntegratedServer.get("getRoamData", {
+      params: params
+    });
+    return data;
+  }
+
+  //添加漫游信息
+  async addRoamData(params) {
+    const { data } = await this.IntegratedServer.get("addRoamData", {
+      params: params
+    });
+    return data;
+  }
+
+  //删除漫游信息
+  async deleteRoamData(params) {
+    const { data } = await this.IntegratedServer.get("deleteRoamData", {
+      params: params
+    });
+    return data;
+  }
+
   // 查询流向信息
   async queryFlow(mapServerName, layerIds, params) {
     let result;
