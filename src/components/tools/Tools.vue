@@ -9,12 +9,23 @@
     <municipal-tian v-if="this.toolComponents.indexOf('tian')>=0" :wmtsMap="wmtsMap"></municipal-tian>
     <municipal-layer-control v-if="this.toolComponents.indexOf('layerControl')>=0"></municipal-layer-control>
     <municipal-home v-if="this.toolComponents.indexOf('home')>=0" :cameraView="cameraView"></municipal-home>
+    <municipal-click-query v-if="this.toolComponents.indexOf('clickQuery')>=0"
+                           :clickQueryData="clickQueryData"
+                           :popupOffset="popupOffset"
+                           @clickQuery="clickQuery"></municipal-click-query>
   </div>
 </template>
 
 <script>
 export default {
   name: "municipal-tool",
+  data() {
+    return {
+      wmtsMapObj: {},
+      cameraViewObj: {},
+      clickQueryDataCopy: {}
+    };
+  },
   props: {
     vueKey: {
       type: String,
@@ -26,7 +37,7 @@ export default {
     toolComponents: {
       type: Array,
       default: () => {
-        return ['measure', 'draw', 'fullScreen', 'tian', 'home', 'layerControl'];
+        return ['measure', 'draw', 'fullScreen', 'tian', 'home', 'layerControl', 'clickQuery'];
       }
     },
     wmtsMap: {
@@ -34,13 +45,27 @@ export default {
     },
     cameraView: {
       type: Object
+    },
+    clickQueryData: {
+      type: Object
+    },
+    popupOffset: {
+      type: Array,
+      default: () => {
+        return [0, 0];
+      }
     }
   },
-  data() {
-    return {
-      wmtsMapObj: {},
-      cameraViewObj: {}
-    };
+  watch: {
+    clickQueryData: {
+      handler() {
+        if (Object.keys(this.clickQueryData).length > 0) {
+          console.log(this.clickQueryData);
+          this.clickQueryDataCopy = this.clickQueryData;
+        }
+      },
+      immediate: true
+    }
   },
   updated() {
     this.wmtsMapObj = this.wmtsMap;
@@ -57,6 +82,9 @@ export default {
     },
     handleMeasure(payload) {
       this.$emit('measured', payload);
+    },
+    clickQuery(payload) {
+      this.$emit('clickQuery', payload);
     }
   }
 };

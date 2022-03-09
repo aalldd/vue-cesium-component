@@ -8,9 +8,134 @@ class emgUtil {
     //开启深度检测
     this.view.viewer.scene.globe.depthTestAgainstTerrain = true;
     this.dynaCutList = [];
+    this.popups = [];
   }
 
   //三维效果方法
+  //添加三维弹出框
+
+  //添加popup
+  addPopup = (gisData, emgData, title, position, id = 0, offset) => {
+    let content = '',
+      gisContent = '',
+      emgContent = '';
+
+    let ids = id;
+
+    //应急信息
+    if (emgData) {
+      Object.keys(emgData).map(key => {
+        if (!emgData[key] && emgData[key] !== 0)
+          emgData[key] = '';
+
+        emgContent += `<tr><th class="cesium-feature__field-header">${key}</th><td class="cesium-feature__field-data">${emgData[key]}</td></tr>`;
+      });
+    }
+    //GIS信息
+    const {AttStruct, SFEleArray, fields, features} = gisData;
+    if (AttStruct && SFEleArray) {
+      for (let index = 0; index < AttStruct.FldNumber; index++) {
+        const att = AttStruct.FldName[index];
+        const value = SFEleArray[0].AttValue[index];
+        gisContent += `<tr><th class="cesium-feature__field-header">${att}</th><td class="cesium-feature__field-data">${value}</td></tr>`;
+      }
+    } else if (fields && features) {
+      // 从k9取数据
+      const titles = gisData.fields.filter(field => field.visible);
+      for (let index = 0; index < titles.length; index++) {
+        const attr = titles[index].name;
+        const value = features[0].attributes[attr];
+        gisContent += `<tr><th class="cesium-feature__field-header">${attr}</th><td class="cesium-feature__field-data">${value}</td></tr>`;
+      }
+    } else {
+      // 对于不是从gis服务获取的数据
+      const titles = Object.keys(gisData);
+      const values = Object.values(gisData);
+      for (let index = 0; index < titles.length; index++) {
+        const attr = titles[index];
+        const value = values[index];
+        gisContent += `<tr><th class="cesium-feature__field-header">${attr}</th><td class="cesium-feature__field-data">${value}</td></tr>`;
+      }
+    }
+    content = `<div class="cesium-component cesium-popup cesium-popup--aligned-top-center cesium-popup--shadow ${id}">
+                        <div class="cesium-popup__main-container cesium-widget" role="dialog">
+                            <header class="cesium-popup__header">
+                                <h2 class="cesium-popup__header-title cesium-popup__header-title--button" role="button">${title}</h2>
+                            </header>
+                            <div class="cesium-popup_tabContainer">
+                                <input id="radio" checked="checked" class="cesium-popup_radio" type="radio" name="radio">
+                                <input id="radio1" class="cesium-popup_radio" type="radio" name="radio">
+                                ${this.view?.client !== 'emergency' ? '' :
+      `<label for="radio">应急数据</label>
+                                    <label for="radio1">GIS数据</label>
+                                    <div class="cesium-popup_tab">
+                                        <article class="cesium-popup__content">
+                                            <div class="cesium-feature__main-container">
+                                                <div class="cesium-feature__fields cesium-feature__content-element">
+                                                    <table class="cesium-widget__table">
+                                                        <tbody>
+                                                            ${emgContent || '<div style="color:white;line-height:148px;text-align:center">暂无数据</div>'}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </article>
+                                    </div >`
+    }
+                                <div class="cesium-popup_tab" ${this.view?.client !== 'emergency' && 'style="max-height: 180px;"'}>
+                                    <article class="cesium-popup__content">
+                                        <div class="cesium-feature__main-container">
+                                            <div class="cesium-feature__fields cesium-feature__content-element">
+                                                <table class="cesium-widget__table">
+                                                    <tbody>
+                                                        ${gisContent}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </article>
+                                </div>
+                            </div>
+                        </div>
+                       </div>`;
+
+    //popup的位置
+    const positionC = Cesium.Cartesian3.fromDegrees(position.lng, position.lat, position.height);
+
+    this.popupController = new CesiumZondy.Manager.PopupController({
+      viewer: this.view.viewer
+    });
+
+    this.popup = this.popupController.appendPopup(
+      //容器div的id
+      `${ids}`,
+      //文本
+      content,
+      //坐标位置
+      positionC,
+      //偏移量
+      offset,
+      //弹窗的关闭按钮点击回调函数
+      this.removePopUp
+    );
+    this.popups.push(this.popup);
+
+    //气泡更新：随地图操作即时更新位置
+    this.popupController.refreshPopups();
+    // needLimitPopup && this.view.viewer.camera.changed.addEventListener(this.limitPopup, this);
+    return this.popup;
+  };
+
+  //移除popup
+  removePopUp = () => {
+    this.popups.length && this.popups.forEach(popup => {
+      popup && this.view.removePopUp(popup, null, {removeDiv: true});
+      this.popupController && popup && this.popupController.removePopup(popup, null, {removeDiv: true});
+    });
+    this.popups = [];
+    this.stopHighlight();
+  };
+
   //视点跳转
   flyToEx = (lng, lat, height) => {
     //跳转
@@ -586,7 +711,7 @@ class emgUtil {
         return item;
       }
     });
-    ;
+
 
 
     this.wall = this.view.viewer.entities.add({
@@ -778,6 +903,7 @@ class emgUtil {
         viewer: this.view.viewer
       });
     }
+    this.removePopUp();
     this.stopHighlight();
     this.stopCutFillM();
     this.removeParticular();

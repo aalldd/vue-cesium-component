@@ -45,4 +45,5 @@ export {default as MunicipalTianControl} from "../components/tools/TianMap";
 export {default as MunicipalLayerControl} from '../components/tools/LayerControl';
 export {default as MunicipalPopup} from '../components/tools/Popup';
 export {default as MunicipalTianTools} from "../components/tools/Tools";
+export {default as MunicipalClickQuery} from "../components/tools/ClickQuery";
 

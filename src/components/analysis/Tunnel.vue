@@ -83,7 +83,7 @@ import MathTools from '@/util/helpers/mathTools';
 
 export default {
   name: "municipal-tunnel",
-  inject: ['Cesium', 'CesiumZondy', 'webGlobe', 'commonConfig'],
+  inject: ['Cesium', 'CesiumZondy', 'webGlobe'],
   mixins: [loadingM3ds],
   data() {
     return {
@@ -105,10 +105,6 @@ export default {
     ...PanelOpts,
     tunnelStyle: {
       type: Object
-    },
-    //需要地面图层的layerIndex用来选出管网图层中的transform
-    layerIndexs: {
-      type: Array
     }
   },
   watch: {
@@ -246,8 +242,7 @@ export default {
         return resPoint;
       });
       //从基础配置中拿取偏移坐标
-      const offset = window?.commonConfig?.globalConfig?.offset || [0, 0];
-      const geometry = polygonList.map(p => [p.x + offset[0], p.y + offset[1]]).reduce((a, b) => a.concat(b), []).join();
+      const geometry = polygonList.map(p => [p.x + this.offset[0], p.y + this.offset[1]]).reduce((a, b) => a.concat(b), []).join();
       let range = [];
       tunnelType === '矩形' ? range = [tunnelCenterHeight - tunnelHeight / 2, tunnelCenterHeight + tunnelHeight / 2] : range = [tunnelCenterHeight - tunnelRadius, tunnelCenterHeight + tunnelRadius];
       this.$emit('sendQueryParam', {

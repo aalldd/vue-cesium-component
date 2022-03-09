@@ -9,7 +9,8 @@
                           :commonConfig="globalConfig"
   >
     <router-view></router-view>
-    <municipal-tool :wmtsMap="wmtsMap" :cameraView="cameraView"></municipal-tool>
+    <municipal-tool :wmtsMap="wmtsMap" :popupOffset="popupOffset" :cameraView="cameraView" @clickQuery="clickQuery"
+                    :clickQueryData="clickQueryData"></municipal-tool>
   </municipal-common-layer>
 </template>
 
@@ -17,6 +18,7 @@
 </style>
 
 <script>
+import Store from "@/store/store";
 export default {
   data() {
     return {
@@ -61,7 +63,9 @@ export default {
           roll: 0.0002114284469649675
         }
       },
-      globalConfig: null
+      globalConfig: null,
+      clickQueryData: null,
+      popupOffset: [200, 64]
     };
   },
   async mounted() {
@@ -142,6 +146,12 @@ export default {
         console.error(e);
         return null;
       }
+    },
+    async clickQuery(param) {
+      const store = new Store();
+      const data = await store.getGeometry(param);
+      console.log(data);
+      this.clickQueryData = data;
     }
   }
 };
