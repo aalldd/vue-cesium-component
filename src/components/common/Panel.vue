@@ -12,7 +12,7 @@
             <div class="expand" v-show="expandable" @click="expanded=!expanded">
               <municipal-icon :name="expandIcon"></municipal-icon>
             </div>
-            <div class="close" v-show="closable" @click="onClose">
+            <div class="close" v-show="closable" @click="onClose" style="cursor: pointer">
               <municipal-icon name="close"></municipal-icon>
             </div>
           </div>

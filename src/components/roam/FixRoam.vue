@@ -1,6 +1,6 @@
 <template>
   <div>
-    <municipal-panel v-if="detailVisibleCopy" :title="title" :draggable="draggable" @close="$emit('onClose')"
+    <municipal-panel v-if="detailVisibleCopy" :title="roamTitle" :draggable="draggable" @onClose="onClose"
                      :closable="closable"
                      :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
       <template v-slot:extra>
@@ -20,7 +20,7 @@
           <a-col :span="16" style="display:flex;justify-content: flex-start"
                  v-if="item.uniKey==='model'">
             <a-select style="width: 100%" @change="modelChange"
-                      :default-value="modelList[0].name">
+                      :value="currentModel">
               <a-select-option v-for="(jitem,index) in modelList" :value="jitem.name"
                                :key="index">
                 {{ jitem.name }}
@@ -30,7 +30,7 @@
           <a-col :span="16" style="display:flex;justify-content: flex-start"
                  v-if="item.uniKey==='angel'">
             <a-select style="width: 100%" @change="viewChange"
-                      :default-value="viewList[0].name">
+                      :value="currentView">
               <a-select-option v-for="(jitem,index) in viewList" :value="jitem.name"
                                :key="index">
                 {{ jitem.name }}
@@ -41,21 +41,20 @@
           <a-col :span="16" v-if="['speed','pitch','heading','range'].indexOf(item.uniKey)>=0">
             <a-row style="align-items: center;display: flex;width: 100%">
               <a-col :span="12">
-                <a-slider v-model="item.value" :min="-180" :max="180" style="min-width: 100px"/>
+                <a-slider v-model="item.value" :min="-180" :max="180" style="min-width: 100px;margin-right: 10px"/>
               </a-col>
               <a-col :span="12">
                 <a-input-number
                   v-model="item.value"
                   :min="-180"
                   :max="180"
-                  style="margin-left: 4px"
                 />
               </a-col>
             </a-row>
           </a-col>
 
           <a-col :span="16" style="display:flex;justify-content: flex-start" v-if="item.uniKey==='loop'">
-            <a-radio-group :options="loopOption" :default-value="item.value" @change="changeLoop"/>
+            <a-radio-group :options="loopOption" :value="isLoop?'是':'否'" @change="changeLoop"/>
           </a-col>
 
           <a-col :span="16">
@@ -75,7 +74,7 @@
             </div>
           </a-col>
         </a-row>
-        <a-row class="input-item">
+        <a-row class="input-item" v-if="!preview">
           <a-col :span="24" style="display:flex;justify-content: flex-end">
             <div style="display: flex;justify-content: flex-start">
               <a-button style="margin-right: 10px" @click="startRoam">
@@ -95,7 +94,8 @@
     <municipal-fixroam-data v-if="planVisible" :title="title" :draggable="draggable" @close="$emit('onPlanClose')"
                             :closable="closable" :dataSource="roamPlanData"
                             @addRoamPlan="addRoamPlan"
-                            @onRowClick="modifyRoamPlan"
+                            @onRowClick="previewRoamPlan"
+                            @modifyRoamPlan="modifyRoamPlan"
                             @deleteRoamPlan="deleteRoamPlan"
                             :loading="loading"
                             :need-expand="expandable" :panel-class-name="panelClassName">
@@ -119,6 +119,11 @@ export default {
       isRoaming: false,
       loopOption: ['是', '否'],
       showRoamDetail: true,
+      preview: false,
+      currentModel: '',
+      currentView: '',
+      isLoop: false,
+      roamTitle: '',
       //用来渲染界面的数据，可以由外部决定，不传就用默认的
       fixedRoamDataCopy: [{
         title: '漫游方案名称',
@@ -199,10 +204,6 @@ export default {
         return [];
       }
     },
-    detailVisible: {
-      type: Boolean,
-      default: false
-    },
     planVisible: {
       type: Boolean,
       default: true
@@ -233,9 +234,10 @@ export default {
     modelList: {
       handler() {
         if (this.modelList?.length && this.fixedRoamDataCopy?.length) {
+          this.currentModel = this.modelList[0].name;
           this.fixedRoamDataCopy = this.fixedRoamDataCopy.map(item => {
             if (item.uniKey === 'model') {
-              item.value = this.modelList[0].value;
+              item.value = this.modelList[0].name;
             }
             return item;
           });
@@ -246,9 +248,10 @@ export default {
     viewList: {
       handler() {
         if (this.viewList?.length && this.fixedRoamDataCopy?.length) {
+          this.currentView = this.viewList[0].name;
           this.fixedRoamDataCopy = this.fixedRoamDataCopy.map(item => {
-            if (item.uniKey === 'view') {
-              item.value = this.viewList[0].value;
+            if (item.uniKey === 'angel') {
+              item.value = this.viewList[0].name;
             }
             return item;
           });
@@ -264,12 +267,6 @@ export default {
       },
       immediate: true,
       deep: true
-    },
-    detailVisible: {
-      handler() {
-        this.detailVisibleCopy = this.detailVisible;
-      },
-      immediate: true
     }
   },
   destroyed() {
@@ -277,14 +274,20 @@ export default {
     this.stopRoam();
   },
   methods: {
+    onClose() {
+      this.stopRoam();
+      this.detailVisibleCopy = false;
+    },
     showPath() {
       this.pathVisible = !this.pathVisible;
       this.isRoaming && this.startRoam();
     },
     modelChange(val) {
+      this.currentModel = val;
       this.changeFixedData(val, 'model');
     },
     viewChange(val) {
+      this.currentView = val;
       this.changeFixedData(val, 'view');
     },
     changeLoop(e) {
@@ -322,17 +325,16 @@ export default {
       //防止视点跳转
       this.webGlobe.viewer.trackedEntity = undefined;
       this.removeAll();
-      console.log(this.fixedRoamDataCopy);
       !!this.animationAnalyse && this.animationAnalyse.stop();
       const loop = this.findValue('loop') === '是' ? true : false;
       const model = this.findValue('model');
-      const angle = this.findValue('angel');
+      const angel = this.findValue('angel');
       const speed = this.findValue('speed');
       const heading = this.findValue('heading');
       const pitch = this.findValue('pitch');
       const range = this.findValue('range');
       const modelUrl = this.modelList.find(item => item.name === model).value;
-      const view = this.viewList.find(item => item.name === angle).value;
+      const view = this.viewList.find(item => item.name === angel).value;
 
       this.animationAnalyse = new Cesium.AnimationAnalyse(this.webGlobe.viewer, {
         exHeight: 1,
@@ -347,7 +349,9 @@ export default {
         range: range
       });
       this.animationAnalyse.start();
-      this.animationAnalyse._animationModel.model.minimumPixelSize = 5;
+      if (this.animationAnalyse._animationModel) {
+        this.animationAnalyse._animationModel.model.minimumPixelSize = 5;
+      }
       this.isRoaming = true;
     },
     stopRoam() {
@@ -355,7 +359,7 @@ export default {
       this.isRoaming = false;
     },
     saveRoam() {
-      this.changeFixedData("'" + this.path.join() + "'", 'path');
+      this.changeFixedData("'" + this.path.join() + "'", 'route');
       const planData = {isVisible: this.pathVisible ? '是' : '否'};
       this.fixedRoamDataCopy.forEach(item => {
         planData[item.uniKey] = item.value;
@@ -363,17 +367,20 @@ export default {
       this.$emit('saveRoam', planData);
     },
     addRoamPlan() {
-      this.stopRoam()
+      this.stopRoam();
+      this.roamTitle = '新增漫游方案';
+      this.preview = false;
       this.detailVisibleCopy = true;
     },
-    modifyRoamPlan(record) {
+    initForm(record) {
       //消除antd的props数据校验错误
-      for(let key in record){
-        if(['range','heading','pitch','speed'].indexOf(key)>=0){
-          record[key]=Number(record[key])
+      for (let key in record) {
+        if (['range', 'heading', 'pitch', 'speed'].indexOf(key) >= 0) {
+          record[key] = Number(record[key]);
         }
       }
-
+      this.currentModel = record['model'];
+      this.currentView = record['angel'];
       this.detailVisibleCopy = true;
       this.fixedRoamDataCopy = this.fixedRoamDataCopy.map(item => {
         if (Object.keys(record).indexOf(item.uniKey) >= 0) {
@@ -389,11 +396,21 @@ export default {
         }
         return item;
       });
-      this.startRoam()
+      this.startRoam();
     },
-    deleteRoamPlan(record){
-      this.stopRoam()
-      this.$emit('deleteRoamPlan',record)
+    previewRoamPlan(record) {
+      this.roamTitle = `预览${record.planName}方案`;
+      this.preview = true;
+      this.initForm(record);
+    },
+    modifyRoamPlan(record) {
+      this.roamTitle = `修改${record.planName}方案`;
+      this.preview = false;
+      this.initForm(record);
+    },
+    deleteRoamPlan(record) {
+      this.stopRoam();
+      this.$emit('deleteRoamPlan', record);
     }
   }
 };
