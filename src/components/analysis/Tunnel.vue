@@ -258,18 +258,6 @@ export default {
 <style scoped lang="scss">
 @import "../var";
 
-.input-item {
-  display: flex;
-  align-items: center;
-  margin: 10px 0;
-  min-height: 40px;
-
-  .itemWrapper {
-    display: flex;
-    justify-content: flex-start;
-  }
-}
-
 .icons {
   display: flex;
   justify-content: center;

@@ -114,6 +114,11 @@ export default {
               menuName: '卷帘分析',
               menuRoute: 'roll',
               key: '4-5'
+            },
+            {
+              menuName: '填挖方分析',
+              menuRoute: 'cutFill',
+              key: '4-6'
             }
           ]
         }

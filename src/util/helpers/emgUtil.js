@@ -843,15 +843,15 @@ class emgUtil {
       height: -1000
     });
     // 设置开挖的动态效果
-    // dynaCut.planes[0].plane.plane = new Cesium.CallbackProperty(function () {
-    //   for (let i = 0; i < clippingPlanes.length; i++) {
-    //     if (i === clippingPlanes.length - 1) {
-    //       let plane = clippingPlanes[i];
-    //       plane.distance = -height;
-    //       Cesium.Plane.transform(plane, tileset.modelMatrix, new Cesium.ClippingPlane(Cesium.Cartesian3.UNIT_X, 0.0));
-    //     }
-    //   }
-    // }.bind(this), false);
+    dynaCut.planes[0].plane.plane = new Cesium.CallbackProperty(function () {
+      for (let i = 0; i < clippingPlanes.length; i++) {
+        if (i === clippingPlanes.length - 1) {
+          let plane = clippingPlanes[i];
+          plane.distance = -height;
+          Cesium.Plane.transform(plane, tileset.modelMatrix, new Cesium.ClippingPlane(Cesium.Cartesian3.UNIT_X, 0.0));
+        }
+      }
+    }.bind(this), false);
     this.dynaCutList.push(dynaCut);
   };
 
@@ -864,6 +864,29 @@ class emgUtil {
 
     return [lng, lat];
   };
+
+  cutFillAna(positions, height, getResult) {
+    this.view.viewer.scene.globe.depthTestAgainstTerrain = false;
+    //初始化高级分析功能管理类
+    const advancedAnalysisManager = new CesiumZondy.Manager.AdvancedAnalysisManager({
+      viewer: this.view.viewer
+    });
+    let cutFill;
+    //创建填挖方实例
+    cutFill = advancedAnalysisManager.createCutFill(2.0, {
+      //设置x方向采样点个数
+      xPaneNum: 16,
+      //设置y方向采样点个数参数
+      yPaneNum: 16,
+      //设置填挖规整高度
+      height: height,
+      //返回结果的回调函数
+      callback: getResult
+    });
+
+    //开始执行填挖方分析
+    advancedAnalysisManager.startCutFill(cutFill, positions);
+  }
 
   // 开挖实现  layerIndexs地上图层的id
   dig = (pointArr, height, layerIndexs) => {

@@ -1,87 +1,90 @@
 <template>
-  <municipal-panel :title="title" :draggable="draggable" @onClose="$emit('onClose')" :closable="closable"
-                   :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
-    <template v-slot:content>
-      <a-row class="input-item">
-        <a-col :span="6">
-          <span class="input-tag">开挖深度</span>
-        </a-col>
-        <a-col :span="10">
-          <a-slider v-model="digDistance" :min="1" :max="100"/>
-        </a-col>
-        <a-col :span="8">
-          <a-input-number
-            v-model="digDistance"
-            :min="1"
-            :max="100"
-            style="margin-left: 16px"
-          />
-        </a-col>
-      </a-row>
-      <a-row class="input-item">
-        <a-col :span="6">
-          <span class="input-tag">开挖材质</span>
-        </a-col>
-        <a-col :span="10" :style="{ display: 'flex' }">
-          <div
-            v-for="(item, index) in drawTextures"
-            :key="index"
-            style="
+  <div>
+    <municipal-panel :title="title" :draggable="draggable" @onClose="$emit('onClose')" :closable="closable"
+                     :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
+      <template v-slot:content>
+        <a-row class="input-item">
+          <a-col :span="6">
+            <span class="input-tag">开挖深度</span>
+          </a-col>
+          <a-col :span="10">
+            <a-slider v-model="digDistance" :min="1" :max="100"/>
+          </a-col>
+          <a-col :span="8">
+            <a-input-number
+              v-model="digDistance"
+              :min="1"
+              :max="100"
+              style="margin-left: 16px"
+            />
+          </a-col>
+        </a-row>
+        <a-row class="input-item">
+          <a-col :span="6">
+            <span class="input-tag">开挖材质</span>
+          </a-col>
+          <a-col :span="10" :style="{ display: 'flex' }">
+            <div
+              v-for="(item, index) in drawTextures"
+              :key="index"
+              style="
               margin: 0 5px;
               display: flex;
               align-items: center;
               justify-content: center;
             "
-          >
-            <a-popover>
-              <template slot="content">
-                <div style="width: 130px; height: 130px">
-                  <img :src="item" style="width: 100%; height: 100%"/>
+            >
+              <a-popover>
+                <template slot="content">
+                  <div style="width: 130px; height: 130px">
+                    <img :src="item" style="width: 100%; height: 100%"/>
+                  </div>
+                </template>
+                <div
+                  :class="item === drawTexture && activeTexture"
+                  class="textrue"
+                >
+                  <a-avatar
+                    :src="item"
+                    size="small"
+                    @click="changeTexture(item)"
+                  />
                 </div>
-              </template>
-              <div
-                :class="item === drawTexture && activeTexture"
-                class="textrue"
-              >
-                <a-avatar
-                  :src="item"
-                  size="small"
-                  @click="changeTexture(item)"
-                />
-              </div>
-            </a-popover>
-          </div>
-        </a-col>
-      </a-row>
-      <a-row class="input-item">
-        <a-col :span="6">
-          <span class="input-tag">开挖范围</span>
-        </a-col>
-        <a-col :span="14">
-          <municipal-draw
-            :vueKey="vueKey"
-            :enable-menu-control="false"
-            @load="onDrawLoad"
-            @drawcreate="handleDraw"
-          >
-            <div class="icons">
-              <div
-                v-for="item in drawTools"
-                :key="item"
-                style="margin: 0px 8px; cursor: pointer"
-                v-on:click="activeTools(item)"
-              >
-                <municipal-icon
-                  :name="`-vector-${item}`"
-                  style="cursor: pointer"
-                ></municipal-icon>
-              </div>
+              </a-popover>
             </div>
-          </municipal-draw>
-        </a-col>
-      </a-row>
-    </template>
-  </municipal-panel>
+          </a-col>
+        </a-row>
+        <a-row class="input-item">
+          <a-col :span="6">
+            <span class="input-tag">开挖范围</span>
+          </a-col>
+          <a-col :span="14">
+            <municipal-draw
+              :vueKey="vueKey"
+              :enable-menu-control="false"
+              @load="onDrawLoad"
+              @drawcreate="handleDraw"
+            >
+              <div class="icons">
+                <div
+                  v-for="item in drawTools"
+                  :key="item"
+                  style="margin: 0px 8px; cursor: pointer"
+                  v-on:click="activeTools(item)"
+                >
+                  <municipal-icon
+                    :name="`-vector-${item}`"
+                    style="cursor: pointer"
+                  ></municipal-icon>
+                </div>
+              </div>
+            </municipal-draw>
+          </a-col>
+        </a-row>
+      </template>
+    </municipal-panel>
+    <slot></slot>
+  </div>
 </template>
 
 <script>
@@ -108,10 +111,6 @@ export default {
       default: () => {
         return ["square", "polygon"];
       }
-    },
-    //用来指定地上图层的layerIndex
-    layerIndexs: {
-      type: Array,
     },
     title: {
       type: String,
@@ -176,63 +175,28 @@ export default {
         _minHeight - this.digDistance,
         this.drawTexture
       );
-      const {dynaCutList, clippingPlanes} = this.emgManager.dig(
+      const {dynaCutList} = this.emgManager.dig(
         pointArr,
         this.digDistance,
         this.layerIndexs ? this.layerIndexs : null
       );
-      dynaCutList.forEach(item => {
-        item.planes[0].plane.plane = new Cesium.CallbackProperty(function () {
-          for (let i = 0; i < clippingPlanes.length; i++) {
-            if (i === clippingPlanes.length - 1) {
-              let plane = clippingPlanes[i];
-              console.log(this.digDistance);
-              plane.distance = -this.digDistance;
-              Cesium.Plane.transform(plane, tileset.modelMatrix, new Cesium.ClippingPlane(Cesium.Cartesian3.UNIT_X, 0.0));
-            }
-          }
-        }.bind(this), false);
-      });
       const data = {
         dynaCutList,
         digDistance: this.digDistance,
         positions: this.drawRange,
       };
-      this.cutFillAna(this.drawRange, _minHeight, data);
-    },
-    cutFillAna(positions, terrainHeight, dynacutData) {
-      const view = this.webGlobe;
-      view.viewer.scene.globe.depthTestAgainstTerrain = false;
-      //初始化高级分析功能管理类
-      const advancedAnalysisManager =
-        new CesiumZondy.Manager.AdvancedAnalysisManager({
-          viewer: view.viewer,
-        });
-      const targetHeight = terrainHeight - this.digDistance;
-      //创建填挖方实例
-      const cutFill = advancedAnalysisManager.createCutFill(2.0, {
-        //设置x方向采样点个数
-        xPaneNum: 12,
-        //设置y方向采样点个数参数
-        yPaneNum: 12,
-        //设置填挖规整高度
-        height: targetHeight,
-        //返回结果的回调函数
-        callback: (result) => {
-          this.heightRange =
-            result.minHeight.toFixed(2) + "~" + result.maxHeight.toFixed(2);
-          this.sArea = result.surfaceArea;
-          this.fArea = result.cutVolume;
-          const data = {
-            heightRange: this.heightRange,
-            sArea: this.sArea,
-            fArea: this.fArea,
-          };
-          this.$emit('onDynacut', Object.assign(data, dynacutData));
-        },
+      this.emgManager.cutFillAna(this.drawRange, _minHeight - this.digDistance, (result) => {
+        this.heightRange =
+          result.minHeight.toFixed(2) + "~" + result.maxHeight.toFixed(2);
+        this.sArea = result.surfaceArea;
+        this.fArea = result.cutVolume;
+        const dataRes = {
+          heightRange: this.heightRange,
+          sArea: this.sArea,
+          fArea: this.fArea,
+        };
+        this.$emit('onDynacut', Object.assign(dataRes, data));
       });
-      //开始执行填挖方分析
-      advancedAnalysisManager.startCutFill(cutFill, positions);
     },
     activeTools(tool) {
       this.emgManager.removeAll();

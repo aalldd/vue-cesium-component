@@ -1,7 +1,7 @@
 import emgUtil from "@/util/helpers/emgUtil";
 
 const loadingM3ds = {
-  inject: ['Cesium', 'CesiumZondy', 'webGlobe'],
+  inject: ['Cesium', 'CesiumZondy', 'webGlobe', 'eventBus'],
   mounted() {
     //由于M3d图层数据加载慢，每秒轮询一次
     this.view = this.webGlobe;

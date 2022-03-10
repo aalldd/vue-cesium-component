@@ -47,12 +47,17 @@ const router=new Router({
         {
           path: '/squib',
           name: 'squib',
-          component: ()=>import('../pages/SquibAna')
+          component: () => import('../pages/SquibAna')
         },
         {
           path: '/roll',
           name: 'roll',
-          component: ()=>import('../pages/RollingAna')
+          component: () => import('../pages/RollingAna')
+        },
+        {
+          path: '/cutFill',
+          name: 'cutFill',
+          component: () => import('../pages/CutFillAna')
         }
       ]
     }

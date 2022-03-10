@@ -22,6 +22,8 @@ export {default as MunicipalTunnel} from '../components/analysis/Tunnel';
 export {default as MunicipalFlow} from '../components/analysis/Flow';
 export {default as MunicipalSquib} from '../components/analysis/Squib';
 export {default as MunicipalRoll} from '../components/analysis/Roll';
+export {default as MunicipalCutFill} from '../components/analysis/CutFill';
+export {default as MunicipalCutFillResult} from '../components/analysis/CutFillResult';
 export {default as MunicipalSquibRes} from '../components/analysis/SquibRes';
 export {default as MunicipalFixRoam} from '../components/roam/FixRoam';
 export {default as MunicipalFixRoamData} from '../components/roam/FixRoamData';

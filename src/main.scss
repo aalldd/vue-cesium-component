@@ -24,7 +24,52 @@
   padding: 4px;
 }
 
-//结果面板css
+.ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-body > table > .ant-table-tbody > tr > td {
+  text-align: center;
+}
+
+.ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-header > table > .ant-table-thead > tr > th {
+  text-align: center;
+}
+
+.ant-table-small > .ant-table-content > .ant-table-body {
+  margin: 0;
+}
+
+.ant-collapse > .ant-collapse-item {
+  &.ant-collapse-item-active {
+    margin-bottom: 0;
+  }
+
+  border-bottom: none !important;
+  margin-bottom: 10px;
+}
+
+//一些公共部分的样式，每个组件的这些样式都是一样的，所以没有写到scoped里面
+.icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+
+  &:hover {
+    background-color: $active-background;
+  }
+}
+
+.input-item {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+  min-height: 40px;
+
+  .itemWrapper {
+    display: flex;
+    justify-content: flex-start;
+  }
+}
+
 .position-bottom {
   position: absolute;
   width: 1600px;
@@ -49,27 +94,6 @@
   .ant-table-pagination.ant-pagination {
     margin: 6px;
   }
-}
-
-.ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-body > table > .ant-table-tbody > tr > td {
-  text-align: center;
-}
-
-.ant-table-small > .ant-table-content > .ant-table-scroll > .ant-table-header > table > .ant-table-thead > tr > th {
-  text-align: center;
-}
-
-.ant-table-small > .ant-table-content > .ant-table-body {
-  margin: 0;
-}
-
-.ant-collapse > .ant-collapse-item {
-  &.ant-collapse-item-active {
-    margin-bottom: 0;
-  }
-
-  border-bottom: none !important;
-  margin-bottom: 10px;
 }
 
 // cesium 全局样式
