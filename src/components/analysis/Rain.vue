@@ -1,5 +1,5 @@
 <template>
-  <municipal-panel :draggable="draggable" @click="$emit('onClose')" :title="title" :need-expand="true"
+  <municipal-panel :draggable="draggable" @onClose="$emit('onClose')" :title="title" :need-expand="true"
                    :panel-class-name="panelClassName" :panel-style="panelStyle">
     <template v-slot:extra>
       <span :style="{marginRight:'10px'}">展示降雨:</span>

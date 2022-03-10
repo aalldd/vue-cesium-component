@@ -1,5 +1,5 @@
 <template>
-  <municipal-panel :title="title" :draggable="draggable" @close="$emit('onClose')" :closable="closable"
+  <municipal-panel :title="title" :draggable="draggable" @onClose="$emit('onClose')" :closable="closable"
                    :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
     <template v-slot:content>
       <a-tabs type="card" @change="tabsChange" :active-key="0">

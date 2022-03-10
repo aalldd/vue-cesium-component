@@ -1,10 +1,10 @@
 <template>
-  <municipal-panel :draggable="draggable" @close="$emit('onClose')" :title="title"
+  <municipal-panel :draggable="draggable" @onClose="$emit('onClose')" :title="title"
                    :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
     <template v-slot:content>
       <div class="content">
         <div class="icon" @click="clickQuery">
-          <municipal-icon name="-vector-square" ></municipal-icon>
+          <municipal-icon name="-vector-square"></municipal-icon>
         </div>
         <span class="title">点击查询</span>
         <municipal-cursor-tip v-if="cursorVisible">

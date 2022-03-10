@@ -1,6 +1,6 @@
 <template>
   <div>
-    <municipal-panel :title="title" :draggable="draggable" @close="$emit('onClose')"
+    <municipal-panel :title="title" :draggable="draggable" @onClose="$emit('onClose')"
                      :closable="closable"
                      :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
       <template v-slot:content>

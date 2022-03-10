@@ -3,7 +3,7 @@
     <municipal-panel
       :title="title"
       :draggable="draggable"
-      @close="$emit('onClose')"
+      @onClose="$emit('onClose')"
       :closable="closable"
       :need-expand="expandable"
       :panel-style="panelStyle"

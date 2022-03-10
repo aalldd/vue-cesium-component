@@ -22,8 +22,7 @@ export default {
   data() {
     return {
       wmtsMapObj: {},
-      cameraViewObj: {},
-      clickQueryDataCopy: {}
+      cameraViewObj: {}
     };
   },
   props: {
@@ -54,17 +53,6 @@ export default {
       default: () => {
         return [0, 0];
       }
-    }
-  },
-  watch: {
-    clickQueryData: {
-      handler() {
-        if (Object.keys(this.clickQueryData).length > 0) {
-          console.log(this.clickQueryData);
-          this.clickQueryDataCopy = this.clickQueryData;
-        }
-      },
-      immediate: true
     }
   },
   updated() {

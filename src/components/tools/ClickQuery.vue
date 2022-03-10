@@ -35,7 +35,7 @@ export default {
   watch: {
     clickQueryData: {
       handler() {
-        if (Object.keys(this.clickQueryData).length > 0) {
+        if (this.clickQueryData && Object.keys(this.clickQueryData).length > 0) {
           //校验数据源是否包含gisData，emgData，title这三个字段
           this.showPopUp();
         }

@@ -5,10 +5,10 @@
 <!--*/-->
 <template>
   <div class="flood">
-    <municipal-rain :draggable="draggable" @close="$emit('onClose')" v-if="needRain" title="降雨信息"
+    <municipal-rain :draggable="draggable" @onClose="$emit('onClose')" v-if="needRain" title="降雨信息"
                     :panel-style="rainPanelStyle" :panel-class-name="panelClassName"
                     :rain-level="rainLevel"></municipal-rain>
-    <municipal-panel :draggable="draggable" @close="$emit('onClose')" :title="title" :closable="closable"
+    <municipal-panel :draggable="draggable" @onClose="$emit('onClose')" :title="title" :closable="closable"
                      :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
       <template v-slot:content>
         <div class="content">

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <municipal-panel v-if="state==='init'" :title="title" :draggable="draggable" @close="$emit('onClose')"
+    <municipal-panel v-if="state==='init'" :title="title" :draggable="draggable" @onClose="$emit('onClose')"
                      :closable="closable"
                      :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
       <template v-slot:content>
@@ -531,7 +531,7 @@ export default {
         });
         return min;
       } else {
-        return;
+
       }
     },
     renderEffectedRegion() {
