@@ -124,7 +124,8 @@ export default {
       drawRange: [],
       sArea: 0,
       fArea: 0,
-      heightRange: ""
+      heightRange: "",
+      drawType: ''
     };
   },
   computed: {
@@ -180,10 +181,17 @@ export default {
         this.digDistance,
         this.layerIndexs ? this.layerIndexs : null
       );
+      pointArr.push(pointArr[0]);
+      const geometry = pointArr.map(p => [p.x, p.y]).reduce((a, b) => a.concat(b), []).join();
       const data = {
         dynaCutList,
-        digDistance: this.digDistance,
-        positions: this.drawRange,
+        minHeight: _minHeight - this.digDistance,
+        geometry: geometry,
+        geometryType: this.drawType === 'square' ? 'rect' : 'polygon',
+        cutLayerIndexs: this.layerIndexs,
+        m3ds: this.m3ds,
+        offset: this.offset,
+        mapServerName: this.mapServerName
       };
       this.emgManager.cutFillAna(this.drawRange, _minHeight - this.digDistance, (result) => {
         this.heightRange =
@@ -202,6 +210,7 @@ export default {
       this.emgManager.removeAll();
       this.drawOper && this.drawOper.removeEntities();
       window.drawElement && window.drawElement.stopDrawing();
+      this.drawType = tool;
       switch (tool) {
         case "polygon":
           this.drawOper.enableDrawPolygon();

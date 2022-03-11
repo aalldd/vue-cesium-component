@@ -5,27 +5,28 @@
                    :height="height"
                    :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClass">
     <template v-slot:content>
-      <a-tabs
-        :default-active-key="choosedTabIndex"
-        tab-position="top"
-        type="card"
-        size="small"
-        @change="onTabsChange"
-      >
-        <a-tab-pane v-for="(item,index) in tabsCopy" :key="index" :tab="item.tabName">
-          <a-table :columns="item.columns"
-                   :data-source="item.features"
-                   :scroll="scrollStyle"
-                   :pagination="paginationCopy"
-                   :row-selection="rowSelection"
-                   @change="handleTableChange"
-                   :customRow="customRow"
-                   size="small"
-                   :bordered="true"
-                   :load="load">
-          </a-table>
-        </a-tab-pane>
-      </a-tabs>
+      <a-spin :spinning="load">
+        <a-tabs
+          :default-active-key="choosedTabIndex"
+          tab-position="top"
+          type="card"
+          size="small"
+          @change="onTabsChange"
+        >
+          <a-tab-pane v-for="(item,index) in tabsCopy" :key="index" :tab="item.tabName">
+            <a-table :columns="item.columns"
+                     :data-source="item.features"
+                     :scroll="scrollStyle"
+                     :pagination="paginationCopy"
+                     :row-selection="rowSelection"
+                     @change="handleTableChange"
+                     :customRow="customRow"
+                     size="small"
+                     :bordered="true">
+            </a-table>
+          </a-tab-pane>
+        </a-tabs>
+      </a-spin>
     </template>
     <template v-slot:extra>
       <div class="export" v-if="needExport">
@@ -52,6 +53,7 @@
 </template>
 <script>
 import exportExcel from '@/util/operators/exportExcel';
+import loadingM3ds from "@/util/mixins/withLoadingM3ds";
 import resultMixin from "@/util/mixins/resultMixin";
 import _ from 'lodash';
 
@@ -60,13 +62,13 @@ const exportTypes = [
 ];
 export default {
   name: 'municipal-result-common',
-  mixins:[resultMixin],
+  mixins: [loadingM3ds, resultMixin],
   data() {
     return {
       exportType: exportTypes[0],
       exportTypes: exportTypes,
       choosedTabIndex: 0,
-      tabsCopy:[]
+      tabsCopy: []
     };
   },
   props: {
@@ -85,28 +87,28 @@ export default {
       }
     }
   },
-  watch:{
-    tabs:{
-      handler(){
-        if(this.tabs?.length>0){
+  watch: {
+    tabs: {
+      handler() {
+        if (this.tabs?.length > 0) {
           const extraOption = {
             ellipsis: true,
             scopedSlots: {customRender: 'popover'}
           };
-          this.tabsCopy=this.tabs.map(tab=>{
-            if(tab.columns){
-              tab.columns=tab.columns.map(item=>{
+          this.tabsCopy = this.tabs.map(tab => {
+            if (tab.columns) {
+              tab.columns = tab.columns.map(item => {
                 return {
                   ...extraOption,
                   ...item
-                }
-              })
+                };
+              });
             }
-            return tab
-          })
+            return tab;
+          });
         }
       },
-      immediate:true
+      immediate: true
     }
   },
   methods: {
@@ -121,7 +123,7 @@ export default {
       value === exportTypes[0] && this.exportAll();
       value === exportTypes[1] && this.exportTab();
       value === exportTypes[2] && this.exportPage();
-      return;
+
     },
     //导出所有标签栏中的数据
     exportAll() {

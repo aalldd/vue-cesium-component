@@ -5,17 +5,18 @@
                    :height="height"
                    :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClass">
     <template v-slot:content>
-      <a-table :columns="columnsCopy"
-               :data-source="dataSource"
-               :scroll="scrollStyle"
-               :row-selection="rowSelection"
-               :pagination="paginationCopy"
-               @change="handleTableChange"
-               :customRow="customRow"
-               size="small"
-               :bordered="true"
-               :load="load">
-      </a-table>
+      <a-spin :spinning="load">
+        <a-table :columns="columnsCopy"
+                 :data-source="dataSource"
+                 :scroll="scrollStyle"
+                 :row-selection="rowSelection"
+                 :pagination="paginationCopy"
+                 @change="handleTableChange"
+                 :customRow="customRow"
+                 size="small"
+                 :bordered="true">
+        </a-table>
+      </a-spin>
       <slot></slot>
     </template>
     <template v-slot:extra>
@@ -28,7 +29,7 @@
       </div>
       <slot name="extra"></slot>
     </template>
-<!--    表格的弹出框-->
+    <!--    表格的弹出框-->
     <template slot="popover" slot-scope="record">
       <a-popover>
         <template slot="content">
@@ -90,7 +91,7 @@ export default {
           });
         }
       },
-      immediate:true
+      immediate: true
     }
   },
   methods: {
@@ -99,7 +100,7 @@ export default {
       this.exportType = value;
       value === exportTypes[0] && this.exportAll();
       value === exportTypes[1] && this.exportPage();
-      return;
+
     },
     //导出所有标签栏中的数据
     exportAll() {

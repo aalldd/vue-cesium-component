@@ -1,7 +1,7 @@
 const resultMixin = {
   data() {
     return {
-      panelWidthCopy: Number(window.getComputedStyle(document.body).width.replace('px',''))*0.95,
+      panelWidthCopy: Number(window.getComputedStyle(document.body).width.replace('px', '')) * 0.95,
       paginationCopy: {}
     };
   },
@@ -32,7 +32,7 @@ const resultMixin = {
     width: {
       type: Number
     },
-    height:{
+    height: {
       type: Number
     },
     panelPosition: {
@@ -63,6 +63,11 @@ const resultMixin = {
       type: Object
     },
     needExport: {
+      type: Boolean,
+      default: true
+    },
+    //是否需要点击行跳转
+    needClickFly: {
       type: Boolean,
       default: true
     }
@@ -116,6 +121,15 @@ const resultMixin = {
       return {
         on: {
           click: () => {
+            //如果需要点击行跳转
+            if (this.needClickFly && record.geometry) {
+              const tile = this.m3ds.find(item => item.layerId === record.layerId);
+              const position = [record.geometry.x - this.offset[0], record.geometry.y - this.offset[1]];
+              //模型坐标转出来的高度有问题，看管段高度统一为70m
+              const {lng, lat} = this.emgManager.changeToLat(position);
+              this.emgManager.flyToEx(lng, lat, 70);
+              this.emgManager.binkPipe([tile], [record.OID]);
+            }
             this.$emit('onRowClick', record);
           }
         }

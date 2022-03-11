@@ -21,7 +21,7 @@ class Store {
       let oidStr = '';
       for (let index = 0; index < params.objectIds.length; index++) {
         oidStr += params.objectIds[index] + ',';
-        if ((index !== 0 && (index + 1) % 2000 == 0) || index == params.objectIds.length - 1) {
+        if ((index !== 0 && (index + 1) % 2000 === 0) || index === params.objectIds.length - 1) {
           objectIdsStrs.push(oidStr.substring(0, oidStr.length - 1));
           oidStr = '';
         }
@@ -55,7 +55,7 @@ class Store {
   async query3d(params, url, offset, mapServerName) {
     if (params.geometry && params.geometry.length > 0) {
       let geometrys = params.geometry.split(',');
-      const length = params.geometryType == 'cicle' ? geometrys.length - 1 : geometrys.length;
+      const length = params.geometryType === 'circle' ? geometrys.length - 1 : geometrys.length;
       for (let index = 0; index < length; index++) {
         if (index % 2 === 0) {
           geometrys[index] = Number(geometrys[index]) + Number(offset[0]);
@@ -67,11 +67,12 @@ class Store {
     }
 
     try {
+      //这套是调用mapServer的方法
       if (params.layerId) {
         if (mapServerName) {
           const {geometry, geometryType, page, pageCount} = params;
           if (params.returnIdsOnly) {//返回OID列表
-            if (geometryType == 'rect') {//矩形查询
+            if (geometryType === 'rect') {//矩形查询
               let geometrys = geometry.split(',');
               const geom = geomUtil.toJSON({
                 type: 'extent',
@@ -82,7 +83,7 @@ class Store {
               });
               params.geometry = geom.geometry;
               params.geometryType = geom.geometryType;
-            } else if (geometryType == 'polygon') {
+            } else if (geometryType === 'polygon') {
               let geometrys = geometry.split(',');
               let geometryList = [];
               geometrys.forEach((ge, index) => {
@@ -125,6 +126,7 @@ class Store {
           }
         }
       } else {
+        //这条是调用igs服务的方法，但是现在基本不用了
         const structs = {IncludeAttribute: true, IncludeGeometry: false, IncludeWebGraphic: true};
         const rule = {CompareRectOnly: true, EnableDisplayCondition: true, Intersect: true};
         const {data} = await Service.get(`http://${url.split('/')[2]}/igs/rest/g3d/getFeature`, {
