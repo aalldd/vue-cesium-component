@@ -1,18 +1,5 @@
 <template>
   <div class="draw-tool">
-    <mapgis-3d-draw
-      v-bind:vue-key="vueKey"
-      v-bind:vue-index="vueIndex"
-      :enableControl="enableControl"
-      :drawStyle="drawStyle"
-      :clampToGround="clampToGround"
-      @load="handleLoad"
-      @unload="handleUnload"
-      @drawcreate="drawcreate"
-      :position="position"
-      :infinite="infinite">
-
-    </mapgis-3d-draw>
     <div v-if="enableMenuControl==='none'">
       <slot></slot>
     </div>
@@ -39,6 +26,7 @@
 
 <script>
 import loadingM3ds from "@/util/mixins/withLoadingM3ds";
+import {buffer} from '@turf/turf';
 
 export default {
   name: "municipal-draw",
@@ -67,6 +55,7 @@ export default {
         outlineColor: '#000000',
         //线宽
         width: 2,
+        drawHeight: 40
       }
     };
   },
@@ -123,6 +112,14 @@ export default {
       }
     }
   },
+  mounted() {
+    if (!this.drawElement) {
+      this.drawElement = new Cesium.DrawElement(this.view.viewer);
+    }
+    if (!this.drawEntities) {
+      this.drawEntities = [];
+    }
+  },
   methods: {
     activeDraw() {
       this.popoverVisible = true;
@@ -130,43 +127,38 @@ export default {
     deactiveDraw() {
       this.popoverVisible = false;
     },
-    handleLoad(payload) {
-      this.$emit('load', payload);
-      window.drawOper = payload;
-    },
-    handleUnload(payload) {
-      this.$emit('unload', payload);
-    },
     drawStart(drawType) {
+      const {outlineColor, color, drawHeight} = this.startDrawing();
       this.drawType = drawType;
+      const self = this;
       switch (drawType) {
         //如果绘制范围为全球，我们返回一个字符用来标识是查全部的数据
         case 'global':
-          this.drawcreate('global');
+          self.drawcreate('global');
           return;
         //如果绘制范围为当前视角范围，我们返回四个坐标经纬度分别对应当前屏幕的四角的四个坐标点
         case 'preview':
-          this.activePreview();
+          self.activePreview();
           return;
         case 'point':
-          window.drawOper.enableDrawPoint();
+          self.activePoint(outlineColor, color, drawHeight);
           return;
         case 'line':
-          window.drawOper.enableDrawLine();
+          self.activeLine(outlineColor, color, drawHeight);
           return;
         case 'polygon':
-          window.drawOper.enableDrawPolygon();
+          self.activePolygon(outlineColor, color, drawHeight);
           return;
         //  平台的矩形绘制工具只返回两个坐标，所以自己用cesium原生写了一个
         case 'rect':
-          this.activeRect();
+          self.activeRect(outlineColor, color, drawHeight);
           return;
         case 'circle':
           //由于平台的圆形绘制工具只返回一个中心点坐标
-          this.activeCircle();
+          self.activeCircle(outlineColor, color, drawHeight);
           return;
         case 'delete':
-          window.drawOper.removeEntities();
+          self.removeAll();
           this.drawElement && this.drawElement.stopDrawing();
           return;
         default:
@@ -180,18 +172,109 @@ export default {
         type: this.drawType
       });
     },
-    activeRect() {
-      const view = this.webGlobe;
-      if (!this.drawElement) {
-        this.drawElement = new Cesium.DrawElement(view.viewer);
-        this.drawElement.setGroundPrimitiveType('TERRAIN');
-      }
-      if (!this.entityController) {
-        this.entityController = new CesiumZondy.Manager.EntityController({
-          viewer: view.viewer
+    startDrawing() {
+      if (!this.infinite) {
+        this.drawEntities.forEach(item => {
+          this.view.viewer.entities.remove(item);
         });
+        this.drawEntities = [];
+        this.drawElement.stopDrawing();
       }
-
+      if (this.clampToGround) {
+        this.drawElement.setGroundPrimitiveType('BOTH');
+      } else {
+        this.drawElement.setGroundPrimitiveType('NONE');
+      }
+      const outlineColor = new Cesium.Color.fromCssColorString(this.drawStyleCopy.outlineColor).withAlpha(this.drawStyleCopy.opacity);
+      const color = new Cesium.Color.fromCssColorString(this.drawStyleCopy.color).withAlpha(this.drawStyleCopy.opacity);
+      const drawHeight = this.drawStyleCopy.drawHeight;
+      return {outlineColor, color, drawHeight};
+    },
+    activePoint(outlineColor, color, drawHeight) {
+      this.drawElement.startDrawingMarker({
+        addDefaultMark: false,
+        color: color,
+        callback: (position) => {
+          //拿经纬度坐标
+          const {lng, lat, height} = this.emgManager.Cartesian3ToLat(position);
+          let modelHeight = drawHeight || height; //模型高度 如果没有指定，就用当前坐标高度
+          //添加点：经度、纬度、高程、名称、像素大小、颜色、外边线颜色、边线宽度
+          let drawEntity = this.entityController.appendPoint(lng, lat, modelHeight, '点', 10,
+            color,
+            outlineColor,
+            this.drawStyleCopy.outlineWidth);
+          this.drawEntities.push(drawEntity);
+          if (!this.infinite) {
+            this.drawElement.stopDrawing();
+          }
+          this.drawcreate(position);
+        }
+      });
+    },
+    activeLine(outlineColor, color, drawHeight) {
+      this.drawElement.startDrawingPolyline({
+        color,
+        callback: (positions) => {
+          let degreeArr = [];
+          positions.forEach(position => {
+            const {lng, lat, height} = this.emgManager.Cartesian3ToLat(position);
+            const modelHeight = drawHeight || height;
+            degreeArr.push([lng, lat, modelHeight]);
+          });
+          let polyline = new Cesium.DrawElement.PolylinePrimitive({
+            id: "polyline",
+            positions: positions,
+            width: this.drawStyleCopy.width,
+            geodesic: true
+          });
+          let drawEntity = this.view.viewer.scene.primitives.add(polyline);
+          this.drawEntities.push(drawEntity);
+          if (!this.infinite) {
+            this.drawElement.stopDrawing();
+          }
+          this.drawcreate(positions);
+        }
+      });
+    },
+    activePolygon(outlineColor, color, drawHeight) {
+      this.drawElement.startDrawingPolygon({
+        callback: (positions) => {
+          let pointArr = [];
+          let polygonArr = [];
+          positions.forEach(position => {
+            const {lng, lat, height} = this.emgManager.Cartesian3ToLat(position);
+            const modelHeight = drawHeight || height;
+            const pointM = this.emgManager.positionTransfer({lng, lat, modelHeight});
+            pointArr.push([lng, lat, modelHeight]);
+            polygonArr.push(pointM[0], pointM[1]);
+          });
+          //构造区对象
+          var polygon = {
+            name: "多边形",
+            polygon: {
+              //坐标点
+              hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights(pointArr),
+              //是否指定各点高度
+              perPositionHeight: true,
+              //颜色
+              material: new Cesium.Color(33 / 255, 150 / 255, 243 / 255, 0.3),
+              //轮廓线是否显示
+              outline: true,
+              //轮廓线颜色
+              outlineColor: Cesium.Color.BLACK
+            }
+          };
+          //绘制图形通用方法：对接Cesium原生特性
+          this.entityController.appendGraphics(polygon);
+          if (!this.infinite) {
+            this.drawElement.stopDrawing();
+          }
+          this.drawEntities.push(polygon);
+          this.drawcreate(positions);
+        }
+      });
+    },
+    activeRect(outlineColor, color, drawHeight) {
       this.drawElement.startDrawingExtent({
         callback: (positions, e) => {
           this.drawElement.stopDrawing();
@@ -203,10 +286,10 @@ export default {
           let southwest = Cesium.Rectangle.southwest(positions, new Cesium.Cartographic());//西南角的坐标
 
           //经纬度
-          const cnw = [Cesium.Math.toDegrees(northwest.longitude), Cesium.Math.toDegrees(northwest.latitude), northwest.height];
-          const cne = [Cesium.Math.toDegrees(northeast.longitude), Cesium.Math.toDegrees(northeast.latitude), northwest.height];
-          const cse = [Cesium.Math.toDegrees(southeast.longitude), Cesium.Math.toDegrees(southeast.latitude), northwest.height];
-          const csw = [Cesium.Math.toDegrees(southwest.longitude), Cesium.Math.toDegrees(southwest.latitude), northwest.height];
+          const cnw = [Cesium.Math.toDegrees(northwest.longitude), Cesium.Math.toDegrees(northwest.latitude), drawHeight || northwest.height];
+          const cne = [Cesium.Math.toDegrees(northeast.longitude), Cesium.Math.toDegrees(northeast.latitude), drawHeight || northwest.height];
+          const cse = [Cesium.Math.toDegrees(southeast.longitude), Cesium.Math.toDegrees(southeast.latitude), drawHeight || northwest.height];
+          const csw = [Cesium.Math.toDegrees(southwest.longitude), Cesium.Math.toDegrees(southwest.latitude), drawHeight || northwest.height];
           const hierarchy = Cesium.Cartesian3.fromDegreesArrayHeights([...cnw, ...cne, ...cse, ...csw]);
           //构造区对象
           let polygon = {
@@ -217,16 +300,67 @@ export default {
               //是否指定各点高度
               perPositionHeight: true,
               //颜色
-              material: new Cesium.Color.fromCssColorString(this.drawStyleCopy.color).withAlpha(this.drawStyleCopy.opacity),
+              material: color,
               //轮廓线是否显示
               outline: true,
               //轮廓线颜色
-              outlineColor: new Cesium.Color.fromCssColorString(this.drawStyleCopy.outlineColor)
+              outlineColor: outlineColor
             }
           };
           //绘制图形通用方法：对接Cesium原生特性
           this.entityController.appendGraphics(polygon);
+          this.drawEntities.push(polygon);
+          if (!this.infinite) {
+            this.drawElement.stopDrawing();
+          }
           this.drawcreate(hierarchy);
+        }
+      });
+    },
+    activeCircle(outlineColor, color, drawHeight) {
+      this.drawElement.startDrawingCircle({
+        callback: (centerPoint, radius) => {
+          const {lng, lat, height} = this.emgManager.Cartesian3ToLat(centerPoint);
+          let modelHeight = drawHeight || height;
+          this.range = this.view.viewer.entities.add({
+            position: Cesium.Cartesian3.fromDegrees(lng, lat, height),
+            ellipse: {
+              semiMinorAxis: radius,
+              semiMajorAxis: radius,
+              height: modelHeight, //浮空
+              material: color,
+            }
+          });
+          const origindata = {
+            "type": "FeatureCollection",
+            "features": [{
+              "type": "Feature",
+              "properties": {},
+              "geometry": {
+                "type": "Point",
+                "coordinates": [lng, lat]
+              }
+            }]
+          };
+
+          const geojson = buffer(origindata, radius, {
+            units: 'meters'
+          });
+          if (geojson?.features.length && geojson.features[0]?.geometry?.coordinates.length) {
+            let polygonArr = [];
+            let points = geojson.features[0].geometry.coordinates[0].reduce((a, b) => a.concat(b), []);
+            points.forEach((point, index) => {
+              if (index % 2 === 0) {
+                const pointM = this.emgManager.changeToCartesian3({lng: point, lat: points[index + 1], height});
+                polygonArr.push(pointM);
+              }
+            });
+            if (!this.infinite) {
+              this.drawElement.stopDrawing();
+            }
+            this.drawEntities.push(this.range);
+            this.drawcreate(polygonArr);
+          }
         }
       });
     },

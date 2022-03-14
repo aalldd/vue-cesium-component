@@ -2,7 +2,7 @@
   <municipal-panel :title="title" :draggable="draggable" @onClose="$emit('onClose')" :closable="closable"
                    :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
     <template v-slot:content>
-      <municipal-draw :vueKey="vueKey" enable-menu-control="func" :drawItems="drawItems" :infinite="true"
+      <municipal-draw :vueKey="vueKey" enable-menu-control="func" :drawItems="drawItems" :infinite="false"
                       @drawcreate="handleDraw"></municipal-draw>
       <municipal-layer :checkedKeys="checkedKeys"
                        :customTreeData="false"
@@ -57,7 +57,7 @@ export default {
     },
     handleDraw(result) {
       let geometry;
-      let geometryType = result.type;
+      let geometryType = result.type === 'circle' ? 'polygon' : result.type;
       const {payload} = result;
       //如果回传了笛卡尔3坐标
       if (Array.isArray(payload)) {
