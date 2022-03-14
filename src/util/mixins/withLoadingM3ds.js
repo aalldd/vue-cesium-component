@@ -1,7 +1,11 @@
 import emgUtil from "@/util/helpers/emgUtil";
+import vueOptions from "@/util/options/vueOptions";
 
 const loadingM3ds = {
   inject: ['Cesium', 'CesiumZondy', 'webGlobe', 'eventBus'],
+  props: {
+    ...vueOptions
+  },
   mounted() {
     //由于M3d图层数据加载慢，每秒轮询一次
     this.view = this.webGlobe;

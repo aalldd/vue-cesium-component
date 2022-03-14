@@ -13,38 +13,44 @@
       :infinite="infinite">
 
     </mapgis-3d-draw>
-    <div v-if="!enableMenuControl">
+    <div v-if="enableMenuControl==='none'">
       <slot></slot>
     </div>
-    <div v-if="enableMenuControl">
+    <div v-if="enableMenuControl==='menu'">
       <div class="toolbar-wrapper" v-show="popoverVisible" @mouseenter="activeDraw" @mouseleave="deactiveDraw">
         <div class="tool-item" v-for="item in Object.keys(drawToolmap).filter(jitem=>this.drawItems.indexOf(jitem)>=0) "
              v-on:click="drawStart(item)" :key="item" :class="drawType===item?'activeItem':''">
-          <mapgis-icon :name="drawToolmap[item][0]"></mapgis-icon>
+          <municipal-icon :name="drawToolmap[item][0]"></municipal-icon>
         </div>
       </div>
       <div class="tool-item" @mouseenter="activeDraw" @mouseleave="deactiveDraw">
-        <mapgis-icon name="draw"></mapgis-icon>
+        <municipal-icon name="draw"></municipal-icon>
+      </div>
+    </div>
+    <div v-if="enableMenuControl==='func'" class="tool-wrapper">
+      <div class="tool" :class="drawType===item?'activeItem':''"
+           :key="item" v-for="item in Object.keys(drawToolmap).filter(jitem=>this.drawItems.indexOf(jitem)>=0)"
+           v-on:click="drawStart(item)">
+        <municipal-icon :name="drawToolmap[item][0]"></municipal-icon>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import Icon from '../common/Icon';
+import loadingM3ds from "@/util/mixins/withLoadingM3ds";
 
 export default {
   name: "municipal-draw",
-  inject: ['Cesium', 'CesiumZondy', 'webGlobe'],
-  components: {
-    'mapgis-icon': Icon,
-  },
+  mixins: [loadingM3ds],
   data() {
     return {
       activeTool: true,
       cursorVisible: false,
       popoverVisible: false,
       drawToolmap: {
+        'preview': ['-vector-preview'],
+        'global': ['-vector-global'],
         'point': ['-vector-point'],
         'line': ['-vector-polyline'],
         'polygon': ['-vector-polygon'],
@@ -75,7 +81,7 @@ export default {
     drawItems: {
       type: Array,
       default: () => {
-        return ['point', 'line', 'polygon', 'rect', 'circle', 'delete'];
+        return ['preview', 'global', 'point', 'line', 'polygon', 'rect', 'circle', 'delete'];
       }
     },
     //是否采用mapgis-ceisum提供的原生样式
@@ -83,9 +89,13 @@ export default {
       type: Boolean,
       default: false
     },
+    //绘制组件有三种呈现方式，自定义ui，用于右下角的展示，用于普通功能的展示
     enableMenuControl: {
-      type: Boolean,
-      default: false
+      type: String,
+      default: 'none',
+      validator(value) {
+        return ['none', 'menu', 'func'].indexOf(value) >= 0;
+      }
     },
     drawStyle: {
       type: Object,
@@ -121,8 +131,8 @@ export default {
       this.popoverVisible = false;
     },
     handleLoad(payload) {
-      this.drawOper = payload;
       this.$emit('load', payload);
+      window.drawOper = payload;
     },
     handleUnload(payload) {
       this.$emit('unload', payload);
@@ -130,24 +140,33 @@ export default {
     drawStart(drawType) {
       this.drawType = drawType;
       switch (drawType) {
+        //如果绘制范围为全球，我们返回一个字符用来标识是查全部的数据
+        case 'global':
+          this.drawcreate('global');
+          return;
+        //如果绘制范围为当前视角范围，我们返回四个坐标经纬度分别对应当前屏幕的四角的四个坐标点
+        case 'preview':
+          this.activePreview();
+          return;
         case 'point':
-          this.drawOper.enableDrawPoint();
+          window.drawOper.enableDrawPoint();
           return;
         case 'line':
-          this.drawOper.enableDrawLine();
+          window.drawOper.enableDrawLine();
           return;
         case 'polygon':
-          this.drawOper.enableDrawPolygon();
+          window.drawOper.enableDrawPolygon();
           return;
         //  平台的矩形绘制工具只返回两个坐标，所以自己用cesium原生写了一个
         case 'rect':
           this.activeRect();
           return;
         case 'circle':
-          this.drawOper.enableDrawCircle();
+          //由于平台的圆形绘制工具只返回一个中心点坐标
+          this.activeCircle();
           return;
         case 'delete':
-          this.drawOper.removeEntities();
+          window.drawOper.removeEntities();
           this.drawElement && this.drawElement.stopDrawing();
           return;
         default:
@@ -156,8 +175,10 @@ export default {
       }
     },
     drawcreate(payload) {
-      console.log(payload);
-      this.$emit('drawcreate', payload);
+      this.$emit('drawcreate', {
+        payload,
+        type: this.drawType
+      });
     },
     activeRect() {
       const view = this.webGlobe;
@@ -208,6 +229,10 @@ export default {
           this.drawcreate(hierarchy);
         }
       });
+    },
+    activePreview() {
+      const previewRange = this.emgManager.getCurrentView();
+      this.drawcreate(previewRange);
     }
   }
 };
@@ -219,9 +244,28 @@ export default {
 .draw-tool {
   position: relative;
 
-  .toolbar-wrapper {
-    .activeItem {
-      background-color: $active-background;
+  .activeItem {
+    background-color: $active-background;
+  }
+}
+
+.tool-wrapper {
+  display: flex;
+  align-items: center;
+
+  .tool {
+    width: 2em;
+    height: 2em;
+    background-color: transparent;
+    color: var(--text-color);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--hover-color);
     }
   }
 }

@@ -8,13 +8,13 @@
             <span class="input-tag">开挖深度</span>
           </a-col>
           <a-col :span="10">
-            <a-slider v-model="digDistance" :min="1" :max="100"/>
+            <a-slider v-model="digDistance" :min="1" :max="40"/>
           </a-col>
           <a-col :span="8">
             <a-input-number
               v-model="digDistance"
               :min="1"
-              :max="100"
+              :max="40"
               style="margin-left: 16px"
             />
           </a-col>
@@ -61,7 +61,8 @@
           <a-col :span="14">
             <municipal-draw
               :vueKey="vueKey"
-              :enable-menu-control="false"
+              enable-menu-control="func"
+              :drawItems="drawItems"
               @load="onDrawLoad"
               @drawcreate="handleDraw"
             >
@@ -125,7 +126,8 @@ export default {
       sArea: 0,
       fArea: 0,
       heightRange: "",
-      drawType: ''
+      drawType: '',
+      drawItems: ['polygon', 'rect']
     };
   },
   computed: {
@@ -137,7 +139,8 @@ export default {
     onDrawLoad(payload) {
       this.drawOper = payload;
     },
-    handleDraw(payload) {
+    handleDraw(drawRes) {
+      const {payload} = drawRes;
       this.drawRange = payload;
       this.dynacut();
     },

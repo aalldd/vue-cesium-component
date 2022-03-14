@@ -2,7 +2,7 @@
   <div class="controlTools">
     <municipal-measure :vueKey="vueKey" v-if="this.toolComponents.indexOf('measure')>=0"
                        @measureResult="handleMeasure"></municipal-measure>
-    <municipal-draw :vueKey="vueKey" v-if="this.toolComponents.indexOf('draw')>=0" :enable-menu-control="true"
+    <municipal-draw :vueKey="vueKey" v-if="this.toolComponents.indexOf('draw')>=0" enable-menu-control="menu"
                     @drawcreate="handleDraw"></municipal-draw>
     <municipal-fullScreen v-if="this.toolComponents.indexOf('fullScreen')>=0"
                           :initScreen="false"></municipal-fullScreen>

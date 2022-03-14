@@ -15,7 +15,8 @@
             <div style="display: flex; justify-content: flex-start">
               <municipal-draw
                 :vueKey="vueKey"
-                :enable-menu-control="false"
+                :drawItems="drawItems"
+                enable-menu-control="func"
                 @load="onDrawLoad"
                 @drawcreate="handleDraw"
               >
@@ -124,15 +125,17 @@
 </template>
 
 <script>
-import VueOptions from '@/util/options/vueOptions'
+import VueOptions from '@/util/options/vueOptions';
 import PanelOpts from "@/util/options/panelOptions";
 import loadingM3ds from "@/util/mixins/withLoadingM3ds";
+
 export default {
   name: "municipal-auto-roam",
   inject: ["Cesium", "CesiumZondy", "webGlobe"],
   mixins: [loadingM3ds],
   data() {
     return {
+      drawItems: ['point'],
       pathVisible: true,
       isRoaming: false,
       autoRoamDataCopy: [
@@ -284,10 +287,11 @@ export default {
       )?.name;
     },
 
-    handleDraw(result) {
+    handleDraw(drawRes) {
+      const {payload: result} = drawRes;
       // 屏幕坐标转经纬度
       const postion = this.emgManager.Cartesian3ToLat(result);
-      const { lng, lat, height } = postion;
+      const {lng, lat, height} = postion;
       if (result) {
         // 每次点击左右键模型旋转的角度
         this.radian = Cesium.Math.toRadians(1.0);
@@ -383,7 +387,7 @@ export default {
       let orientation = this.mycar.orientation.getValue(
         this.webGlobe.viewer.clock.currentTime
       );
-      const { lng, lat, height } = this.changeToLat();
+      const {lng, lat, height} = this.changeToLat();
       const newCenter = this.emgManager.changeToCartesian3({
         lng,
         lat,
@@ -505,7 +509,7 @@ export default {
         new Cesium.Cartesian3()
       );
       // 拿到下一个点的地形高度
-      const { height } = this.setHeight(position);
+      const {height} = this.setHeight(position);
       return height;
     },
 
@@ -560,13 +564,13 @@ export default {
       );
 
       if (isUP !== 0) {
-        const { lng, lat } = this.changeToLat(position);
+        const {lng, lat} = this.changeToLat(position);
         let newHeight = height1;
         let newPosition;
         if (this.currentModel === "小车") {
-          newPosition = { lng, lat, height: newHeight + 0.5 };
+          newPosition = {lng, lat, height: newHeight + 0.5};
         } else {
-          newPosition = { lng, lat, height: newHeight };
+          newPosition = {lng, lat, height: newHeight};
         }
 
         if (this.currentModel !== "无人机") {
@@ -608,10 +612,10 @@ export default {
 
     // 取地形高程 会将模型高度也算进去
     setHeight(position) {
-      const { lng, lat, height } = this.changeToLat(position);
+      const {lng, lat, height} = this.changeToLat(position);
       let carto = new Cesium.Cartographic.fromDegrees(lng, lat); //输入经纬度
       let h2 = this.webGlobe.viewer.scene.sampleHeight(carto);
-      return { lng, lat, height: h2 };
+      return {lng, lat, height: h2};
     },
 
     // 笛卡尔3转经纬度
@@ -627,16 +631,16 @@ export default {
       let lng = Cesium.Math.toDegrees(cartographic.longitude);
       let lat = Cesium.Math.toDegrees(cartographic.latitude);
       let height = cartographic.height;
-      return { lng, lat, height };
+      return {lng, lat, height};
     },
 
     removePlanes() {
       this.mouseEventManager &&
-        this.mouseEventManager.unRegisterMouseEvent("LEFT_CLICK");
+      this.mouseEventManager.unRegisterMouseEvent("LEFT_CLICK");
       this.mouseEventManager &&
-        this.mouseEventManager.unRegisterMouseEvent("MOUSE_MOVE");
+      this.mouseEventManager.unRegisterMouseEvent("MOUSE_MOVE");
       this.mouseEventManager &&
-        this.mouseEventManager.unRegisterMouseEvent("RIGHT_CLICK");
+      this.mouseEventManager.unRegisterMouseEvent("RIGHT_CLICK");
       this.stopRoam();
     },
 

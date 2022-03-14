@@ -1,6 +1,6 @@
 //服务接口，只能用于测试，不用于组件库
 import Service from '@/service/service';
-import {geomUtil} from '@/util/helpers/helper';
+import {geomUtil, dataFormatter} from './helpers';
 
 class Store {
   constructor(view, m3ds) {
@@ -11,6 +11,45 @@ class Store {
     this.ScadaServer = Service.City.Plugin('ScadaServer');
     this.MapServer = Service.City.Plugin('MapServer');
     this.AuxDataServer = Service.City.Plugin("AuxDataServer");
+    this.cancelToken = Service.CancelToken;
+  }
+
+  //根据条件查询地下管线的信息 然后整理成tabs格式的数据，直接可以供result组件进行使用
+  async queryLayers(geometry, geometryType, where, cutLayerIndexs, offset, mapServerName, exportName, layerIds) {
+    let layers;
+    if (!layerIds) {
+      layers = this.m3ds.filter(item => !cutLayerIndexs.includes(item.layerIndex));
+    } else {
+      layers = this.m3ds.filter(item => layerIds.includes(item.layerId));
+    }
+
+    const promises = layers.map(t => {
+      if (t.gdbp) {
+        let params = {
+          gdbp: t.gdbp,
+          f: 'json',
+          geometry: geometry,
+          geometryType: geometryType,
+          layerId: t.layerId,
+          returnIdsOnly: true,
+          returnGeometry: false
+        };
+        //如果传对象的话，需要是{line:content,point:content}这样的格式
+        if (where && where instanceof Object) {
+          if (t.civFeatureType.endsWith('Line')) {
+            params.where = where.line;
+          } else {
+            params.where = where.point;
+          }
+        } else {
+          params.where = where;
+        }
+        return this.query3d(params, t.url, offset, mapServerName);
+      }
+    });
+    let data = await Promise.all(promises);
+    data = data.filter((d, ind) => d?.features?.length);
+    return dataFormatter(data, exportName);
   }
 
   //根据oids查询属性信息
@@ -154,7 +193,7 @@ class Store {
 
   //添加漫游信息
   async addRoamData(params) {
-    const { data } = await this.IntegratedServer.get("addRoamData", {
+    const {data} = await this.IntegratedServer.get("addRoamData", {
       params: params
     });
     return data;

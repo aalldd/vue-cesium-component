@@ -45,6 +45,7 @@
                              title="选择失效关联设备"
                              panelPosition="left"
                              :columns="invalidColunm"
+                             :needClickFly="false"
                              @onRowClick="onRowClick"
                              :width="400"
                              :pagination="false"
@@ -60,6 +61,7 @@
                              :title="detailTitle"
                              panelPosition="bottom"
                              :columns="detailColunm"
+                             :needClickFly="false"
                              @onRowClick="onRowClick"
                              :height="400"
                              @onClose="()=>{this.detailVisible=false}"
@@ -817,6 +819,7 @@ export default {
               title: item.name,
               dataIndex: item.name,
               key: item.name,
+              width: 120
             }
           );
         }

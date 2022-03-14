@@ -481,6 +481,15 @@ class emgUtil {
     };
   };
 
+  //笛卡尔3坐标转二维点坐标fv
+  Car3ToFv = (position) => {
+    const lngLat = this.Cartesian3ToLat(position);
+    return {
+      x: this.positionTransfer(lngLat)[0],
+      y: this.positionTransfer(lngLat)[1]
+    };
+  };
+
   //经纬度坐标转换为二维点坐标fv（模型坐标）
   positionTransfer = (position, transform) => {
     // 将经纬度坐标转为模型坐标

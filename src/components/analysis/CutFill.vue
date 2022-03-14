@@ -53,7 +53,11 @@
             <span class="input-tag">绘制区域</span>
           </a-col>
           <a-col :span="14">
-            <municipal-draw :vueKey="vueKey" :enable-menu-control="false" @load="onDrawLoad" @drawcreate="handleDraw">
+            <municipal-draw :vueKey="vueKey"
+                            enable-menu-control="func"
+                            @load="onDrawLoad"
+                            :drawItems="drawItems"
+                            @drawcreate="handleDraw">
               <div class="icons" @click="drawArea">
                 <municipal-icon name="-vector-polygon" style="cursor: pointer"></municipal-icon>
               </div>
@@ -77,7 +81,8 @@ export default {
   data() {
     return {
       terrainHeight: 30,
-      drawTexture: ""
+      drawTexture: "",
+      drawItems: ['polygon', 'rect']
     };
   },
   props: {
@@ -106,7 +111,8 @@ export default {
     onDrawLoad(payload) {
       this.drawOper = payload;
     },
-    handleDraw(positions) {
+    handleDraw(drawRes) {
+      const {payload: positions} = drawRes;
       let tileset = this.m3ds.find((t) => t.layerId) || this.m3ds[0];
       let transform = tileset.root.transform;
       this.view.viewer.scene.globe.depthTestAgainstTerrain = true;

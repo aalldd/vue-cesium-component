@@ -17,10 +17,11 @@
             </div>
           </div>
         </div>
-        <div class="content" v-show="!expanded">
-          <slot name="content"></slot>
-        </div>
-        <slot></slot>
+        <transition name="expand">
+          <div class="content" v-show="!expanded">
+            <slot name="content"></slot>
+          </div>
+        </transition>
       </div>
     </vue-draggable-resizable>
     <div class="panel-container" v-if="!draggable" :style="{...panelStyle}" :class="[panelClassName]">
@@ -130,10 +131,12 @@ export default {
       }
     }
   }
+}
 
-  .content {
-    padding: $panel-padding;
-  }
+.content {
+  height: auto;
+  overflow: hidden;
+  padding: $panel-padding;
 }
 
 </style>

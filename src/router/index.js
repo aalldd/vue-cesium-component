@@ -15,11 +15,6 @@ const router=new Router({
           component: ()=>import('../components/analysis/Flood')
         },
         {
-          path: '/clickQuery',
-          name: 'clickQuery',
-          component: ()=>import('../components/query/clickQuery')
-        },
-        {
           path: '/dynacut',
           name: 'dynacut',
           component: ()=>import('../pages/DynacutAna')
@@ -58,6 +53,11 @@ const router=new Router({
           path: '/cutFill',
           name: 'cutFill',
           component: () => import('../pages/CutFillAna')
+        },
+        {
+          path: '/quickQuery',
+          name: 'quickQuery',
+          component: () => import('../pages/QuickQueryAna')
         }
       ]
     }

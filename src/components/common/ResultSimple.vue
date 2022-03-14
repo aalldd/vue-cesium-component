@@ -14,8 +14,10 @@
                  @change="handleTableChange"
                  :customRow="customRow"
                  size="small"
+                 v-if="dataSource.length>0"
                  :bordered="true">
         </a-table>
+        <a-empty v-else></a-empty>
       </a-spin>
       <slot></slot>
     </template>

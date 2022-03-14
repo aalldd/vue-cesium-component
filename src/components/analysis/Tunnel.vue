@@ -64,7 +64,8 @@
           <span class="input-tag">绘制隧道</span>
         </a-col>
         <a-col :span="14">
-          <municipal-draw :vueKey="vueKey" :enable-menu-control="false" @load="onDrawLoad" @drawcreate="handleDraw">
+          <municipal-draw :vueKey="vueKey" enable-menu-control="func" :drawItems="drawItems" @load="onDrawLoad"
+                          @drawcreate="handleDraw">
             <div class="icons" @click="drawTunnelPath">
               <municipal-icon name="-vector-point" style="cursor: pointer"></municipal-icon>
             </div>
@@ -97,7 +98,8 @@ export default {
       tunnelStyleCopy: {
         color: '#000',
         alpha: 0.4
-      }
+      },
+      drawItems: ['line']
     };
   },
   props: {
@@ -120,12 +122,15 @@ export default {
     onDrawLoad(payload) {
       this.drawOper = payload;
     },
-    handleDraw(payload) {
+    handleDraw(drawRes) {
+      const {payload} = drawRes;
       this.tunnelPath = payload.map(item => {
         return this.emgManager.Cartesian3ToLat(item);
       });
       this.drawTunnel();
-      this.calLine();
+      this.$nextTick(() => {
+        this.calLine();
+      });
     },
     drawTunnelPath() {
       this.emgManager.removeAll();
@@ -227,28 +232,28 @@ export default {
               BottomBarList = [...BottomBarList, ep1];
             }
           }
-
         });
       }
 
-      const transform = this.m3ds.find(t => !this.layerIndexs.includes(t.layerIndex)).root.transform;
       BottomBarList = BottomBarList.reverse();
       polygonList = [...topBarList, ...BottomBarList, topBarList[0]].map(item => {
         let point = {x: item[0], y: item[1], z: item[2]};
-        let resPoint = new Cesium.Cartesian3;
-        let invserTran = new Cesium.Matrix4;
-        Cesium.Matrix4.inverse(transform, invserTran);
-        Cesium.Matrix4.multiplyByPoint(invserTran, point, resPoint);
-        return resPoint;
+        const lngLat = this.emgManager.Cartesian3ToLat(point);
+        const position = this.emgManager.positionTransfer(lngLat);
+        return {x: position[0], y: position[1]};
       });
       //从基础配置中拿取偏移坐标
-      const geometry = polygonList.map(p => [p.x + this.offset[0], p.y + this.offset[1]]).reduce((a, b) => a.concat(b), []).join();
+      const geometry = polygonList.map(p => [p.x, p.y]).reduce((a, b) => a.concat(b), []).join();
       let range = [];
       tunnelType === '矩形' ? range = [tunnelCenterHeight - tunnelHeight / 2, tunnelCenterHeight + tunnelHeight / 2] : range = [tunnelCenterHeight - tunnelRadius, tunnelCenterHeight + tunnelRadius];
       this.$emit('sendQueryParam', {
-        'geometry': geometry,
-        'geometryType': 'polygon',
-        'range': range
+        geometry: geometry,
+        geometryType: 'polygon',
+        range: range,
+        mapServerName: this.mapServerName,
+        offset: this.offset,
+        cutLayerIndexs: this.layerIndexs,
+        m3ds: this.m3ds
       });
     }
   }

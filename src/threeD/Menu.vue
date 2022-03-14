@@ -47,13 +47,9 @@ export default {
           key: '0',
           children: [
             {
-              menuName: '点击查询',
-              menuRoute: 'clickQuery',
-              key: '0-0'
-            }, {
               menuName: '快速查询',
               menuRoute: 'quickQuery',
-              key: '0-1'
+              key: '0-0'
             }
           ]
         }, {

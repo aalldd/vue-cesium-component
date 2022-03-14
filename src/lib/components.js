@@ -38,6 +38,9 @@ export {default as MunicipalResultCommon} from '../components/common/ResultCommo
 export {default as MunicipalResultSimple} from '../components/common/ResultSimple';
 export {default as MunicipalLayer} from '../components/common/Layer';
 
+//查询
+export {default as MunicipalQuickQuery} from '../components/query/QuickQuery';
+
 //地图工具
 export {default as MunicipalDraw} from "../components/tools/Draw";
 export {default as MunicipalFullScreen} from "../components/tools/FullScreen";

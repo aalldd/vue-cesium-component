@@ -103,7 +103,7 @@ export default {
     },
     init() {
       this.trackCamera();
-      this.cameraListener();
+      this.emgManager && this.cameraListener();
       this.view.viewer.scene.screenSpaceCameraController.enableTilt = false;
     },
     trackCamera() {

@@ -11,6 +11,7 @@
           tab-position="top"
           type="card"
           size="small"
+          v-if="tabs.length>0"
           @change="onTabsChange"
         >
           <a-tab-pane v-for="(item,index) in tabsCopy" :key="index" :tab="item.tabName">
@@ -26,6 +27,7 @@
             </a-table>
           </a-tab-pane>
         </a-tabs>
+        <a-empty v-else></a-empty>
       </a-spin>
     </template>
     <template v-slot:extra>

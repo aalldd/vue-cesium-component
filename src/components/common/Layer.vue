@@ -1,37 +1,31 @@
 <template>
-  <municipal-panel :title="title" :draggable="draggable" @close="$emit('onClose')"
-                   :closable="closable"
-                   :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
-    <template v-slot:content>
-      <a-input-search style="margin-bottom: 8px" placeholder="Search" @change="onChange" v-if="needSearch"/>
-      <a-spin :spinning="loadingCopy" style="min-height: 200px;overflow-y: scroll;overflow-x:hidden;max-height: 600px">
-        <a-tree
-          :expanded-keys="expandedKeys"
-          :checkedKeys="checkedKeysCopy"
-          :auto-expand-parent="autoExpandParent"
-          :tree-data="layerDataCopy"
-          :checkable="checkable"
-          @expand="onExpand"
-          @check="checked"
-        >
-          <template slot="title" slot-scope="{ title }">
+  <div>
+    <a-input-search style="margin-bottom: 8px" placeholder="搜索图层" @change="onChange" v-if="needSearch"/>
+    <a-spin :spinning="loadingCopy" style="overflow-y: scroll;overflow-x:hidden;max-height: 600px;min-height: 50px">
+      <a-tree
+        :expanded-keys="expandedKeys"
+        :checkedKeys="checkedKeysCopy"
+        :auto-expand-parent="autoExpandParent"
+        :tree-data="layerDataCopy"
+        :checkable="checkable"
+        @expand="onExpand"
+        @check="checked"
+      >
+        <template slot="title" slot-scope="{ title }">
         <span v-if="title.indexOf(searchValue) > -1">
           {{ title.substr(0, title.indexOf(searchValue)) }}
           <span style="color: #f50">{{ searchValue }}</span>
           {{ title.substr(title.indexOf(searchValue) + searchValue.length) }}
         </span>
-            <span v-else>{{ title }}</span>
-          </template>
-        </a-tree>
-      </a-spin>
-      <slot></slot>
-    </template>
-  </municipal-panel>
+          <span v-else>{{ title }}</span>
+        </template>
+      </a-tree>
+    </a-spin>
+  </div>
 </template>
 
 <script>
-import panelOptions from "@/util/options/panelOptions";
-import VueOptions from '@/util/options/vueOptions'
+import VueOptions from '@/util/options/vueOptions';
 import {treeUtil} from "@/util/helpers/helper";
 
 const getParentKey = (key, tree) => {
@@ -76,9 +70,10 @@ export default {
       },
       immediate: true
     },
+    //受控状态使用checkedKeys
     checkedKeys: {
       handler() {
-        if (this.checkedKeys.length > 0) {
+        if (this.checkedKeys.length > 0 && !this.defaultChecked) {
           this.checkedKeysCopy = this.checkedKeys;
         }
       },
@@ -92,7 +87,6 @@ export default {
     }
   },
   props: {
-    ...panelOptions,
     ...VueOptions,
     //生成树的数据
     layerData: {
@@ -118,7 +112,7 @@ export default {
     //是否需要自定义树的数据,如果为是，则渲染layerData，如果为否，根据globalConfig中的全部图层树结合layerGroup中的筛选规则进行筛选
     customTreeData: {
       type: Boolean,
-      default: true
+      default: false
     },
     //需要提供哪些管网需要展示，配置格式 管网分组名称+子管网图层名称+流动的绘制纹理图片,如果不配置，将显示全部图层，如果只配置管网分组名称，将显示该分组下的全部图层
     //如果需要指定的单独的管网图层，每个管网名称下面必须含有subLayers字段
@@ -131,6 +125,9 @@ export default {
     needSearch: {
       type: Boolean,
       default: true
+    },
+    defaultChecked: {
+      type: Array
     }
   },
   mounted() {
@@ -153,7 +150,7 @@ export default {
             };
           });
           const keys = Object.keys(this.layerGroup);
-          if (!keys) {
+          if (!keys.length > 0) {
             treeData = treeDataTotal;
           } else {
             //从完整的图层树中筛选出用户传入的图层分组以及分组下的子图层
@@ -173,13 +170,26 @@ export default {
               }
             });
           }
-          const checkedKeys = [];
-          const layers = [];
-          //默认勾选全部
-          treeUtil.forEach(treeData, (item) => {
-            checkedKeys.push(item.key);
-            checkedKeys.push(item.key);
-            item.name && layers.push(item.name);
+          let checkedKeys = [];
+          //默认勾选全部 如果指定了就按照指定的勾选
+          if (!this.defaultChecked) {
+            treeUtil.forEach(treeData, (item) => {
+              checkedKeys.push(item.key);
+              checkedKeys.push(item.key);
+            });
+          } else {
+            checkedKeys = this.defaultChecked;
+          }
+
+          //将图层的layerId添加进去
+          treeData = treeUtil.map(treeData, (tItem) => {
+            const target = window.m3ds.find(item => item.name === tItem.name);
+            if (target) {
+              tItem.layerId = target.layerId;
+            } else {
+              tItem.layerId = null;
+            }
+            return tItem;
           });
           this.checkedKeysCopy = checkedKeys;
           this.layerDataCopy = treeData;
@@ -189,7 +199,6 @@ export default {
             .map(item => {
               return getParentKey(item.key, this.layerData);
             });
-          this.layerIds = window.m3ds.filter((item, index) => layers.indexOf(item.name) >= 0).map(item => item.layerId);
           this.$emit('load', this);
           window.clearInterval(this.myInterval);
         }
@@ -210,7 +219,8 @@ export default {
     },
     checked(checkedKeys) {
       this.checkedKeysCopy = checkedKeys;
-      this.$emit('check', checkedKeys);
+      const filterLayerIds = treeUtil.filter(this.layerDataCopy, (item) => checkedKeys.indexOf(item.key) >= 0).map(item => item.layerId).filter(item => item !== null);
+      this.$emit('check', checkedKeys, filterLayerIds);
     },
     generateList(data) {
       for (let i = 0; i < data.length; i++) {

@@ -61,7 +61,8 @@
             <div style="display: flex;justify-content: flex-start" v-if="item.uniKey==='route'">
               <municipal-draw
                 :vueKey="vueKey"
-                :enable-menu-control="false"
+                enable-menu-control="func"
+                :drawItems="drawItems"
                 @load="onDrawLoad"
                 @drawcreate="handleDraw"
               >
@@ -115,6 +116,7 @@ export default {
   mixins: [loadingM3ds],
   data() {
     return {
+      drawItems: ['line'],
       pathVisible: true,
       isRoaming: false,
       loopOption: ['是', '否'],
@@ -305,7 +307,8 @@ export default {
     onDrawLoad(payload) {
       this.drawOper = payload;
     },
-    handleDraw(result) {
+    handleDraw(drawRes) {
+      const {payload: result} = drawRes;
       const lats = result.map(item => this.emgManager.Cartesian3ToLat(item));
       lats.forEach(item => {
         const longtitude = item?.lng;

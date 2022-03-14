@@ -1,24 +1,22 @@
 <template>
-  <municipal-layer :customTreeData="customTreeData"
-                   :checkedKeys="checkedKeys"
-                   :title="title"
-                   :layerDataCopy="layerDataCopy"
-                   :layerGroup="layerGroup"
-                   :draggable="draggable"
-                   @onClose="$emit('onClose')"
-                   :closable="closable"
-                   :need-expand="expandable"
-                   :panel-style="panelStyle"
-                   @check="check"
-                   @load="onLayerLoad"
-                   :panel-class-name="panelClassName">
-    <div style="display: flex;align-items: center;justify-content: flex-end" v-if="!uiControlled">
-      <a-button type="primary" @click="queryData" style="margin-right: 10px">请求数据</a-button>
-      <a-button @click="startFlow" style="margin-right: 10px">开始分析</a-button>
-      <a-button @click="cancelFlow">结束分析</a-button>
-    </div>
-    <slot v-else></slot>
-  </municipal-layer>
+  <municipal-panel :title="title" :draggable="draggable" @onClose="$emit('onClose')" :closable="closable"
+                   :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
+    <template v-slot:content>
+      <municipal-layer :customTreeData="customTreeData"
+                       :checkedKeys="checkedKeys"
+                       :layerData="layerDataCopy"
+                       :layerGroup="layerGroup"
+                       @check="check"
+                       @load="onLayerLoad">
+        <div style="display: flex;align-items: center;justify-content: flex-end" v-if="!uiControlled">
+          <a-button type="primary" @click="queryData" style="margin-right: 10px">请求数据</a-button>
+          <a-button @click="startFlow" style="margin-right: 10px">开始分析</a-button>
+          <a-button @click="cancelFlow">结束分析</a-button>
+        </div>
+        <slot v-else></slot>
+      </municipal-layer>
+    </template>
+  </municipal-panel>
 </template>
 
 <script>
@@ -164,8 +162,9 @@ export default {
       }, 3000);
     },
     onLayerLoad(payload) {
-      console.log(payload);
-      this.layerIds = payload.layerIds;
+      this.layerIds = treeUtil.filter(item => {
+        return item.layerId !== null;
+      }).map(item => item.layerId);
       this.checkedKeys = payload.checkedKeysCopy;
       this.layerDataCopy = payload.layerDataCopy;
     },
@@ -219,12 +218,10 @@ export default {
       });
       return result;
     },
-    check(checkedKeys) {
+    check(checkedKeys, layerIds) {
       //通过找与m3ds中匹配的图层名进行筛选
       this.checkedKeys = checkedKeys;
-      const choosedLayer = treeUtil.filter(this.layerDataCopy, (item) => checkedKeys.indexOf(item.key) >= 0).map(item => item.name);
-      const choosedM3d = this.m3ds.filter((item, index) => choosedLayer.indexOf(item.name) >= 0);
-      this.layerIds = choosedM3d.map(item => item.layerId);
+      this.layerIds = layerIds;
       this.mapServerName = window.commonConfig?.globalConfig?.mapServerName || "";
       this.flowEntities.length > 0 && this.flowEntities.forEach(item => {
         const layerName = item.layerName;
@@ -250,7 +247,7 @@ export default {
       this.$emit('query', params);
     },
     cancelFlow() {
-      this.emgManager.removeAll();
+      this.emgManager && this.emgManager.removeAll();
       this.arrListener && window.clearInterval(this.arrListener);
       this.view.viewer.camera.changed.removeEventListener(this.motivation, this);
     },
@@ -351,7 +348,7 @@ export default {
               if (!arrowId) {
                 this.webGlobe.viewer.entities.add(flowLine);
               } else {
-                return;
+
               }
             } else {
               arrowId && this.webGlobe.viewer.entities.remove(arrowId);
