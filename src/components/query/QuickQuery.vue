@@ -66,8 +66,8 @@ export default {
           return [position.x, position.y];
         }).reduce((a, b) => a.concat(b), []).join();
       } else if (payload === "global") {
-        geometry = null;
-        geometryType = null;
+        geometry = '';
+        geometryType = '';
       } else {
         geometry = payload.geometry;
         geometryType = 'rect';

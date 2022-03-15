@@ -90,6 +90,12 @@ class Store {
     return data;
   }
 
+  //根据图层字段名，查询该图层下，该字段的所有取值
+  async queryFieldValues(mapServerName, layerId, fieldName) {
+    const {data} = await this.MapServer.get(`${mapServerName}/${layerId}/queryFieldValues?fieldName=${fieldName}`);
+    return data;
+  }
+
   //查询GIS信息
   async query3d(params, url, offset, mapServerName) {
     if (params.geometry && params.geometry.length > 0) {

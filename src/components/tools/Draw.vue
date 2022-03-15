@@ -245,7 +245,7 @@ export default {
             const {lng, lat, height} = this.emgManager.Cartesian3ToLat(position);
             const modelHeight = drawHeight || height;
             const pointM = this.emgManager.positionTransfer({lng, lat, modelHeight});
-            pointArr.push([lng, lat, modelHeight]);
+            pointArr.push(lng, lat, modelHeight);
             polygonArr.push(pointM[0], pointM[1]);
           });
           //构造区对象
@@ -257,19 +257,19 @@ export default {
               //是否指定各点高度
               perPositionHeight: true,
               //颜色
-              material: new Cesium.Color(33 / 255, 150 / 255, 243 / 255, 0.3),
+              material: color,
               //轮廓线是否显示
               outline: true,
               //轮廓线颜色
-              outlineColor: Cesium.Color.BLACK
+              outlineColor: outlineColor
             }
           };
           //绘制图形通用方法：对接Cesium原生特性
-          this.entityController.appendGraphics(polygon);
+          const polygonEntity = this.entityController.appendGraphics(polygon);
           if (!this.infinite) {
             this.drawElement.stopDrawing();
           }
-          this.drawEntities.push(polygon);
+          this.drawEntities.push(polygonEntity);
           this.drawcreate(positions);
         }
       });
@@ -308,8 +308,8 @@ export default {
             }
           };
           //绘制图形通用方法：对接Cesium原生特性
-          this.entityController.appendGraphics(polygon);
-          this.drawEntities.push(polygon);
+          const rectEntity = this.entityController.appendGraphics(polygon);
+          this.drawEntities.push(rectEntity);
           if (!this.infinite) {
             this.drawElement.stopDrawing();
           }

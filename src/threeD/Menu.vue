@@ -50,6 +50,11 @@ export default {
               menuName: '快速查询',
               menuRoute: 'quickQuery',
               key: '0-0'
+            },
+            {
+              menuName: '条件查询',
+              menuRoute: 'conditionQuery',
+              key: '0-1'
             }
           ]
         }, {

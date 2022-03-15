@@ -36,10 +36,13 @@ export {default as MunicipalCursorTip} from "../components/common/CursorTip";
 export {default as MunicipalPanel} from '../components/common/Panel';
 export {default as MunicipalResultCommon} from '../components/common/ResultCommon';
 export {default as MunicipalResultSimple} from '../components/common/ResultSimple';
+export {default as MunicipalFilter} from '../components/common/Filter';
 export {default as MunicipalLayer} from '../components/common/Layer';
+export {default as MunicipalLayerSelect} from '../components/common/LayerSelect';
 
 //查询
 export {default as MunicipalQuickQuery} from '../components/query/QuickQuery';
+export {default as MunicipalConditionQuery} from '../components/query/ConditionQuery';
 
 //地图工具
 export {default as MunicipalDraw} from "../components/tools/Draw";

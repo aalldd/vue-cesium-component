@@ -58,6 +58,11 @@ const router=new Router({
           path: '/quickQuery',
           name: 'quickQuery',
           component: () => import('../pages/QuickQueryAna')
+        },
+        {
+          path: '/conditionQuery',
+          name: 'conditionQuery',
+          component: () => import('../pages/ConditionQueryAna')
         }
       ]
     }
