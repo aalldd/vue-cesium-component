@@ -49,7 +49,7 @@ export default {
       drawType: '',
       drawStyleCopy: {
         color: '#FF0000',
-        opacity: 1,
+        opacity: 0.4,
         outlineWidth: 1,
         //边线颜色
         outlineColor: '#000000',

@@ -11,7 +11,8 @@
       </div>
       <slot name="filter"></slot>
       <div style="display: flex;justify-content: flex-end;margin-top: 10px">
-        <a-button type="primary">查询</a-button>
+        <a-button @click="reset" style="margin-right: 10px">重置</a-button>
+        <a-button type="primary" @click="queryCondition">查询</a-button>
       </div>
     </template>
   </municipal-panel>
@@ -30,7 +31,8 @@ export default {
       drawItems: ['global', 'preview', 'polygon', 'rect', 'circle'],
       layerInfoCopy: {},
       fldName: [],
-      fieldArr: []
+      fieldArr: [],
+      condition: ''
     };
   },
   props: {
@@ -39,7 +41,7 @@ export default {
       type: Object,
       default: () => {
         return {
-          width: '500px',
+          width: '600px',
           position: 'absolute',
           right: '2em',
           top: '2em'
@@ -48,7 +50,7 @@ export default {
     },
     layerInfo: {
       type: Object
-    }
+    },
   },
   watch: {
     layerInfo: {
@@ -60,7 +62,15 @@ export default {
       }, immediate: true
     }
   },
+  mounted() {
+    this.eventBus.$on('sendSql', sql => {
+      this.condition = sql;
+    });
+  },
   methods: {
+    reset() {
+      this.$emit('reset');
+    },
     handleDraw(result) {
       let geometry;
       let geometryType = result.type === 'circle' ? 'polygon' : result.type;
@@ -78,19 +88,14 @@ export default {
         geometry = payload.geometry;
         geometryType = 'rect';
       }
-      const params = {
+      this.geometry = {
         geometry,
-        geometryType,
-        cutLayerIndexs: this.layerIndexs,
-        m3ds: this.m3ds,
-        offset: this.offset,
-        mapServerName: this.mapServerName,
-        layerIds: this.layerIds
+        geometryType
       };
-      this.params = params;
     },
     onLayerChange(targetLayer) {
       const tile = this.m3ds.find(item => item.layerId === targetLayer.layerId);
+      this.layerId = tile.layerId;
       //选择了图层之后，要去服务请求到该图层下的字段值
       const params = {
         gdbp: tile.gdbp,
@@ -122,6 +127,25 @@ export default {
       }
       this.fldName = fldName;
       this.fieldArr = fieldArr;
+    },
+    queryCondition() {
+      if (!this.geometry) {
+        this.$message.warn('请先绘制查询范围');
+        return;
+      }
+      if (!this.layerId) {
+        this.$message.warn('请先选择查询图层');
+        return;
+      }
+
+      const standardParam = {
+        cutLayerIndexs: this.layerIndexs,
+        m3ds: this.m3ds,
+        offset: this.offset,
+        mapServerName: this.mapServerName
+      };
+      const params = {...standardParam, ...this.geometry, where: this.condition, layerIds: [this.layerId]};
+      this.$emit('queryCondition', params);
     }
   }
 };

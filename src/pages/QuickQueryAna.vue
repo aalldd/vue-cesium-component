@@ -35,7 +35,6 @@ export default {
     async query(info) {
       this.load = true;
       this.resultVisible = true;
-      console.log(info);
       const {geometry, geometryType, cutLayerIndexs, m3ds, offset, mapServerName, layerIds} = info;
       const store = new Store(this.webGlobe, m3ds);
       this.tabs = await store.queryLayers(geometry, geometryType, null, cutLayerIndexs, offset, mapServerName, this.title, layerIds);

@@ -3,7 +3,6 @@
     <a-tree-select
       v-model="value"
       style="width: 100%"
-      size="small"
       allow-clear
       :disable-branch-nodes="true"
       :maxTagCount="6"

@@ -1,12 +1,23 @@
 <template>
   <div>
-    <municipal-condition-query :title="title" @queryLayerInfo="queryLayerInfo" @load="funcLoad">
+    <municipal-condition-query :title="title"
+                               @reset="reset"
+                               @queryLayerInfo="queryLayerInfo"
+                               @queryCondition="queryCondition"
+                               @load="funcLoad">
       <!--      由于条件筛选组件需要频繁调用服务，所以需要直接写在外层-->
       <template v-slot:filter>
-        <municipal-filter :fldName="fldName" :fieldArr="fieldArr" :fieldValue="fieldValue"
+        <municipal-filter :fldName="fldName" :fieldArr="fieldArr" :fieldValue="fieldValue" ref="filter"
                           @onChangeFieldName="onChangeFieldName"></municipal-filter>
       </template>
     </municipal-condition-query>
+    <municipal-result-common :title="title+'结果'"
+                             v-show="resultVisible"
+                             :panelPosition="panelPosition"
+                             @onClose="onClose"
+                             :tabs="tabs"
+                             :load="load"
+                             :exportFileName="exportFileName"></municipal-result-common>
   </div>
 </template>
 
@@ -20,15 +31,27 @@ export default {
       title: '条件查询',
       fldName: [],
       fieldArr: [],
-      fieldValue: []
+      fieldValue: [],
+      resultVisible: false,
+      panelPosition: 'bottom',
+      tabs: [],
+      load: false,
+      exportFileName: '条件查询结果'
     };
   },
   methods: {
     funcLoad(vm) {
-      console.log(vm);
       this.store = new Store();
       this.mapServerName = vm.mapServerName;
     },
+    reset() {
+      this.$refs.filter.reset();
+    },
+    onClose() {
+      this.store && this.store.cancelToken;
+      this.resultVisible = false;
+    },
+    //每次选择图层之后的回调，用于拿filter组件所需的数据
     async queryLayerInfo(param) {
       const {mapServerName, tile, ...rest} = param;
       this.layerId = param.layerId;
@@ -60,6 +83,16 @@ export default {
       }
       const {fieldValues} = await this.store.queryFieldValues(this.mapServerName, this.layerId, fieldName);
       this.fieldValue = fieldValues;
+    },
+    async queryCondition(params) {
+      this.load = true;
+      this.resultVisible = true;
+      const {geometry, geometryType, cutLayerIndexs, m3ds, offset, mapServerName, layerIds, where} = params;
+      const store = new Store(this.webGlobe, m3ds);
+      this.tabs = await store.queryLayers(geometry, geometryType, where, cutLayerIndexs, offset, mapServerName, this.title, layerIds);
+      if (this.tabs) {
+        this.load = false;
+      }
     }
   }
 };

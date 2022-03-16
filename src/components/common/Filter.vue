@@ -3,7 +3,7 @@
     <a-table :columns="columns" :data-source="dataSource" :pagination="false" :bordered="false">
       <!--      逻辑-->
       <div slot="logicOpers" slot-scope="text,record,index" title="增加条件">
-        <a-select :value="record.selectedItem.logicOpers" @change="changeLogicOpers" v-if="index"
+        <a-select :value="record.selectedItem.logicOpers" @change="v=>changeLogicOpers(v,index)" v-if="index"
                   style="width: 100%;min-width: 80px;max-width: 110px">
           <a-select-option v-for="item in LOGIC_OPERS" :value="item.label" :key="item.label">
             {{ item.label }}
@@ -24,19 +24,15 @@
       <!--      运算符-->
       <a-select slot="funcOpers" slot-scope="text,record,index" :value="record.selectedItem.funcOpers"
                 style="width: 100%;min-width: 80px;max-width: 110px"
-                @change="changeOpers(index)">
+                @change="v=>changeOpers(v,index)">
         <a-select-option v-for="item in text" :value="item.value" :key="item.label">
           {{ item.label }}
         </a-select-option>
       </a-select>
       <!--      值-->
-      <a-auto-complete slot="fieldValues" slot-scope="text,record" allowClear :value="record.selectedItem.fieldValues"
-                       style="width: 100%;min-width: 80px;max-width: 110px">
-        <template slot="dataSource">
-          <a-select-option v-for="(item,index) in text" :key="index" :title="item.toString()">
-            {{ item.toString() }}
-          </a-select-option>
-        </template>
+      <a-auto-complete slot="fieldValues" slot-scope="text,record,index" :data-source="record.fieldValues" allowClear
+                       :value="record.selectedItem.fieldValues"
+                       style="width: 100%;min-width: 80px;max-width: 110px" @change="v=>changeFieldValue(v,index)">
       </a-auto-complete>
       <!--      删-->
       <a-popconfirm
@@ -52,13 +48,14 @@
         </a>
       </a-popconfirm>
     </a-table>
+    <a-input style="margin-top: 10px" disabled :value="inputSql"></a-input>
   </div>
 </template>
 
 <script>
 import loadingM3ds from "@/util/mixins/withLoadingM3ds";
 import {getOperators, LOGIC_OPERS, NUMBER_OPERS} from './DataType';
-
+//这里列就直接写死，因为条件筛选表格是固定的
 const columns = [
   {
     dataIndex: 'logicOpers',
@@ -99,30 +96,40 @@ const columns = [
     scopedSlots: {customRender: 'delete'}
   }
 ];
+const initDataSource = [{
+  logicOpers: [],
+  fieldName: [],
+  funcOpers: [],
+  fieldValues: [],
+  key: 0,
+  selectedItem: {},
+  delete: []
+}];
 export default {
   name: "municipal-filter",
   mixins: [loadingM3ds],
   data() {
     return {
+      initDataSource: initDataSource,
       dataSource: [{
         logicOpers: [],
         fieldName: [],
         funcOpers: [],
         fieldValues: [],
         key: 0,
-        selectedItem: [],
+        selectedItem: {},
         delete: []
       }],
       columns,
       LOGIC_OPERS,
       //当前编辑的数据的index
       currentIndex: 0,
-      //当前的操作项
+      //当前的运算项目，运算符的集合
       currentOpers: [],
       //当前的数据列表
       currentFieldValues: [],
-      //当前的数据名
-      currentFieldName: ''
+      //查询的sql字符串
+      inputSql: ''
     };
   },
   props: {
@@ -140,55 +147,103 @@ export default {
     },
     fieldValue: {
       type: Array
+    },
+    maxRow: {
+      type: Number,
+      default: 4
     }
   },
   watch: {
     fieldValue: {
       handler() {
         if (this.fieldValue) {
-          this.currentFieldValues = [...new Set(this.fieldValue)];
-          this.assginData();
+          const currentFieldValues = [...new Set(this.fieldValue)].map(item => item.toString());
+          this.dataSource[this.currentIndex].fieldValues = currentFieldValues;
+          this.$nextTick(() => {
+            this.createSql();
+          });
         }
       },
       immediate: true
     }
   },
+  destroyed() {
+    this.dataSource = initDataSource;
+  },
   methods: {
+    reset() {
+      this.dataSource = _.cloneDeep(initDataSource);
+      this.createSql();
+    },
     changeFieldName(value, index) {
+      this.currentIndex = index;
+      const newDataS = _.cloneDeep(this.dataSource);
       let item = this.fieldArr.find(f => f.fldName === value);
       const funcOpers = getOperators(item.fldType);
-      this.currentOpers = funcOpers;
-      this.currentIndex = index;
-      this.currentFieldName = value;
-      //我们现在获取了
+      newDataS[index].funcOpers = funcOpers;
+      const selectedItem = Object.assign(newDataS[index].selectedItem, {
+        fieldName: value,
+        funcOpers: '',
+        fieldValues: ''
+      });
+      newDataS[index].selectedItem = selectedItem;
+      this.dataSource = newDataS;
+      this.$nextTick(() => {
+        this.createSql();
+      });
+      //从外面的服务获取到这个字段下面的取值
       this.$emit('onChangeFieldName', value);
     },
-    changeLogicOpers(value) {
-      console.log(value);
+    changeLogicOpers(value, index) {
+      this.changeDataSource({logicOpers: value}, index);
     },
     changeOpers(value, index) {
-      console.log(value);
-      console.log(index);
+      this.changeDataSource({funcOpers: value}, index);
+    },
+    changeFieldValue(value, index) {
+      this.changeDataSource({fieldValues: value}, index);
+    },
+    changeDataSource(data, index) {
+      const newDataS = _.cloneDeep(this.dataSource);
+      const selectedItem = Object.assign(newDataS[index].selectedItem, data);
+      newDataS[index].selectedItem = selectedItem;
+      this.dataSource = newDataS;
+      this.$nextTick(() => {
+        this.createSql();
+      });
     },
     plus() {
       //  添加
+      if (this.dataSource.length >= this.maxRow) {
+        this.$message.warn('你的条件有点多哟');
+        return;
+      }
+      const newData = Object.assign(this.initDataSource[0], {key: this.dataSource.length});
+      this.dataSource.push(newData);
     },
     onDelete(text, record, index) {
       //  删除
+      if (this.dataSource.length <= 1) {
+        this.$message.warn('已经是第一条数据了哟');
+      } else {
+        this.dataSource.splice(index, 1);
+        this.createSql();
+      }
     },
-    assginData() {
-      const newData = {
-        funcOpers: this.currentOpers,
-        fieldValues: this.currentFieldValues,
-        selectedItem: {
-          fieldName: this.currentFieldName,
-          funcOpers: "", fieldValues: ""
+    createSql() {
+      let sql = '';
+      this.dataSource.forEach((item, index) => {
+        const {fieldName, funcOpers, fieldValues, logicOpers} = item.selectedItem;
+        const value = item.funcOpers === NUMBER_OPERS ? fieldValues : `'${fieldValues}'`;
+        if (!index) {
+          Object.values(item.selectedItem).filter(v => v).length === 3 ? (sql = `${fieldName} ${funcOpers} ${value}`) : "";
+        } else {
+          Object.values(item.selectedItem).filter(v => v).length === 4 ? (sql += `${logicOpers} ${fieldName} ${funcOpers} ${value}`) : sql;
         }
-      };
-      const target = Object.assign(this.dataSource[this.currentIndex], newData);
-      console.log(target);
-      this.$set(this.dataSource, this.currentIndex, target);
-      console.log(this.dataSource);
+      });
+      this.inputSql = sql;
+      this.eventBus.$emit('sendSql', sql);
+      this.$emit('sendSql', sql);
     }
   }
 };
