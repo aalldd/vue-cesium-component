@@ -1,13 +1,15 @@
 <template>
-  <municipal-common-layer :height="height"
-                          class="mapWrapper"
-                          :plugin-path="pluginPath"
-                          :lib-path="libPath"
-                          @load="handleLoad"
-                          @onM3dLoad="onM3dLoad"
-                          :m3dInfos="m3dInfos"
-                          :commonConfig="globalConfig"
+  <municipal-common-layer
+    container="cesiumWrapper"
+    class="mapWrapper"
+    :plugin-path="pluginPath"
+    :lib-path="libPath"
+    @load="handleLoad"
+    @onM3dLoad="onM3dLoad"
+    :m3dInfos="m3dInfos"
+    :commonConfig="globalConfig"
   >
+    <Menu></Menu>
     <router-view></router-view>
     <municipal-tool :wmtsMap="wmtsMap" :popupOffset="popupOffset" :cameraView="cameraView" @clickQuery="clickQuery"
                     :clickQueryData="clickQueryData"></municipal-tool>
@@ -19,10 +21,14 @@
 
 <script>
 import Store from "@/store/store";
+import Menu from "@/threeD/Menu/Menu";
+
 export default {
+  components: {
+    Menu
+  },
   data() {
     return {
-      height: 870,
       // 天地图地址
       url: 'http://t0.tianditu.gov.cn/vec_c/wmts',
       baseUrl: 'http://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer',
@@ -155,3 +161,4 @@ export default {
   }
 };
 </script>
+

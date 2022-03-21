@@ -21,7 +21,7 @@ export default {
         width: '400px',
         position:'absolute',
         right:'2em',
-        top:'2em'
+        top: '4em'
       };
     }
   },

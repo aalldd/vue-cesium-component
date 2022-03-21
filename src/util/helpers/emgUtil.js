@@ -3,7 +3,7 @@ import {polygon, point, booleanPointInPolygon} from '@turf/turf';
 
 class emgUtil {
   constructor(view) {
-    if (view) {
+    if (view && view.viewer) {
       this.view = view;
       this.view.viewer.scene.globe.undergroundMode = true;
       //开启深度检测

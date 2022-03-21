@@ -1,9 +1,9 @@
 <template>
   <mapgis-web-scene
-    class="mapWrapper"
+    :height="height"
     :libPath="libPath"
     :pluginPath="pluginPath"
-    :height="height"
+    :container="container"
     :keyEventEnable="keyEventEnable"
     @load="handleLoad"
   >
@@ -75,6 +75,9 @@ export default {
     keyEventEnable: {
       type: Boolean,
       default: false
+    },
+    container: {
+      type: [String, HTMLElement]
     }
   },
   watch: {
@@ -106,5 +109,8 @@ export default {
 </script>
 
 <style scoped>
-
+#mapWrapper {
+  width: 600px;
+  height: 800px;
+}
 </style>

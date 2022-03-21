@@ -72,7 +72,7 @@
 
 .position-bottom {
   position: absolute;
-  width: 1600px;
+  width: 1800px;
   bottom: 2em;
   left: 2em;
 }
@@ -80,14 +80,14 @@
 .position-left {
   position: absolute;
   width: 450px;
-  top: 2em;
-  left: 4em;
+  top: 4em;
+  left: 2em;
 }
 
 .position-right {
   position: absolute;
-  top: 2em;
-  right: 4em;
+  top: 4em;
+  right: 2em;
 }
 
 .resultPanel {
@@ -97,6 +97,14 @@
 }
 
 // cesium 全局样式
+.cesium-map-wrapper {
+  overflow: hidden !important;
+}
+
+.cesiumWrapper {
+  height: 100% !important;
+}
+
 .cesium-popup-content-wrapper {
   width: 340px;
   height: 340px;

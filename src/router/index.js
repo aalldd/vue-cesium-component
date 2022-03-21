@@ -8,7 +8,7 @@ const router = new Router({
     {
       path: '/',
       name: 'root',
-      component: () => import('../threeD/Menu'),
+      component: () => import('../threeD/ThreeD'),
       children: [
         {
           path: '/flood',
