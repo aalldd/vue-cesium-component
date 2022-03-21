@@ -1,7 +1,7 @@
 <template>
   <div>
     <a-input-search style="margin-bottom: 8px" placeholder="搜索图层" @change="onChange" v-if="needSearch"/>
-    <a-spin :spinning="loadingCopy" style="overflow-y: scroll;overflow-x:hidden;max-height: 600px;min-height: 50px">
+    <a-spin :spinning="loadingCopy" :style="layerStyle">
       <a-tree
         :expanded-keys="expandedKeys"
         :checkedKeys="checkedKeysCopy"
@@ -61,6 +61,17 @@ export default {
       handler() {
         if (this.layerData.length > 0 && this.customTreeData) {
           this.layerDataCopy = this.layerData;
+          let checkedKeys = [];
+          //默认勾选全部 如果指定了就按照指定的勾选
+          if (!this.defaultChecked) {
+            treeUtil.forEach(this.layerDataCopy, (item) => {
+              checkedKeys.push(item.key);
+              checkedKeys.push(item.key);
+            });
+          } else {
+            checkedKeys = this.defaultChecked;
+          }
+          this.checkedKeysCopy = checkedKeys;
           this.generateList(this.layerData);
           this.expandedKeys = this.dataList
             .map(item => {
@@ -128,6 +139,18 @@ export default {
     },
     defaultChecked: {
       type: Array
+    },
+    //图层树的样式
+    layerStyle: {
+      type: Object,
+      default: () => {
+        return {
+          maxHeight: '500px',
+          minHeight: '50px',
+          overflowY: 'scroll',
+          overflowX: 'hidden'
+        };
+      }
     }
   },
   mounted() {
@@ -162,6 +185,10 @@ export default {
                   const target = item.children.filter(jItem => subLayers.indexOf(jItem.title) >= 0);
                   item.children = target;
                   return item;
+                  //  如果指定了subLayers，但是没有写任何值，说明只需要管网，不需要管网下面的子图层
+                } else if (subLayers && subLayers.length === 0) {
+                  item.children = null;
+                  return item;
                 } else {
                   return item;
                 }
@@ -191,6 +218,7 @@ export default {
             }
             return tItem;
           });
+
           this.checkedKeysCopy = checkedKeys;
           this.layerDataCopy = treeData;
           this.loadingCopy = false;

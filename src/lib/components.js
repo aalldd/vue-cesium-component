@@ -1,17 +1,5 @@
 // 场景
 export {default as MunicipalCommonLayer} from "../components/baseMap/CommonLayer";
-export {default as MunicipalArcgisTileLayer} from "../components/baseMap/ArcgisTileLayer";
-export {default as MunicipalArcgisMap} from "../components/baseMap/ArcgisMap";
-export {default as MunicipalEchartsLayer} from "../components/baseMap/EchartsLayer";
-export {default as MunicipalIgsM3d} from "../components/baseMap/IgsM3d";
-export {default as MunicipalIgsTileLayer} from "../components/baseMap/IgsTileLayer";
-export {default as MunicipalIgsTerrain} from "../components/baseMap/IgsTerrain";
-export {default as MunicipalIgsVectorlayer} from "../components/baseMap/IgsVectorlayer";
-export {default as MunicipalMapvLayer} from "../components/baseMap/MapvLayer";
-export {default as MunicipalOgcWmsLayer} from "../components/baseMap/OgcWmsLayer";
-export {default as MunicipalVectortileLayer} from "../components/baseMap/VectortileLayer";
-export {default as MunicipalWebScene} from "../components/baseMap/WebScene";
-export {default as MunicipalWmtsDocLayer} from "../components/baseMap/WmtsDocLayer";
 
 
 //分析
@@ -39,6 +27,10 @@ export {default as MunicipalResultSimple} from '../components/common/ResultSimpl
 export {default as MunicipalFilter} from '../components/common/Filter';
 export {default as MunicipalLayer} from '../components/common/Layer';
 export {default as MunicipalLayerSelect} from '../components/common/LayerSelect';
+
+//统计
+export {default as MunicipalPipeStatistic} from '../components/statistic/PipeStatistic';
+export {default as MunicipalStatisticChart} from '../components/statistic/StatisticChart';
 
 //查询
 export {default as MunicipalQuickQuery} from '../components/query/QuickQuery';

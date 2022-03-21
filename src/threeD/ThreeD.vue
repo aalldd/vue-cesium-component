@@ -32,7 +32,7 @@ export default {
       m3dInfos: [
         {
           maximumMemoryUsage: 1024,
-          url: 'http://192.168.12.200:6163/igs/rest/g3d/lgzh0901',
+          url: 'http://192.168.12.200:6163/igs/rest/g3d/lgzh0902',
           layers: '',
           vueIndex: '0'
         }
@@ -150,7 +150,6 @@ export default {
     async clickQuery(param) {
       const store = new Store();
       const data = await store.getGeometry(param);
-      console.log(data);
       this.clickQueryData = data;
     }
   }

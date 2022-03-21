@@ -21,7 +21,7 @@
       </a-layout-sider>
       <a-layout>
         <a-layout-content
-          :style="{ background: '#fff', margin: 0, minHeight: '280px' }"
+          :style="{ background: '#fff', margin: 0, minHeight: '280px',overflow:'hidden' }"
         >
           <keep-alive>
             <ThreeD/>
@@ -60,7 +60,14 @@ export default {
         }, {
           menuName: '统计',
           menuRoute: 'statistic',
-          key: '1'
+          key: '1',
+          children: [
+            {
+              menuName: '管线统计',
+              menuRoute: 'pipeStatistic',
+              key: '1-0'
+            }
+          ]
         }, {
           menuName: '联动',
           menuRoute: 'link',

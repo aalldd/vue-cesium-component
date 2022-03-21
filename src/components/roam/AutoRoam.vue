@@ -11,8 +11,8 @@
     >
       <template v-slot:content>
         <a-row class="input-item">
-          <a-col :span="24" style="display: flex; justify-content: flex-start">
-            <div style="display: flex; justify-content: flex-start">
+          <a-col :span="6" style="display: flex; justify-content: flex-start;align-items: center">
+            <div style="display: flex; justify-content: flex-start;margin-right: 10px">
               <municipal-draw
                 :vueKey="vueKey"
                 :drawItems="drawItems"
@@ -20,14 +20,12 @@
                 @load="onDrawLoad"
                 @drawcreate="handleDraw"
               >
-                <municipal-icon
-                  name="-vector-point"
-                  style="cursor: pointer"
-                  @click="activeDraw"
-                ></municipal-icon>
               </municipal-draw>
             </div>
-            请在地图上选择漫游的开始位置
+
+          </a-col>
+          <a-col :span="18">
+            <span>请在地图上选择漫游的开始位置</span>
           </a-col>
         </a-row>
         <a-row
@@ -35,14 +33,14 @@
           v-for="(item, index) in autoRoamDataCopy"
           :key="index"
         >
-          <a-col :span="8">
+          <a-col :span="6">
             <span class="input-tag">{{ item.title }}</span>
           </a-col>
-          <a-col :span="16" v-if="item.uniKey === 'title'">
+          <a-col :span="18" v-if="item.uniKey === 'title'">
             <a-input style="width: 100%" v-model="item.value"></a-input>
           </a-col>
           <a-col
-            :span="16"
+            :span="18"
             style="display: flex; justify-content: flex-start"
             v-if="item.uniKey === 'model'"
           >
@@ -61,7 +59,7 @@
             </a-select>
           </a-col>
           <a-col
-            :span="16"
+            :span="18"
             style="display: flex; justify-content: flex-start"
             v-if="item.uniKey === 'view'"
           >
@@ -80,7 +78,7 @@
             </a-select>
           </a-col>
           <a-col
-            :span="16"
+            :span="18"
             v-if="
               ['speed', 'pitch', 'heading', 'distance'].indexOf(item.uniKey) >=
               0
@@ -90,7 +88,7 @@
               <a-col :span="12">
                 <a-slider
                   v-model="item.value"
-                  :min="-180"
+                  :min="0"
                   :max="180"
                   style="min-width: 100px"
                 />
@@ -98,9 +96,9 @@
               <a-col :span="12">
                 <a-input-number
                   v-model="item.value"
-                  :min="-180"
+                  :min="0"
                   :max="180"
-                  style="margin-left: 4px"
+                  style="margin-left: 20px"
                 />
               </a-col>
             </a-row>
@@ -171,6 +169,7 @@ export default {
     ...PanelOpts,
     modelList: {
       type: Array,
+      require: true,
       default: () => {
         return [
           {
@@ -198,6 +197,7 @@ export default {
     },
     viewList: {
       type: Array,
+      require: true,
       default: () => {
         return [
           {
@@ -288,6 +288,7 @@ export default {
     },
 
     handleDraw(drawRes) {
+      this.drawOper.removeDrawEntities();
       const {payload: result} = drawRes;
       // 屏幕坐标转经纬度
       const postion = this.emgManager.Cartesian3ToLat(result);

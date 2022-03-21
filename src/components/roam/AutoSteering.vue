@@ -2,7 +2,7 @@
   <div class="steering">
     <div v-for="(button, index) in buttonRander" :key="index">
       <div v-if="button === ''"></div>
-      <div style="position: relative" v-if="button != ''">
+      <div style="position: relative" v-if="button !== ''">
         <a-button
           :class="`${
             Object.values(activedButton)[
@@ -12,7 +12,7 @@
               : 'commonBtn steeringButton'
           }`"
         >
-          <a-icon :type="iconMap[button]" />
+          <a-icon :type="iconMap[button]"/>
         </a-button>
         <!-- <div
           :class="`${

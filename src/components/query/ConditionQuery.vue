@@ -6,7 +6,8 @@
         <municipal-draw :vueKey="vueKey" enable-menu-control="func" :drawItems="drawItems" :infinite="false"
                         @drawcreate="handleDraw"></municipal-draw>
         <div style="flex: 1;margin-left: 10px">
-          <municipal-layer-select :customTreeData="false" @onLayerChange="onLayerChange"></municipal-layer-select>
+          <municipal-layer-select :layerGroup="layerGroup" :customTreeData="false"
+                                  @onLayerChange="onLayerChange"></municipal-layer-select>
         </div>
       </div>
       <slot name="filter"></slot>
@@ -32,8 +33,11 @@ export default {
       layerInfoCopy: {},
       fldName: [],
       fieldArr: [],
-      condition: ''
-    };
+      condition: '',
+      layerGroup: {
+        '地下图层': {}
+      }
+    }
   },
   props: {
     ...panelOptions,

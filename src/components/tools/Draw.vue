@@ -112,6 +112,9 @@ export default {
       }
     }
   },
+  destroyed() {
+    this.removeDrawEntities();
+  },
   mounted() {
     if (!this.drawElement) {
       this.drawElement = new Cesium.DrawElement(this.view.viewer);
@@ -367,6 +370,13 @@ export default {
     activePreview() {
       const previewRange = this.emgManager.getCurrentView();
       this.drawcreate(previewRange);
+    },
+    removeDrawEntities() {
+      if (this.drawEntities?.length) {
+        this.drawEntities.forEach(item => {
+          this.view.viewer.entities.remove(item);
+        });
+      }
     }
   }
 };

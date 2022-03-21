@@ -1,10 +1,12 @@
 import emgUtil from "@/util/helpers/emgUtil";
 import vueOptions from "@/util/options/vueOptions";
+import panelOptions from "@/util/options/panelOptions";
 
 const loadingM3ds = {
   inject: ['Cesium', 'CesiumZondy', 'webGlobe', 'eventBus'],
   props: {
-    ...vueOptions
+    ...vueOptions,
+    ...panelOptions
   },
   mounted() {
     //由于M3d图层数据加载慢，每秒轮询一次
@@ -33,14 +35,19 @@ const loadingM3ds = {
             this.transform = this.tilesetList[0]?.root?.transform;
           }
         }
+        this.commonParam = {
+          offset: this.offset,
+          mapServerName: this.mapServerName,
+          cutLayerIndexs: this.layerIndexs
+        };
         this.$emit('load', this);
         window.clearInterval(this.myInterval);
       }
     };
-    this.reAskM3ds(resetChecked);
+    this.reAsked(resetChecked);
   },
   methods: {
-    reAskM3ds(callback) {
+    reAsked(callback) {
       this.myInterval = window.setInterval(() => {
         setTimeout(callback);
       }, 1000);

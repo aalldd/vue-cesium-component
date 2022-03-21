@@ -112,7 +112,9 @@ export default {
       this.drawOper = payload;
     },
     handleDraw(drawRes) {
-      const {payload: positions} = drawRes;
+      this.drawOper.removeDrawEntities();
+      const {payload} = drawRes;
+      const positions = [...payload, payload[0]];
       let tileset = this.m3ds.find((t) => t.layerId) || this.m3ds[0];
       let transform = tileset.root.transform;
       this.view.viewer.scene.globe.depthTestAgainstTerrain = true;
@@ -141,7 +143,6 @@ export default {
       this.emgManager.dig(pointArr, this.terrainHeight, this.layerIndexs ? this.layerIndexs : null);
       // 获取填挖分析的结果
       this.emgManager.cutFillAna(positions, _minHeight, (result) => {
-        console.log(result);
         this.eventBus.$emit('sendCutFillResult', result);
       });
     },

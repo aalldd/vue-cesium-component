@@ -1,6 +1,7 @@
 <template>
   <div>
-    <municipal-tunnel title="隧道分析" :layerIndexs="layerIndexs" @sendQueryParam="getQueryParam"></municipal-tunnel>
+    <municipal-tunnel title="隧道分析" :layerIndexs="layerIndexs" @sendQueryParam="getQueryParam"
+                      :panelStyle="panelStyle"></municipal-tunnel>
     <municipal-result-common title="隧道分析结果" :panelPosition="panelPosition"
                              @onClose="resultVisible=false"
                              v-if="resultVisible"
@@ -30,6 +31,12 @@ export default {
       //用来区分管点和管点用来表示高程的字段名，每个项目可能都不一样，一般管点高程是地面高程，管段是起点地面高程
       defaultQueryParam: ['地面高程', '起点地面高程'],
       load: false,
+      panelStyle: {
+        width: '300px',
+        position: 'absolute',
+        right: '2em',
+        top: '2em'
+      }
     };
   },
   mounted() {

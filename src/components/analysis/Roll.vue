@@ -27,7 +27,6 @@
 <script>
 import panelOptions from "@/util/options/panelOptions";
 import loadingM3ds from "@/util/mixins/withLoadingM3ds";
-import {lnglatValidator} from "@/util/helpers/validator";
 import _ from "lodash";
 
 export default {
@@ -37,7 +36,8 @@ export default {
     return {
       plainOptions: ['上下卷帘', '左右卷帘'],
       rollType: '上下卷帘',
-      isMoving: false
+      isMoving: false,
+      offsetCopy: [0, 0]
     };
   },
   props: {
@@ -82,10 +82,31 @@ export default {
         const intersection = _.intersection(Object.keys(value), ['pitch', 'heading', 'roll', 'position']);
         return intersection.length === 4;
       }
+    },
+    //卷帘的偏移值
+    offsetRoll: {
+      type: Array,
+      default: () => {
+        return [0, 0];
+      }
+    }
+  },
+  watch: {
+    offset: {
+      handler() {
+        this.offsetCopy = _.cloneDeep(this.offsetRoll);
+      },
+      immediate: true
     }
   },
   mounted() {
-    this.init();
+    const reAsk = () => {
+      if (this.emgManager) {
+        this.init();
+        window.clearInterval(this.myInterval);
+      }
+    };
+    this.reAsked(reAsk);
   },
   destroyed() {
     this.quit();
@@ -113,7 +134,7 @@ export default {
       let lng = cp.longitude / Math.PI * 180;
       let lat = cp.latitude / Math.PI * 180;
       let height = cp.height;
-      if(!this.sceneManager){
+      if (!this.sceneManager) {
         this.sceneManager = new CesiumZondy.Manager.SceneManager({viewer: this.view.viewer});
       }
       this.sceneManager.flyToEx(lng, lat, {
@@ -161,8 +182,8 @@ export default {
     calDistance() {
       const canvas = this.view.viewer.scene.canvas;
       const targetRef = this.$refs.sliderRef;
-      const top = targetRef.getBoundingClientRect().top-64;
-      const left = targetRef.getBoundingClientRect().left-200;
+      const top = targetRef.getBoundingClientRect().top - this.offsetCopy[0];
+      const left = targetRef.getBoundingClientRect().left - this.offsetCopy[1];
       let distance;
       const {lng: lng2, lat: lat2} = this.getScreenPoint(0, 0);
       const {lng: lng3, lat: lat3} = this.getScreenPoint(canvas.width, canvas.height);
@@ -315,7 +336,7 @@ export default {
 
 .horizontal-slider {
   position: fixed;
-  left: 0!important;
+  left: 0 !important;
   top: 50%;
   background-color: #D3D3D3;
   width: 100%;

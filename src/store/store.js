@@ -96,6 +96,18 @@ class Store {
     return data;
   }
 
+//获取多管网点或线类型公共字段
+  async GetShareField(mapServerName, params) {
+    const {data} = await this.MapServer.get(mapServerName + '/QueryPipeNetToalFields', {params: params});
+    return data;
+  }
+
+//获取统计结果
+  async GetStatisticsData(mapServerName, params) {
+    const {data} = await this.MapServer.get(mapServerName + '/DevCollectByNetComField', {params: params});
+    return data;
+  }
+
   //查询GIS信息
   async query3d(params, url, offset, mapServerName) {
     if (params.geometry && params.geometry.length > 0) {

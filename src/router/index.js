@@ -1,43 +1,44 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-Vue.use(Router)
+import Vue from 'vue';
+import Router from 'vue-router';
 
-const router=new Router({
+Vue.use(Router);
+
+const router = new Router({
   routes: [
     {
       path: '/',
       name: 'root',
-      component: ()=>import('../threeD/Menu'),
-      children:[
+      component: () => import('../threeD/Menu'),
+      children: [
         {
           path: '/flood',
           name: 'flood',
-          component: ()=>import('../components/analysis/Flood')
+          component: () => import('../components/analysis/Flood')
         },
         {
           path: '/dynacut',
           name: 'dynacut',
-          component: ()=>import('../pages/DynacutAna')
+          component: () => import('../pages/DynacutAna')
         },
         {
           path: '/tunnel',
           name: 'tunnel',
-          component: ()=>import('../pages/TunnelAna')
+          component: () => import('../pages/TunnelAna')
         },
         {
           path: '/fixedRoam',
           name: 'fixedRoam',
-          component: ()=>import('../pages/FixRoamAna')
+          component: () => import('../pages/FixRoamAna')
         },
         {
           path: '/autoRoam',
           name: 'autoRoam',
-          component: ()=>import('../pages/AutoRoamAna')
+          component: () => import('../pages/AutoRoamAna')
         },
         {
           path: '/flow',
           name: 'flow',
-          component: ()=>import('../pages/FlowAna')
+          component: () => import('../pages/FlowAna')
         },
         {
           path: '/squib',
@@ -63,10 +64,15 @@ const router=new Router({
           path: '/conditionQuery',
           name: 'conditionQuery',
           component: () => import('../pages/ConditionQueryAna')
+        },
+        {
+          path: '/pipeStatistic',
+          name: 'pipeStatistic',
+          component: () => import('../pages/PipeStatisticAna')
         }
       ]
     }
   ]
-})
+});
 
-export default router
+export default router;

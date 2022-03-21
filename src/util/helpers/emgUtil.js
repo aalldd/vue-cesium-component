@@ -3,10 +3,12 @@ import {polygon, point, booleanPointInPolygon} from '@turf/turf';
 
 class emgUtil {
   constructor(view) {
-    this.view = view;
-    this.view.viewer.scene.globe.undergroundMode = true;
-    //开启深度检测
-    this.view.viewer.scene.globe.depthTestAgainstTerrain = true;
+    if (view) {
+      this.view = view;
+      this.view.viewer.scene.globe.undergroundMode = true;
+      //开启深度检测
+      this.view.viewer.scene.globe.depthTestAgainstTerrain = true;
+    }
     this.dynaCutList = [];
     this.popups = [];
   }
@@ -720,7 +722,6 @@ class emgUtil {
         return item;
       }
     });
-
 
 
     this.wall = this.view.viewer.entities.add({
