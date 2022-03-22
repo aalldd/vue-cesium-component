@@ -71,6 +71,11 @@ const router = new Router({
           component: () => import('../pages/PipeStatisticAna')
         }
       ]
+    },
+    {
+      path: '/linkage-page',
+      name: 'linkage-page',
+      component: () => import('../pages/LinkageAna')
     }
   ]
 });

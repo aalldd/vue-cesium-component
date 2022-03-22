@@ -10,9 +10,12 @@ const loadingM3ds = {
   },
   mounted() {
     //由于M3d图层数据加载慢，每秒轮询一次
-    this.view = this.webGlobe;
+    let Cesium = this.Cesium || window.Cesium;
+    let CesiumZondy = this.CesiumZondy || window.CesiumZondy;
+    let webGlobe = this.webGlobe || window.webGlobe;
+    this.view = webGlobe;
     const resetChecked = () => {
-      if (window.m3ds && window.commonConfig) {
+      if (window.m3ds && window.commonConfig && CesiumZondy && webGlobe) {
         this.m3ds = window.m3ds;
         this.view.tilesetList = this.m3ds;
         this.emgManager = new emgUtil(this.view);

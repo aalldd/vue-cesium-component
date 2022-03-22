@@ -5,7 +5,10 @@
         <span slot="title" class="submenu-title-wrapper">
           <a-icon type="setting"/>{{ item.menuName }}</span>
         <a-menu-item v-for="jItem in item.children" :key="jItem.key">
-          <router-link :to="jItem.menuRoute">{{ jItem.menuName }}</router-link>
+          <span v-if="jItem.menuRoute.endsWith('page')" @click="openNewPage(jItem.menuRoute)">{{
+              jItem.menuName
+            }}</span>
+          <router-link :to="jItem.menuRoute" v-else>{{ jItem.menuName }}</router-link>
         </a-menu-item>
       </a-sub-menu>
     </a-menu>
@@ -22,6 +25,14 @@ export default {
       current: '',
       menuData
     };
+  },
+  methods: {
+    openNewPage(route) {
+      let newUrl = this.$router.resolve({
+        path: `/${route}`
+      });
+      window.open(newUrl.href, "_blank");
+    }
   }
 };
 </script>

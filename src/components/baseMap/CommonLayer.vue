@@ -1,10 +1,13 @@
 <template>
-  <mapgis-web-scene
+  <municipal-web-scene
     :height="height"
-    :libPath="libPath"
-    :pluginPath="pluginPath"
+    :lib-path="libPath"
+    :plugin-path="pluginPath"
     :container="container"
-    :keyEventEnable="keyEventEnable"
+    :vue-key="vueKey"
+    :vue-index="vueIndex"
+    :key-event-enable="keyEventEnable"
+    :cameraView="cameraView"
     @load="handleLoad"
   >
     <mapgis-3d-igs-m3d v-for="item in m3dInfos"
@@ -12,16 +15,18 @@
                        :layers="item.layers"
                        :offset="item.offset"
                        :key="item.vueIndex"
-                       :vueIndex="item.vueIndex"
+                       :vue-key="item.vueKey"
+                       :vue-index="item.vueIndex"
                        @loaded="handleM3dload"
-                       :maximumMemoryUsage="item.maximumMemoryUsage"/>
+                       :maximum-memory-usage="item.maximumMemoryUsage"/>
     <mapgis-3d-statebar v-if="needState"/>
     <slot></slot>
-  </mapgis-web-scene>
+  </municipal-web-scene>
 </template>
 
 <script>
 import Vue from 'vue';
+import VueOptions from '@/util/options/vueOptions';
 
 export default {
   name: "municipal-common-layer",
@@ -46,10 +51,12 @@ export default {
   data() {
     return {
       m3dLoadCount: 0,
-      eventBus: new Vue()
+      eventBus: new Vue(),
+      cameraViewCopy: null
     };
   },
   props: {
+    ...VueOptions,
     libPath: {
       type: String,
       require: true
@@ -78,6 +85,13 @@ export default {
     },
     container: {
       type: [String, HTMLElement]
+    },
+    lockView: {
+      type: Boolean,
+      default: false
+    },
+    cameraView: {
+      type: Object
     }
   },
   watch: {
@@ -102,7 +116,6 @@ export default {
           this.$emit('onM3dLoad', payload);
         });
       }
-
     }
   }
 };

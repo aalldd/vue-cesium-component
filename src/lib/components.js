@@ -1,6 +1,9 @@
 // 场景
+export {default as MunicipalWebScene} from "../components/baseMap/WebScene";
 export {default as MunicipalCommonLayer} from "../components/baseMap/CommonLayer";
 
+// 二三维联动
+export {default as MunicipalLinkage} from '../components/link/Linkage';
 
 //分析
 export {default as MunicipalFlood} from "../components/analysis/Flood";
@@ -18,7 +21,7 @@ export {default as MunicipalFixRoamData} from '../components/roam/FixRoamData';
 export {default as MunicipalAutoRoam} from '../components/roam/AutoRoam';
 export {default as MunicipalAutoSteering} from '../components/roam/AutoSteering';
 
-//ui组件
+//公共组件
 export {default as MunicipalIcon} from "../components/common/Icon";
 export {default as MunicipalCursorTip} from "../components/common/CursorTip";
 export {default as MunicipalPanel} from '../components/common/Panel';
@@ -27,6 +30,7 @@ export {default as MunicipalResultSimple} from '../components/common/ResultSimpl
 export {default as MunicipalFilter} from '../components/common/Filter';
 export {default as MunicipalLayer} from '../components/common/Layer';
 export {default as MunicipalLayerSelect} from '../components/common/LayerSelect';
+export {default as MunicipalLink} from '../components/common/Link';
 
 //统计
 export {default as MunicipalPipeStatistic} from '../components/statistic/PipeStatistic';

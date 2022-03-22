@@ -2,11 +2,12 @@
   <municipal-common-layer
     container="cesiumWrapper"
     class="mapWrapper"
+    :cameraView="cameraView"
     :plugin-path="pluginPath"
     :lib-path="libPath"
     @load="handleLoad"
     @onM3dLoad="onM3dLoad"
-    :m3dInfos="m3dInfos"
+    :m3dInfos="m3dInfos3d"
     :commonConfig="globalConfig"
   >
     <Menu></Menu>
@@ -29,33 +30,24 @@ export default {
   },
   data() {
     return {
-      // 天地图地址
-      url: 'http://t0.tianditu.gov.cn/vec_c/wmts',
-      baseUrl: 'http://map.geoq.cn/arcgis/rest/services/ChinaOnlineStreetPurplishBlue/MapServer',
-      baseUrl2: 'http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineCommunity/MapServer',
       pluginPath: '/static/cesium/webclient-cesium-plugin.min.js',
       libPath: '/static/cesium/Cesium.js',
-      m3dInfos: [
+      m3dInfos3d: [
         {
           maximumMemoryUsage: 1024,
-          url: 'http://192.168.12.200:6163/igs/rest/g3d/lgzh0902',
+          url: 'http://192.168.12.200:6163/igs/rest/g3d/lgall220224',
           layers: '',
           vueIndex: '0'
         }
       ],
-      // cesium瓦片切片方式
-      tilingScheme: "EPSG:4326",
-      // 地图的瓦片矩阵集合
-      tileMatrixSet: "c",
-      //图层名称
-      wmtsLayer: "vec",
-      //返回格式
-      format: "tiles",
-      //token信息
-      token: {
-        key: "tk",
-        value: "9c157e9585486c02edf817d2ecbc7752"
-      },
+      m3dInfos2d: [
+        {
+          maximumMemoryUsage: 1024,
+          url: 'http://192.168.12.200:6163/igs/rest/g3d/lg2d20220224',
+          layers: '',
+          vueIndex: '0'
+        }
+      ],
       wmtsMap: null,
       cameraView: {
         destination: {
@@ -65,13 +57,15 @@ export default {
         },
         orientation: {
           heading: 0.08752,
-          pitch: -0.689042,
-          roll: 0.0002114284469649675
+          pitch: -1.57,
+          roll: 0
         }
       },
       globalConfig: null,
       clickQueryData: null,
-      popupOffset: [200, 64]
+      popupOffset: [200, 64],
+      globalConfigStore: 'globalConfigStore',
+      linkageDataStore: 'linkageDataStore'
     };
   },
   async mounted() {
@@ -84,6 +78,14 @@ export default {
         mapSolution = ms;
       }
       this.globalConfig = mapSolution?.configJSON?.config3d;
+      //推荐将全局的配置保存在本地存储中，这样二三维联动组件可以直接取到相关配置
+      window.localStorage.setItem(this.globalConfigStore, JSON.stringify(this.globalConfig));
+      window.localStorage.setItem(this.linkageDataStore, JSON.stringify({
+        m3dInfos3d: this.m3dInfos3d,
+        m3dInfos2d: this.m3dInfos2d,
+        pluginPath: this.pluginPath,
+        libPath: this.libPath
+      }));
     }
   },
   methods: {

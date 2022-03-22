@@ -34,7 +34,14 @@ const menuData = [
   }, {
     menuName: '联动',
     menuRoute: 'link',
-    key: '2'
+    key: '2',
+    children: [
+      {
+        menuName: '二三维联动',
+        menuRoute: 'linkage-page',
+        key: '2-0'
+      }
+    ]
   }, {
     menuName: '漫游',
     menuRoute: 'roam',
