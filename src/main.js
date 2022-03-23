@@ -11,7 +11,6 @@ import VueDraggableResizable from 'vue-draggable-resizable';
 import MincialComs from './lib/index';
 import MapgisUi from '@mapgis/webclient-vue-ui';
 import Service from '@/service/service';
-
 import './main.scss';
 
 Vue.use(MapgisUi);

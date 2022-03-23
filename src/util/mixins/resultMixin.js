@@ -1,4 +1,10 @@
+import 'viewerjs/dist/viewer.css';
+import {component as Viewer} from "v-viewer";
+
 const resultMixin = {
+  components: {
+    Viewer
+  },
   data() {
     return {
       panelWidthCopy: Number(window.getComputedStyle(document.body).width.replace('px', '')) * 0.95,
@@ -153,6 +159,18 @@ const resultMixin = {
     //关闭结果面板
     onClose() {
       this.$emit('onClose');
+    },
+    inited(viewer) {
+      this.$viewer = viewer;
+    },
+    show() {
+      this.$viewer.show();
+    },
+    downLoadImg() {
+      const a = document.createElement('a');
+      a.download = name || 'pic';
+      a.href = this.fileUrl;
+      a.click();
     }
   }
 };

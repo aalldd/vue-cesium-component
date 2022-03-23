@@ -6,7 +6,7 @@
                              :load="load"
                              v-if="resultVisible"
                              :fileUrl="fileUrl"
-                             :displayImg:="true"
+                             :displayImg="true"
                              :tabs="tabs"></municipal-result-common>
   </div>
 </template>
@@ -34,7 +34,7 @@ export default {
       const dataT = await store.getCrossSectionData(mapServerName, {point0, point1}, '横断面分析');
       if (!dataT.error) {
         this.tabs = dataT.featureSets;
-        const url = store.toFileUrl(dataT.imgPath);
+        const url = store.toFileUrl(dataT.imgPath).src;
         this.fileUrl = url;
         this.load = false;
       } else {

@@ -6,6 +6,15 @@
                    :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClass">
     <template v-slot:content>
       <a-spin :spinning="load">
+        <div v-if="fileUrl && displayImg">
+          <div style="display: flex;justify-content: flex-end;align-items: center">
+            <a-button style="margin-right: 10px" @click="show">查看大图</a-button>
+            <a-button @click="downLoadImg">下载</a-button>
+          </div>
+          <Viewer @inited="inited">
+            <img :src="fileUrl" alt="" style="width:100%;height:300px">
+          </Viewer>
+        </div>
         <a-table :columns="columnsCopy"
                  :data-source="dataSource"
                  :scroll="scrollStyle"

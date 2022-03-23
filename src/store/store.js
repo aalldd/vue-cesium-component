@@ -340,7 +340,7 @@ class Store {
     const {data} = await this.GPServer.get(mapServerName + "/ProfileMapAnly", {
       params: params
     });
-    if (data.featureSets.length) {
+    if (data.featureSets) {
       data.featureSets = dataFormatter(data.featureSets, exportName);
     }
     return data;
