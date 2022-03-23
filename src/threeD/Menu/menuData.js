@@ -97,6 +97,16 @@ const menuData = [
         menuName: '隧道分析',
         menuRoute: 'tunnel',
         key: '4-6'
+      },
+      {
+        menuName: '覆土埋深分析',
+        menuRoute: 'overburden',
+        key: '4-7'
+      },
+      {
+        menuName: '断面分析',
+        menuRoute: 'horvercut',
+        key: '4-8'
       }
     ]
   }

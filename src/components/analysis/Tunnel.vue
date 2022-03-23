@@ -66,9 +66,6 @@
         <a-col :span="14">
           <municipal-draw :vueKey="vueKey" enable-menu-control="func" :drawItems="drawItems" @load="onDrawLoad"
                           @drawcreate="handleDraw">
-            <div class="icons" @click="drawTunnelPath">
-              <municipal-icon name="-vector-point" style="cursor: pointer"></municipal-icon>
-            </div>
           </municipal-draw>
         </a-col>
       </a-row>

@@ -3,9 +3,10 @@ import Service from '@/service/service';
 import {geomUtil, dataFormatter} from './helpers';
 
 class Store {
-  constructor(view, m3ds) {
+  constructor(view, m3ds, fileServer) {
     this.view = view;
     this.m3ds = m3ds;
+    this.fileServer = fileServer;
     this.IntegratedServer = Service.City.Plugin("IntegratedServer");
     this.GPServer = Service.City.Plugin("GPServer");
     this.ScadaServer = Service.City.Plugin('ScadaServer');
@@ -315,6 +316,59 @@ class Store {
     } catch (error) {
       return [];
     }
+  }
+
+  // 查询覆土埋深规则hitType=3,水平碰撞规则hitType=1，垂直碰撞规则hitType=2
+  async GetHitDetectRulInfo(mapServerName, params) {
+    let data;
+    try {
+      data = await this.GPServer.get(mapServerName + '/GetHitDetectRulInfo', {
+        params: params
+      });
+    } catch (error) {
+      data = new Promise((resolve) => {
+        resolve('error');
+      });
+    }
+    return data;
+  }
+
+  //获取横断面分析信息
+  // /ProfileMapAnlySH
+  async getCrossSectionData(mapServerName, params, exportName) {
+    exportName = exportName || '';
+    const {data} = await this.GPServer.get(mapServerName + "/ProfileMapAnly", {
+      params: params
+    });
+    if (data.featureSets.length) {
+      data.featureSets = dataFormatter(data.featureSets, exportName);
+    }
+    return data;
+  }
+
+  //连通性分析
+  async connectionJudgeNew(mapServerName, params) {
+    const {data} = await this.GPServer.get(mapServerName + "/ConnectionJudgeNew", {
+      params: params
+    });
+    return data;
+  }
+
+  //获取纵断面分析信息
+  async getVerticalSectionData(mapServerName, params) {
+    const {data} = await this.GPServer.get(mapServerName + "/VertSurfaceAnly", {
+      params: params
+    });
+    return data;
+  }
+
+  toFileUrl(url) {
+    if (this.fileServer) {
+      url = `${this.fileServer}/Cityinterface/rest/services/Filedownload.svc/download/${url}`;
+    } else {
+      url = Service.DownloadURL(url);
+    }
+    return {src: url, alt: ""};
   }
 
   async GetRelationshipList(mapServiceName) {

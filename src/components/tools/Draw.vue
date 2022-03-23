@@ -113,6 +113,7 @@ export default {
     }
   },
   destroyed() {
+    this.stopDrawing();
     this.removeDrawEntities();
   },
   mounted() {
@@ -122,6 +123,16 @@ export default {
     if (!this.drawEntities) {
       this.drawEntities = [];
     }
+    //构造鼠标事件管理对象
+    this.mouseEventManager = new CesiumZondy.Manager.MouseEventManager({
+      viewer: this.view.viewer
+    });
+    //注册鼠标右键单击事件
+    this.mouseEventManager.registerMouseEvent('RIGHT_CLICK', () => {
+      this.mouseEventManager.unRegisterMouseEvent('RIGHT_CLICK');
+      this.removeDrawEntities();
+      this.drawElement.stopDrawing();
+    });
   },
   methods: {
     activeDraw() {
@@ -181,7 +192,7 @@ export default {
           this.view.viewer.entities.remove(item);
         });
         this.drawEntities = [];
-        this.drawElement.stopDrawing();
+        this.stopDrawing();
       }
       if (this.clampToGround) {
         this.drawElement.setGroundPrimitiveType('BOTH');
@@ -377,6 +388,9 @@ export default {
           this.view.viewer.entities.remove(item);
         });
       }
+    },
+    stopDrawing() {
+      this.drawElement && this.drawElement.stopDrawing();
     }
   }
 };

@@ -69,6 +69,15 @@ const router = new Router({
           path: '/pipeStatistic',
           name: 'pipeStatistic',
           component: () => import('../pages/PipeStatisticAna')
+        },
+        {
+          path: '/overburden',
+          name: 'overburden',
+          component: () => import('../pages/OverBurdenAna')
+        }, {
+          path: '/horvercut',
+          name: 'horvercut',
+          component: () => import('../pages/HorAndVerCutAna')
         }
       ]
     },

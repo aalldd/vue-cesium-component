@@ -70,7 +70,14 @@ const resultMixin = {
     needClickFly: {
       type: Boolean,
       default: true
-    }
+    },
+    //是否需要图片控件
+    displayImg: {
+      type: Boolean,
+      default: false
+    },
+    //图片的路径
+    fileUrl: [String]
   },
   watch: {
     pagination: {
@@ -104,7 +111,7 @@ const resultMixin = {
       if (this.panelPosition === 'bottom') {
         return {x: true, y: 200};
       } else {
-        return {y: 300};
+        return {x: true, y: 300};
       }
     }
   },

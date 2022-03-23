@@ -6,7 +6,8 @@
                    :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClass">
     <template v-slot:content>
       <a-spin :spinning="load">
-        <a-tabs
+
+      <a-tabs
           :default-active-key="choosedTabIndex"
           tab-position="top"
           type="card"

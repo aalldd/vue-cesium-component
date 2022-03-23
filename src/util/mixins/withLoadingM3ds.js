@@ -43,6 +43,7 @@ const loadingM3ds = {
           mapServerName: this.mapServerName,
           cutLayerIndexs: this.layerIndexs
         };
+        window.commonParam = this.commonParam;
         this.$emit('load', this);
         window.clearInterval(this.myInterval);
       }

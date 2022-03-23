@@ -34,6 +34,7 @@
     "socket.io-client": "^4.4.1",
     "uglifyjs-webpack-plugin": "^2.2.0",
     "url-parse": "^1.5.4",
+    "v-viewer": "^1.6.4",
     "vue": "^2.6.11",
     "vue-draggable-resizable": "^2.3.0",
     "vuex": "^3.6.2",
