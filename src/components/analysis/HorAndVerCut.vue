@@ -55,20 +55,6 @@ export default {
     title: {
       type: String,
       default: '断面分析'
-    },
-    //纵断面分析数据
-    VerticalSectionData: [Array, Object],
-    //横断面分析数据
-    CrossSectionData: [Array, Object]
-  },
-  watch: {
-    CrossSectionData: {
-      handler() {
-        if (!_.isEmpty(this.CrossSectionData) && !this.CrossSectionData.error) {
-          console.log(this.CrossSectionData);
-        }
-      },
-      immediate: true
     }
   },
   methods: {
@@ -98,7 +84,13 @@ export default {
           this.$message.warning("请选择实体设备！");
           return;
         }
-        this.layerIds.push(pickedFeature.primitive.layerId);
+        if (pickedFeature.primitive.layerId) {
+          this.layerIds.push(pickedFeature.primitive.layerId);
+        } else {
+          const targetLayer = this.m3ds.find(item => item.layerIndex === pickedFeature.tileset.layerIndex);
+          this.layerIds.push(targetLayer.layerId);
+        }
+
         //ObjectId
         const propertys = pickedFeature.getPropertyNames();
         let objectId = '';
@@ -112,7 +104,7 @@ export default {
           return;
         }
 
-        if (objectId == "0") {
+        if (objectId === "0") {
           this.$message.warning("模型未加载完成");
           return;
         }
@@ -148,6 +140,8 @@ export default {
         this.choosedType === '纵断面' && this.ConnectionJudgeNew();
         this.pointArray = [];
         this.pointXy = [];
+        this.layerIds = [];
+        this.objectIds = [];
         this.mouseEventManager && this.mouseEventManager.unRegisterMouseEvent('LEFT_CLICK');
         this.cursorVisible = false;
       }
@@ -176,6 +170,7 @@ export default {
         objectId0: this.objectIds[0],
         objectId1: this.objectIds[1]
       };
+      console.log(params);
       this.$emit('queryVer', {...this.commonParam, ...params});
     }
   }

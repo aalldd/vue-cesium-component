@@ -44,6 +44,8 @@ export default {
     },
     async queryVer(params) {
       const store = new Store();
+      this.resultVisible = true;
+      this.load = true;
       const {mapServerName, layerId0, layerId1, objectId0, objectId1} = params;
       const dataT = await store.connectionJudgeNew(mapServerName, {layerId0, layerId1, objectId0, objectId1});
       if (dataT.length > 0 && !dataT.error) {
@@ -62,14 +64,18 @@ export default {
         return f.attributes.OID;
       });
       objectArr.push({layerId: linef.layerId, objectIds: oids});
-      try {
-        const params = {
-          objectInfo: JSON.stringify(objectArr)
-        };
-        const dataT = await store.getVerticalSectionData(mapServerName, params);
-        this.VerticalSectionData = dataT;
-      } catch (error) {
-        this.$message.error(error.message);
+      const params = {
+        objectInfo: JSON.stringify(objectArr)
+      };
+      const dataT = await store.getVerticalSectionData(mapServerName, params, '纵断面分析');
+      if (!dataT.error) {
+        this.tabs = dataT.featureSets;
+        const url = store.toFileUrl(dataT.imgPath).src;
+        this.fileUrl = url;
+        this.load = false;
+      } else {
+        this.$message.warn(dataT.error.message);
+        this.load = false;
       }
     }
   }

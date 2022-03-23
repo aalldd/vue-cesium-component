@@ -355,10 +355,13 @@ class Store {
   }
 
   //获取纵断面分析信息
-  async getVerticalSectionData(mapServerName, params) {
+  async getVerticalSectionData(mapServerName, params, exportName) {
     const {data} = await this.GPServer.get(mapServerName + "/VertSurfaceAnly", {
       params: params
     });
+    if (data.featureSets) {
+      data.featureSets = dataFormatter(data.featureSets, exportName);
+    }
     return data;
   }
 
