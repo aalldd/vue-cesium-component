@@ -61,20 +61,7 @@ export default {
     query() {
       this.removeAll();
       this.cursorVisible = true;
-      if (!this.mouseEventManager) {
-        //构造鼠标事件管理对象
-        this.mouseEventManager = new CesiumZondy.Manager.MouseEventManager({
-          viewer: this.view.viewer
-        });
-      }
-      //注册鼠标左键单击事件
-      this.mouseEventManager.registerMouseEvent('LEFT_CLICK', (movement) => this.leftClick(movement));
-      //注册鼠标右键单击事件
-      this.mouseEventManager.registerMouseEvent('RIGHT_CLICK', () => {
-        this.mouseEventManager.unRegisterMouseEvent('LEFT_CLICK');
-        this.mouseEventManager.unRegisterMouseEvent('RIGHT_CLICK');
-        this.cursorVisible = false;
-      });
+      this.registerMouseEvent();
     },
     leftClick(movement) {
       if (this.choosedType === '纵断面') {
@@ -170,7 +157,6 @@ export default {
         objectId0: this.objectIds[0],
         objectId1: this.objectIds[1]
       };
-      console.log(params);
       this.$emit('queryVer', {...this.commonParam, ...params});
     }
   }
@@ -200,6 +186,7 @@ export default {
   align-items: center;
   justify-content: center;
   margin-left: 10px;
+  cursor: pointer;
 
   &:hover {
     background-color: $highlight-color;

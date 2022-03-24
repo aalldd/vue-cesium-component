@@ -107,6 +107,11 @@ const menuData = [
         menuName: '断面分析',
         menuRoute: 'horvercut',
         key: '4-8'
+      },
+      {
+        menuName: '联通分析',
+        menuRoute: 'connection',
+        key: '4-9'
       }
     ]
   }

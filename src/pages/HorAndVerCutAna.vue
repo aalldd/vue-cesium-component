@@ -47,11 +47,11 @@ export default {
       this.resultVisible = true;
       this.load = true;
       const {mapServerName, layerId0, layerId1, objectId0, objectId1} = params;
-      const dataT = await store.connectionJudgeNew(mapServerName, {layerId0, layerId1, objectId0, objectId1});
-      if (dataT.length > 0 && !dataT.error) {
-        this.vertSurfaceAnly(dataT, mapServerName);
+      const {data} = await store.connectionJudgeNew(mapServerName, {layerId0, layerId1, objectId0, objectId1});
+      if (data.length > 0 && !data.error) {
+        this.vertSurfaceAnly(data, mapServerName);
       } else {
-        this.$message.info(dataT.error.message);
+        this.$message.info(data.error.message);
       }
     },
     async vertSurfaceAnly(data, mapServerName) {

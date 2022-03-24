@@ -78,6 +78,10 @@ const router = new Router({
           path: '/horvercut',
           name: 'horvercut',
           component: () => import('../pages/HorAndVerCutAna')
+        }, {
+          path: '/connection',
+          name: 'connection',
+          component: () => import('../pages/ConnectionAna')
         }
       ]
     },

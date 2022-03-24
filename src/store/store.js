@@ -351,7 +351,10 @@ class Store {
     const {data} = await this.GPServer.get(mapServerName + "/ConnectionJudgeNew", {
       params: params
     });
-    return data;
+    const tabs = dataFormatter(data);
+    return {
+      data, tabs
+    };
   }
 
   //获取纵断面分析信息

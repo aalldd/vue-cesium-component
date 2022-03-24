@@ -17,6 +17,7 @@ export {default as MunicipalCutFill} from '../components/analysis/CutFill';
 export {default as MunicipalCutFillResult} from '../components/analysis/CutFillResult';
 export {default as MunicipalSquibRes} from '../components/analysis/SquibRes';
 export {default as MunicipalOverBurden} from '../components/analysis/OverBurden';
+export {default as MunicipalConnection} from '../components/analysis/Connection';
 export {default as MunicipalHorAndVerCut} from '../components/analysis/HorAndVerCut';
 export {default as MunicipalFixRoam} from '../components/roam/FixRoam';
 export {default as MunicipalFixRoamData} from '../components/roam/FixRoamData';

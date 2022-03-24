@@ -59,6 +59,22 @@ const loadingM3ds = {
     removeAll() {
       this.emgManager.removeAll();
       this.drawElement && this.drawElement.stopDrawing();
+    },
+    registerMouseEvent() {
+      if (!this.mouseEventManager) {
+        //构造鼠标事件管理对象
+        this.mouseEventManager = new CesiumZondy.Manager.MouseEventManager({
+          viewer: this.view.viewer
+        });
+      }
+      //注册鼠标左键单击事件
+      this.mouseEventManager.registerMouseEvent('LEFT_CLICK', (movement) => this.leftClick(movement));
+      //注册鼠标右键单击事件
+      this.mouseEventManager.registerMouseEvent('RIGHT_CLICK', () => {
+        this.mouseEventManager.unRegisterMouseEvent('LEFT_CLICK');
+        this.mouseEventManager.unRegisterMouseEvent('RIGHT_CLICK');
+        this.cursorVisible = false;
+      });
     }
   },
   destroyed() {
