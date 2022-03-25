@@ -368,6 +368,30 @@ class Store {
     return data;
   }
 
+  //获取电子围栏数据
+  async getFenceData(params) {
+    const {data} = await this.IntegratedServer.get("getFenceData", {
+      params: params
+    });
+    return data;
+  }
+
+  //添加/修改电子围栏
+  async addFenceData(params) {
+    const {data} = await this.IntegratedServer.get("addFenceData", {
+      params: params
+    });
+    return data;
+  }
+
+  //删除电子围栏
+  async deleteFenceData(params) {
+    const {data} = await this.IntegratedServer.get("deleteFenceData", {
+      params: params
+    });
+    return data;
+  }
+
   toFileUrl(url) {
     if (this.fileServer) {
       url = `${this.fileServer}/Cityinterface/rest/services/Filedownload.svc/download/${url}`;

@@ -306,7 +306,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .input-item {
   display: flex;
   align-items: center;

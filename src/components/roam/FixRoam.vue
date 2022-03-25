@@ -92,16 +92,16 @@
         </a-row>
       </template>
     </municipal-panel>
-    <municipal-fixroam-data v-if="planVisible" :title="title" :draggable="draggable" @close="$emit('onPlanClose')"
-                            :closable="closable" :dataSource="roamPlanData"
-                            @addRoamPlan="addRoamPlan"
-                            @onRowClick="previewRoamPlan"
-                            @modifyRoamPlan="modifyRoamPlan"
-                            @deleteRoamPlan="deleteRoamPlan"
-                            :loading="loading"
-                            :need-expand="expandable" :panel-class-name="panelClassName">
+    <municipal-plan-mananger v-if="planVisible" :title="title" :draggable="draggable" @close="$emit('onPlanClose')"
+                             :closable="closable" :dataSource="roamPlanData"
+                             @addPlan="addRoamPlan"
+                             @onRowClick="previewRoamPlan"
+                             @modifyPlan="modifyRoamPlan"
+                             @deletePlan="deleteRoamPlan"
+                             :loading="loading"
+                             :need-expand="expandable" :panel-class-name="panelClassName">
 
-    </municipal-fixroam-data>
+    </municipal-plan-mananger>
   </div>
 </template>
 

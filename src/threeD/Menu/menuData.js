@@ -112,6 +112,11 @@ const menuData = [
         menuName: '联通分析',
         menuRoute: 'connection',
         key: '4-9'
+      },
+      {
+        menuName: '电子围栏',
+        menuRoute: 'fence',
+        key: '4-10'
       }
     ]
   }

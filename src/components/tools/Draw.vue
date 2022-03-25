@@ -94,7 +94,7 @@ export default {
     },
     clampToGround: {
       type: Boolean,
-      default: true
+      default: false
     },
     position: {
       type: String,
@@ -107,9 +107,10 @@ export default {
   },
   watch: {
     drawStyle: {
-      handler: () => {
+      handler() {
         this.drawStyleCopy = Object.assign(this.drawStyleCopy, this.drawStyle);
-      }
+      },
+      immediate: true
     }
   },
   destroyed() {
@@ -123,16 +124,16 @@ export default {
     if (!this.drawEntities) {
       this.drawEntities = [];
     }
-    //构造鼠标事件管理对象
-    this.mouseEventManager = new CesiumZondy.Manager.MouseEventManager({
-      viewer: this.view.viewer
-    });
-    //注册鼠标右键单击事件
-    this.mouseEventManager.registerMouseEvent('RIGHT_CLICK', () => {
-      this.mouseEventManager.unRegisterMouseEvent('RIGHT_CLICK');
-      this.removeDrawEntities();
-      this.drawElement.stopDrawing();
-    });
+    // //构造鼠标事件管理对象
+    // this.mouseEventManager = new CesiumZondy.Manager.MouseEventManager({
+    //   viewer: this.view.viewer
+    // });
+    // //注册鼠标右键单击事件
+    // this.mouseEventManager.registerMouseEvent('RIGHT_CLICK', () => {
+    //   this.mouseEventManager.unRegisterMouseEvent('RIGHT_CLICK');
+    //   this.removeDrawEntities();
+    //   this.drawElement.stopDrawing();
+    // });
   },
   methods: {
     activeDraw() {
@@ -210,8 +211,8 @@ export default {
         color: color,
         callback: (position) => {
           //拿经纬度坐标
-          const {lng, lat, height} = this.emgManager.Cartesian3ToLat(position);
-          let modelHeight = drawHeight || height; //模型高度 如果没有指定，就用当前坐标高度
+          const {lng, lat, height} = this.emgManager.changeToLatAndTerrainHeight(position);
+          let modelHeight = this.clampToGround ? height : drawHeight; //模型高度 如果没有指定，就用当前坐标高度
           //添加点：经度、纬度、高程、名称、像素大小、颜色、外边线颜色、边线宽度
           let drawEntity = this.entityController.appendPoint(lng, lat, modelHeight, '点', 10,
             color,
@@ -231,8 +232,8 @@ export default {
         callback: (positions) => {
           let degreeArr = [];
           positions.forEach(position => {
-            const {lng, lat, height} = this.emgManager.Cartesian3ToLat(position);
-            const modelHeight = drawHeight || height;
+            const {lng, lat, height} = this.emgManager.changeToLatAndTerrainHeight(position);
+            const modelHeight = this.clampToGround ? height : drawHeight;
             degreeArr.push([lng, lat, modelHeight]);
           });
           let polyline = new Cesium.DrawElement.PolylinePrimitive({
@@ -256,8 +257,8 @@ export default {
           let pointArr = [];
           let polygonArr = [];
           positions.forEach(position => {
-            const {lng, lat, height} = this.emgManager.Cartesian3ToLat(position);
-            const modelHeight = drawHeight || height;
+            const {lng, lat, height} = this.emgManager.changeToLatAndTerrainHeight(position);
+            const modelHeight = this.clampToGround ? height : drawHeight;
             const pointM = this.emgManager.positionTransfer({lng, lat, modelHeight});
             pointArr.push(lng, lat, modelHeight);
             polygonArr.push(pointM[0], pointM[1]);
@@ -334,8 +335,8 @@ export default {
     activeCircle(outlineColor, color, drawHeight) {
       this.drawElement.startDrawingCircle({
         callback: (centerPoint, radius) => {
-          const {lng, lat, height} = this.emgManager.Cartesian3ToLat(centerPoint);
-          let modelHeight = drawHeight || height;
+          const {lng, lat, height} = this.emgManager.changeToLatAndTerrainHeight(centerPoint);
+          let modelHeight = this.clampToGround ? height : drawHeight;
           this.range = this.view.viewer.entities.add({
             position: Cesium.Cartesian3.fromDegrees(lng, lat, height),
             ellipse: {

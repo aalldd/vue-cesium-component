@@ -929,6 +929,49 @@ class emgUtil {
     // this.dynaCutList = [];
   };
 
+  // 绘制电子围栏,需要坐标点集合(经纬度)，围栏底部点集合，围栏顶部高度，围栏材质（闪烁，呼吸两种）,动画速度
+  drawFence(pointArr, minimumHeights, maxHeight, wallType, speed, speedList) {
+    const material = new Cesium.PolylineTrailLinkMaterialProperty({
+      image: '/static/cesium/Assets/Images/color.png',
+      color: Cesium.Color.RED,
+      duration: speedList[speed - 1] * 1000,
+      direction: 3.0
+    });
+
+    let alp = 1;
+    let num = 0;
+    let step = speed / 50;
+    const material1 = new Cesium.ImageMaterialProperty({
+      transparent: true,
+      color: new Cesium.CallbackProperty(() => {
+        if ((num % 2) === 0) {
+          alp -= step;
+        } else {
+          alp += step;
+        }
+
+        if (alp <= 0.3) {
+          num++;
+        } else if (alp >= 1) {
+          num++;
+        }
+        return Cesium.Color.RED.withAlpha(alp);
+        //entity的颜色透明 并不影响材质，并且 entity也会透明
+      }, false)
+    });
+
+    //立体墙闪烁
+    this.view.viewer.entities.add({
+      name: 'wall',
+      wall: {
+        positions: Cesium.Cartesian3.fromDegreesArray(pointArr),
+        maximumHeights: minimumHeights.map(p => p + maxHeight),
+        minimumHeights: minimumHeights,
+        material: wallType === '0' ? material : material1
+      }
+    });
+  }
+
   removeAll = () => {
     if (!this.entityController) {
       //构造几何控制对象

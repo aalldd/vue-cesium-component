@@ -19,6 +19,7 @@ export {default as MunicipalSquibRes} from '../components/analysis/SquibRes';
 export {default as MunicipalOverBurden} from '../components/analysis/OverBurden';
 export {default as MunicipalConnection} from '../components/analysis/Connection';
 export {default as MunicipalHorAndVerCut} from '../components/analysis/HorAndVerCut';
+export {default as MunicipalFence} from '../components/analysis/Fence';
 export {default as MunicipalFixRoam} from '../components/roam/FixRoam';
 export {default as MunicipalFixRoamData} from '../components/roam/FixRoamData';
 export {default as MunicipalAutoRoam} from '../components/roam/AutoRoam';
@@ -34,6 +35,7 @@ export {default as MunicipalFilter} from '../components/common/Filter';
 export {default as MunicipalLayer} from '../components/common/Layer';
 export {default as MunicipalLayerSelect} from '../components/common/LayerSelect';
 export {default as MunicipalLink} from '../components/common/Link';
+export {default as MunicipalPlanManager} from '../components/common/PlanManager';
 
 //统计
 export {default as MunicipalPipeStatistic} from '../components/statistic/PipeStatistic';

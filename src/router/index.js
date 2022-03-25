@@ -82,6 +82,10 @@ const router = new Router({
           path: '/connection',
           name: 'connection',
           component: () => import('../pages/ConnectionAna')
+        }, {
+          path: '/fence',
+          name: 'fence',
+          component: () => import('../pages/FenceAna')
         }
       ]
     },
