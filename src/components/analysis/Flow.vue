@@ -162,7 +162,7 @@ export default {
       }, 3000);
     },
     onLayerLoad(payload) {
-      this.layerIds = treeUtil.filter(item => {
+      this.layerIds = treeUtil.filter(payload.layerDataCopy, item => {
         return item.layerId !== null;
       }).map(item => item.layerId);
       this.checkedKeys = payload.checkedKeysCopy;

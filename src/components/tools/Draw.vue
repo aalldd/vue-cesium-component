@@ -15,8 +15,9 @@
       </div>
     </div>
     <div v-if="enableMenuControl==='func'" class="tool-wrapper">
-      <div class="tool" :class="drawType===item?'activeItem':''"
-           :key="item" v-for="item in Object.keys(drawToolmap).filter(jitem=>this.drawItems.indexOf(jitem)>=0)"
+      <div v-for="item in Object.keys(drawToolmap).filter(jitem=>this.drawItems.indexOf(jitem)>=0)"
+           class="tool" :class="drawType===item?'activeItem':''"
+           :key="item"
            v-on:click="drawStart(item)">
         <municipal-icon :name="drawToolmap[item][0]"></municipal-icon>
       </div>
@@ -121,8 +122,8 @@ export default {
     if (!this.drawElement) {
       this.drawElement = new Cesium.DrawElement(this.view.viewer);
     }
-    if (!this.drawEntities) {
-      this.drawEntities = [];
+    if (!window.drawEntities) {
+      window.drawEntities = [];
     }
     // //构造鼠标事件管理对象
     // this.mouseEventManager = new CesiumZondy.Manager.MouseEventManager({
@@ -143,6 +144,10 @@ export default {
       this.popoverVisible = false;
     },
     drawStart(drawType) {
+      if (!this.infinite) {
+        this.removeDrawEntities();
+        this.stopDrawing();
+      }
       const {outlineColor, color, drawHeight} = this.startDrawing();
       this.drawType = drawType;
       const self = this;
@@ -173,8 +178,8 @@ export default {
           self.activeCircle(outlineColor, color, drawHeight);
           return;
         case 'delete':
-          self.removeAll();
-          this.drawElement && this.drawElement.stopDrawing();
+          this.removeDrawEntities();
+          this.stopDrawing();
           return;
         default:
           break;
@@ -188,13 +193,6 @@ export default {
       });
     },
     startDrawing() {
-      if (!this.infinite) {
-        this.drawEntities.forEach(item => {
-          this.view.viewer.entities.remove(item);
-        });
-        this.drawEntities = [];
-        this.stopDrawing();
-      }
       if (this.clampToGround) {
         this.drawElement.setGroundPrimitiveType('BOTH');
       } else {
@@ -218,7 +216,7 @@ export default {
             color,
             outlineColor,
             this.drawStyleCopy.outlineWidth);
-          this.drawEntities.push(drawEntity);
+          window.drawEntities.push(drawEntity);
           if (!this.infinite) {
             this.drawElement.stopDrawing();
           }
@@ -243,7 +241,7 @@ export default {
             geodesic: true
           });
           let drawEntity = this.view.viewer.scene.primitives.add(polyline);
-          this.drawEntities.push(drawEntity);
+          window.drawEntities.push(drawEntity);
           if (!this.infinite) {
             this.drawElement.stopDrawing();
           }
@@ -284,7 +282,7 @@ export default {
           if (!this.infinite) {
             this.drawElement.stopDrawing();
           }
-          this.drawEntities.push(polygonEntity);
+          window.drawEntities.push(polygonEntity);
           this.drawcreate(positions);
         }
       });
@@ -324,7 +322,7 @@ export default {
           };
           //绘制图形通用方法：对接Cesium原生特性
           const rectEntity = this.entityController.appendGraphics(polygon);
-          this.drawEntities.push(rectEntity);
+          window.drawEntities.push(rectEntity);
           if (!this.infinite) {
             this.drawElement.stopDrawing();
           }
@@ -373,7 +371,7 @@ export default {
             if (!this.infinite) {
               this.drawElement.stopDrawing();
             }
-            this.drawEntities.push(this.range);
+            window.drawEntities.push(this.range);
             this.drawcreate(polygonArr);
           }
         }
@@ -384,8 +382,8 @@ export default {
       this.drawcreate(previewRange);
     },
     removeDrawEntities() {
-      if (this.drawEntities?.length) {
-        this.drawEntities.forEach(item => {
+      if (window.drawEntities?.length) {
+        window.drawEntities.forEach(item => {
           this.view.viewer.entities.remove(item);
         });
       }
@@ -403,30 +401,33 @@ export default {
 .draw-tool {
   position: relative;
 
-  .activeItem {
-    background-color: $active-background;
-  }
-}
 
-.tool-wrapper {
-  display: flex;
-  align-items: center;
-
-  .tool {
-    width: 2em;
-    height: 2em;
-    background-color: transparent;
-    color: var(--text-color);
-    border: none;
+  .tool-wrapper, .toolbar-wrapper {
     display: flex;
     align-items: center;
-    justify-content: center;
-    cursor: pointer;
 
-    &:hover {
-      background-color: var(--hover-color);
+    .tool {
+      width: 2em;
+      height: 2em;
+      background-color: transparent;
+      color: var(--text-color);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+
+
+      &:hover {
+        background-color: var(--hover-color);
+      }
+    }
+
+    .activeItem {
+      background-color: $active-background !important;
     }
   }
 }
+
 
 </style>

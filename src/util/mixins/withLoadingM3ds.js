@@ -41,7 +41,8 @@ const loadingM3ds = {
         this.commonParam = {
           offset: this.offset,
           mapServerName: this.mapServerName,
-          cutLayerIndexs: this.layerIndexs
+          cutLayerIndexs: this.layerIndexs,
+          m3ds: this.m3ds
         };
         window.commonParam = this.commonParam;
         this.$emit('load', this);

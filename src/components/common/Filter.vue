@@ -219,7 +219,25 @@ export default {
         return;
       }
       const newData = Object.assign(this.initDataSource[0], {key: this.dataSource.length});
-      this.dataSource.push(newData);
+
+      const lastSelected = this.dataSource[this.dataSource.length - 1];
+      //如果发现上一项数据，为空，或者有一个value是空，都不让添加
+      if (lastSelected && lastSelected.selectedItem) {
+        let valid = true;
+        for (let key in lastSelected.selectedItem) {
+          let value = lastSelected.selectedItem[key];
+          if (value === '' || !value) {
+            valid = false;
+          }
+        }
+        if (!valid) {
+          this.$message.warn('请先填满上一项条件哦');
+        } else {
+          this.dataSource.push(newData);
+        }
+      } else {
+        this.$message.warn('请先填满上一项条件哦');
+      }
     },
     onDelete(text, record, index) {
       //  删除

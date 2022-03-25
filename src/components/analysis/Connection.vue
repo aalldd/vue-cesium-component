@@ -85,6 +85,8 @@ export default {
         this.mouseEventManager.unRegisterMouseEvent('LEFT_CLICK');
         this.mouseEventManager.unRegisterMouseEvent('RIGHT_CLICK');
         this.cursorVisible = false;
+        this.layerIds = [];
+        this.oids = [];
       }
     }
   }

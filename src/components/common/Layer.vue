@@ -20,6 +20,7 @@
           <span v-else>{{ title }}</span>
         </template>
       </a-tree>
+      <slot></slot>
     </a-spin>
   </div>
 </template>

@@ -37,6 +37,7 @@
 
 <script>
 import VueOptions from '@/util/options/vueOptions';
+import panelOptions from "@/util/options/panelOptions";
 
 export default {
   name: "municipal-rain",
@@ -82,6 +83,7 @@ export default {
   },
   props: {
     ...VueOptions,
+    ...panelOptions,
     rainLevel: {
       type: Array,
       default: () => {
@@ -92,26 +94,6 @@ export default {
           {rain: '大暴雨', level: '4.17——10.41', rainSpeed: 30},
           {rain: '特大暴雨', level: '10.41——以上', rainSpeed: 50}];
       }
-    },
-    title: {
-      type: String,
-      default: '降雨信息'
-    },
-    panelStyle: {
-      type: Object,
-      default: () => {
-        return {
-          width: '400px', marginBottom: '20px', position: 'absolute', left: '4em', top: '4em'
-        };
-      }
-    },
-    draggable: {
-      type: Boolean,
-      default: true
-    },
-    panelClassName: {
-      type: String,
-      default: ''
     }
   },
   methods: {
@@ -146,6 +128,7 @@ export default {
     removeRain() {
       if (this.rainObj) {
         this.webGlobe.viewer.scene.postProcessStages.remove(this.rainObj);
+        this.rainObj = null;
       }
     }
   }

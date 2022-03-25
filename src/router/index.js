@@ -13,7 +13,7 @@ const router = new Router({
         {
           path: '/flood',
           name: 'flood',
-          component: () => import('../components/analysis/Flood')
+          component: () => import('../pages/FloodAna')
         },
         {
           path: '/dynacut',
@@ -66,9 +66,14 @@ const router = new Router({
           component: () => import('../pages/ConditionQueryAna')
         },
         {
-          path: '/pipeStatistic',
-          name: 'pipeStatistic',
-          component: () => import('../pages/PipeStatisticAna')
+          path: '/pipelineStatistic',
+          name: 'pipelineStatistic',
+          component: () => import('../pages/PipelineStatisticAna')
+        },
+        {
+          path: '/pipePointStatistic',
+          name: 'pipePointStatistic',
+          component: () => import('../pages/PipePointStatisticAna')
         },
         {
           path: '/overburden',

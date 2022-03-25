@@ -4,8 +4,7 @@
     <template v-slot:content>
       <municipal-draw :vueKey="vueKey" enable-menu-control="func" :drawItems="drawItems" :infinite="false"
                       @drawcreate="handleDraw"></municipal-draw>
-      <municipal-layer :checkedKeys="checkedKeys"
-                       :customTreeData="false"
+      <municipal-layer :customTreeData="false"
                        :layerGroup="layerGroup"
                        @check="check"
                        @load="onLayerLoad">
@@ -27,13 +26,12 @@ export default {
   mixins: [loadingM3ds],
   data() {
     return {
-      checkedKeys: [],
-      layerData: [],
       layerIds: [],
       layerGroup: {
         '地下图层': {}
       },
-      drawItems: ['global', 'preview', 'polygon', 'rect', 'circle']
+      drawItems: ['global', 'preview', 'polygon', 'rect', 'circle'],
+      params: {}
     };
   },
   props: {
@@ -45,15 +43,12 @@ export default {
   },
   methods: {
     check(checkedKeys, layerIds) {
-      this.layerIds = layerIds;
-      this.checkedKeys = checkedKeys;
+      this.params.layerIds = layerIds;
     },
     onLayerLoad(payload) {
-      this.layerIds = treeUtil.filter(payload.layerDataCopy, (item) => {
+      this.params.layerIds = treeUtil.filter(payload.layerDataCopy, (item) => {
         return item.layerId !== null;
       }).map(item => item.layerId);
-      this.checkedKeys = payload.checkedKeysCopy;
-      this.layerData = payload.layerDataCopy;
     },
     handleDraw(result) {
       let geometry;
@@ -72,19 +67,15 @@ export default {
         geometry = payload.geometry;
         geometryType = 'rect';
       }
-      const params = {
-        geometry,
-        geometryType,
-        cutLayerIndexs: this.layerIndexs,
-        m3ds: this.m3ds,
-        offset: this.offset,
-        mapServerName: this.mapServerName,
-        layerIds: this.layerIds
-      };
-      this.params = params;
+      this.params.geometry = geometry;
+      this.params.geometryType = geometryType;
     },
     query() {
-      this.$emit('query', this.params);
+      if (!this.params.geometry) {
+        this.$message.warn('请绘制查询区域！');
+        return;
+      }
+      this.$emit('query', {...this.commonParam, ...this.params});
     }
   }
 };

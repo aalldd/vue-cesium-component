@@ -5,9 +5,8 @@
 <!--*/-->
 <template>
   <div class="flood">
-    <municipal-rain :draggable="draggable" @onClose="$emit('onClose')" v-if="needRain" title="降雨信息"
-                    :panel-style="rainPanelStyle" :panel-class-name="panelClassName"
-                    :rain-level="rainLevel"></municipal-rain>
+    <!--    此处可以填充控制降雨的功能面板-->
+    <slot></slot>
     <municipal-panel :draggable="draggable" @onClose="$emit('onClose')" :title="title" :closable="closable"
                      :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
       <template v-slot:content>
@@ -91,10 +90,6 @@ export default {
     },
     ...VueOptions,
     ...PanelOpts,
-    needRain: {
-      type: Boolean,
-      default: true
-    },
     title: {
       type: String,
       default: '淹没分析'
@@ -103,32 +98,6 @@ export default {
     terrainMode: {
       type: Boolean,
       default: true
-    },
-    rainLevel: {
-      type: Array,
-      default: () => {
-        return [{rain: '小雨', level: '0——0.41', rainSpeed: 4},
-          {rain: '中雨', level: '0.41——1.04', rainSpeed: 8},
-          {rain: '大雨', level: '1.04——2.08', rainSpeed: 12},
-          {rain: '暴雨', level: '2.08——4.17', rainSpeed: 20},
-          {rain: '大暴雨', level: '4.17——10.41', rainSpeed: 30},
-          {rain: '特大暴雨', level: '10.41——以上', rainSpeed: 50}];
-      }
-    },
-    rainTitle: {
-      type: String,
-      default: '降雨信息'
-    },
-    rainPanelStyle: {
-      type: Object,
-      default: () => {
-        return {
-          width: '400px',
-          position: 'absolute',
-          right: '2em',
-          top: '2em'
-        };
-      }
     },
     panelStyle: {
       type: Object,
@@ -202,10 +171,6 @@ export default {
     }
   },
   mounted() {
-    if (!this.$parent.vueKey) {
-      this.$message.warn('分析功能组件需挂载在地图组件之上！');
-      return;
-    }
     this.mount();
   },
   activated() {

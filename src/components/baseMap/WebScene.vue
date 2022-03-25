@@ -135,6 +135,9 @@ export default {
       this.$_registerAsyncActions(map);
       this.$_bindPropsUpdateEvents(); */
       this.initialized = true;
+      const iframe = document.getElementsByClassName('cesium-infoBox-iframe')[0];
+      iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms');
+      iframe.setAttribute('src', '');
       // 这里禁止吧cesium示例化后的webGlobe传上去，此处会发生vue劫持操作，导致内存溢出
       this.$emit("load", {
         component: this,

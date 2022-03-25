@@ -23,7 +23,6 @@ class Store {
     } else {
       layers = this.m3ds.filter(item => layerIds.includes(item.layerId));
     }
-
     const promises = layers.map(t => {
       if (t.gdbp) {
         let params = {
@@ -301,7 +300,7 @@ class Store {
       const data = Promise.all(promises);
       result = data;
     } catch (err) {
-      message.error('所选图层没有流向信息');
+      this.$message.error('所选图层没有流向信息');
       result = [];
     }
     return result;
@@ -351,10 +350,14 @@ class Store {
     const {data} = await this.GPServer.get(mapServerName + "/ConnectionJudgeNew", {
       params: params
     });
-    const tabs = dataFormatter(data);
-    return {
-      data, tabs
-    };
+    if (!data.error) {
+      const tabs = dataFormatter(data);
+      return {
+        data, tabs
+      };
+    } else {
+      return data;
+    }
   }
 
   //获取纵断面分析信息
