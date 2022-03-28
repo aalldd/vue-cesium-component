@@ -7,7 +7,7 @@ import {ScreenSpaceEventType} from "./ScreenSpaceEventType";
 
 export default {
   name: "municipal-link",
-  inject: ["Cesium", "CesiumZondy", "webGlobe"],
+  inject: ["Cesium", "CesiumZondy"],
   props: {
     enable: {type: Boolean, default: false},
     includes: {type: Array, default: () => []},
@@ -251,10 +251,6 @@ export default {
     deleteHandler() {
       let {CesiumZondy, screenSpaceEventType} = this;
       CesiumZondy = CesiumZondy || window.CesiumZondy;
-      /* 这段代码要结合WebGlobe里面的如下代码才能明白
-      window.CesiumZondy.GlobesManager.addSource(vueKey, vueIndex, webGlobe, {
-        ScreenSpaceEventHandler: undefined,
-      }); */
       const instance = this.getInstanceOptions();
       if (instance) {
         const handler = instance.ScreenSpaceEventHandler;

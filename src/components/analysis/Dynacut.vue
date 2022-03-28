@@ -131,6 +131,10 @@ export default {
       this.drawRange = [...payload, payload[0]];
       this.dynacut();
     },
+    removePlanes() {
+      this.analysisManager && this.dynaCutList && this.dynaCutList.map(d => this.analysisManager.deleteDynamicCutting(d));
+      this.dynaCutList = [];
+    },
     changeTexture(textureUrl) {
       this.drawTexture = textureUrl;
     },
@@ -207,11 +211,6 @@ export default {
   align-items: center;
   margin: 10px 0;
   min-height: 40px;
-}
-
-.icons {
-  display: flex;
-  justify-content: flex-start;
 }
 
 .activeTexture {

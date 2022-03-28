@@ -5,9 +5,11 @@
         <span slot="title" class="submenu-title-wrapper">
           <a-icon type="setting"/>{{ item.menuName }}</span>
         <a-menu-item v-for="jItem in item.children" :key="jItem.key">
-          <span v-if="jItem.menuRoute.endsWith('page')" @click="openNewPage(jItem.menuRoute)">{{
+          <div v-if="jItem.menuRoute.endsWith('page')" style="width: 100%;height: 100%"
+               @click="openNewPage(jItem.menuRoute)">{{
               jItem.menuName
-            }}</span>
+            }}
+          </div>
           <router-link :to="jItem.menuRoute" v-else>{{ jItem.menuName }}</router-link>
         </a-menu-item>
       </a-sub-menu>

@@ -39,7 +39,7 @@ export default {
         return window.CesiumZondy;
       },
       get webGlobe() {
-        return window.webGlobe;
+        return this.webGlobe;
       },
       get m3ds() {
         return window.m3ds;
@@ -86,10 +86,6 @@ export default {
     container: {
       type: [String, HTMLElement]
     },
-    lockView: {
-      type: Boolean,
-      default: false
-    },
     cameraView: {
       type: Object
     }
@@ -105,6 +101,8 @@ export default {
   },
   methods: {
     handleLoad(payload) {
+      const {component: {webGlobe}} = payload;
+      this.webGlobe = webGlobe;
       this.$emit('load', payload);
     },
     handleM3dload(payload) {

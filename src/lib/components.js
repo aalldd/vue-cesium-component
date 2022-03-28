@@ -20,6 +20,7 @@ export {default as MunicipalOverBurden} from '../components/analysis/OverBurden'
 export {default as MunicipalConnection} from '../components/analysis/Connection';
 export {default as MunicipalHorAndVerCut} from '../components/analysis/HorAndVerCut';
 export {default as MunicipalFence} from '../components/analysis/Fence';
+export {default as MunicipalSection} from '../components/analysis/Section';
 export {default as MunicipalFixRoam} from '../components/roam/FixRoam';
 export {default as MunicipalFixRoamData} from '../components/roam/FixRoamData';
 export {default as MunicipalAutoRoam} from '../components/roam/AutoRoam';
@@ -54,5 +55,7 @@ export {default as MunicipalTianControl} from "../components/tools/TianMap";
 export {default as MunicipalLayerControl} from '../components/tools/LayerControl';
 export {default as MunicipalPopup} from '../components/tools/Popup';
 export {default as MunicipalTianTools} from "../components/tools/Tools";
+export {default as MunicipalTianToolsLink} from "../components/tools/ToolForLink";
 export {default as MunicipalClickQuery} from "../components/tools/ClickQuery";
+export {default as MunicipalClickQueryLink} from "../components/tools/ClickQueryForLink";
 
