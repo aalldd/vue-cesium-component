@@ -11,19 +11,21 @@
                      :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
       <template v-slot:content>
         <div class="content">
-          <a-row>
-            <div class="input-item" v-for="(item,key) in renderData" :key="key">
-              <span class="input-tag">{{ item.itemName }}</span>
+          <a-row class="input-item" v-for="(item,key) in renderData" :key="key">
+            <a-col :span="7">
+              <span class="input-tag">{{ item.itemName }}:</span>
+            </a-col>
+            <a-col :span="17">
               <a-input v-model="item.itemValue"
                        v-if="item.uniqueKey!=='floodColor'"
                        :disabled="(item.uniqueKey==='startHeight' || item.uniqueKey==='maxHeight') && terrainMode"></a-input>
-              <mapgis-ui-sketch-color-picker
-                v-else
-                :color.sync="item.itemValue"
-                :disableAlpha="false"
-                class="colorPicker"
-              ></mapgis-ui-sketch-color-picker>
-            </div>
+              <!--              <mapgis-ui-sketch-color-picker-->
+              <!--                v-else-->
+              <!--                :color.sync="item.itemValue"-->
+              <!--                :disableAlpha="false"-->
+              <!--                class="colorPicker"-->
+              <!--              ></mapgis-ui-sketch-color-picker>-->
+            </a-col>
           </a-row>
         </div>
         <div class="buttons">
@@ -143,10 +145,6 @@ export default {
           itemName: '水纹频率',
           itemValue: 500,
           uniqueKey: 'frequency'
-        }, {
-          itemName: '洪水颜色',
-          itemValue: 'rgba(149,232,249,0.5)',
-          uniqueKey: 'floodColor'
         }],
       renderData: [],
       maxTerrainHeight: 0,
@@ -267,7 +265,6 @@ export default {
       const {
         params
       } = this;
-      const floodColor = params.find(item => item.uniqueKey === 'floodColor').itemValue;
       const floodSpeed = params.find(item => item.uniqueKey === 'speed').itemValue;
       const specularIntensity = params.find(item => item.uniqueKey === 'specularIntensity').itemValue;
       const amplitude = params.find(item => item.uniqueKey === 'amplitude').itemValue;
@@ -315,7 +312,7 @@ export default {
       // 洪水淹没区域最低高度
       floodAnalysis.startHeight = Number(startHeight);
       // 洪水颜色
-      floodAnalysis.floodColor = this._getColor(floodColor);
+      floodAnalysis.floodColor = this._getColor('rgba(149,232,249,0.5)');
       // 水纹频率 指波浪的个数
       floodAnalysis.frequency = Number(frequency);
       // 水纹速度

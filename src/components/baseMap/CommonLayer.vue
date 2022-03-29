@@ -10,16 +10,16 @@
     :cameraView="cameraView"
     @load="handleLoad"
   >
-    <mapgis-3d-igs-m3d v-for="item in m3dInfos"
-                       :url="item.url"
-                       :layers="item.layers"
-                       :offset="item.offset"
-                       :key="item.vueIndex"
-                       :vue-key="item.vueKey"
-                       :vue-index="item.vueIndex"
-                       @loaded="handleM3dload"
-                       :maximum-memory-usage="item.maximumMemoryUsage"/>
-    <mapgis-3d-statebar v-if="needState"/>
+    <municipal-3d-igs-m3d v-for="item in m3dInfos"
+                          :url="item.url"
+                          :layers="item.layers"
+                          :offset="item.offset"
+                          :key="item.vueIndex"
+                          :vue-key="item.vueKey"
+                          :vue-index="item.vueIndex"
+                          @loaded="handleM3dload"
+                          :maximum-memory-usage="item.maximumMemoryUsage"/>
+    <municipal-3d-statebar v-if="needState"/>
     <slot></slot>
   </municipal-web-scene>
 </template>

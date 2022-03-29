@@ -63,7 +63,7 @@ export default {
       },
       globalConfig: null,
       clickQueryData: null,
-      popupOffset: [200, 64],
+      popupOffset: [0, 0],
       globalConfigStore: 'globalConfigStore',
       linkageDataStore: 'linkageDataStore'
     };

@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import "@mapgis/cesium/dist/Widgets/widgets.css";
+import "./widgets.css";
 import withPrivateMethods from "@/util/mixins/withPrivateMethods";
 import withEvents from "@/util/mixins/withEvents";
 import {flyTo, flyToEx} from "@/util/helpers/util";

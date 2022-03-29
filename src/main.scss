@@ -1,6 +1,24 @@
 @import "~ant-design-vue/dist/antd.css";
 @import "components/var";
 
+::-webkit-scrollbar {
+  height: 5px;
+  width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: $active-background;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: 0;
+  border-radius: 0;
+  background: $panel-background;
+}
+
+
 // antd样式变更
 .ant-tree li .ant-tree-node-content-wrapper {
   width: 100%;
@@ -97,7 +115,32 @@
 }
 
 // cesium 全局样式
+#popup {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.cesium-popup-tip {
+  background: $panel-background;
+  box-shadow: 0 3px 14px $panel-background;
+  width: 17px;
+  height: 17px;
+  padding: 1px;
+  margin: -10px auto 0;
+  transform: rotate(45deg);
+}
+
+.cesium-popup-tip-container {
+  margin: 0 auto;
+  width: 40px;
+  height: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
 .cesium-map-wrapper {
+  position: absolute;
   overflow: hidden !important;
 }
 
@@ -113,6 +156,10 @@
   box-shadow: none;
   padding: 0;
   border: none;
+
+  .cesium-popup-content {
+    max-width: none !important;
+  }
 
   .cesium-popup--aligned-top-center {
     width: 100%;
@@ -184,7 +231,7 @@
   font-size: 32px;
   font-weight: 300;
   color: var(--text-color);
-  top: 10px;
+  top: -5px;
   right: 12px;
   z-index: 1000;
   transition: color .2s ease-in;

@@ -6,15 +6,24 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <link rel="icon" href="<%= BASE_URL %>favicon.ico">
   <title><%= htmlWebpackPlugin.options.title %></title>
+  <style>
+    :root {
+      --background: #fff;
+      --background-base: #fff;
+      --border-color-base: #eee;
+      --text-color: rgba(0, 0, 0, .65);
+      --primary-color: #40a9ff;
+      --hover-color: #40a9ff;
+    }
+  </style>
 </head>
 <body>
 <script>
   window.less = {
-    async: false,
-    env: 'development'
+    async: false
   };
 </script>
-<link rel="stylesheet/less" type="text/css" href="./theme.less" />
+<link rel="stylesheet/less" type="text/css" href="./theme.less"/>
 <script src="https://cdn.bootcss.com/less.js/2.7.3/less.min.js"></script>
 <div id="app"></div>
 <!-- built files will be auto injected -->

@@ -1,17 +1,8 @@
 <template>
   <div class="measure-tool">
-    <mapgis-3d-measure
-      v-show="popoverVisible"
-      @load="handleLoad"
-      @measured="measured"
-      v-bind:vue-key="vueKey"
-      v-bind:vue-index="vueIndex"
-    >
-      <!--      是否需要组件提供的控件，如果不需要就使用自己传入的children-->
-      <div v-if="!enableControl">
-        <slot></slot>
-      </div>
-    </mapgis-3d-measure>
+    <div v-if="!enableControl">
+      <slot></slot>
+    </div>
     <div v-if="enableControl">
       <div class="tool-item" @mouseenter="activeMeasure" @mouseleave="deactiveMeasure">
         <municipal-icon name="ruler"></municipal-icon>
@@ -19,7 +10,7 @@
       <div class="toolbar-wrapper" v-show="popoverVisible" @mouseenter="activeMeasure" @mouseleave="deactiveMeasure">
         <div class="tool-item"
              v-for="item in Object.keys(measureToolmap).filter(jitem=>this.measures.indexOf(jitem)>=0) "
-             v-on:click="measureStart(item)" :key="item">
+             v-on:click="activeMeasureFunc(item)" :key="item">
           <municipal-icon :name="measureToolmap[item][0]"></municipal-icon>
         </div>
       </div>
@@ -31,9 +22,11 @@
 </template>
 
 <script>
+import {measureTool} from './measureTools';
 
 export default {
   name: 'municipal-measure',
+  inject: ['webGlobe'],
   data() {
     return {
       vueKeyOne: 'sceneOne',
@@ -46,7 +39,7 @@ export default {
         'slope': ['podufenxi'],
         'delete': ['shanchu'],
       },
-      container: document.getElementsByClassName('cesium-viewer')
+      container: document.getElementsByClassName('cesium-viewer'),
     };
   },
   props: {
@@ -72,13 +65,23 @@ export default {
     enableControl: {
       type: Boolean,
       default: true
+    },
+    units: {
+      type: Array,
+      default: () => {
+        return ['meters', 'kilometers'];
+      }
     }
   },
+  mounted() {
+    this.funcMapType = {};
+    //每一种量测工具对应一个函数
+    this.measures.forEach(item => {
+      this.funcMapType[item] = measureTool(this.webGlobe, this.units[0], item);
+    });
+    this.$emit('load', this, this.funcMapType);
+  },
   methods: {
-    handleLoad(measure) {
-      this.measure = measure;
-      this.$emit('measureLoad', measure);
-    },
     activeMeasure() {
       this.popoverVisible = true;
     },
@@ -90,34 +93,51 @@ export default {
       this.cursorVisible = false;
       this.$emit('measureResult', result);
     },
-    measureStart(measureType) {
-      if (this.measure) {
-        switch (measureType) {
-          case 'length':
-            this.measure.enableMeasureLength();
-            this.cursorVisible = true;
-            return;
-          case 'area':
-            this.measure.enableMeasureArea();
-            this.cursorVisible = true;
-            return;
-          case 'triangle':
-            this.measure.enableMeasureTriangle();
-            this.cursorVisible = true;
-            return;
-          case 'slope':
-            this.measure.enableMeasureSlope();
-            this.cursorVisible = true;
-            return;
-          case 'delete':
-            this.measure.deleteMeasure();
-            this.cursorVisible = false;
-            return;
-          default:
-            break;
-            return;
+    clearTools(measureType) {
+      this.cursorVisible = false;
+      if (this.funcMapType && !_.isEmpty(this.funcMapType)) {
+        for (let key in this.funcMapType) {
+          if (this.funcMapType[key] && key !== measureType && this.funcMapType[key]._start) {
+            this.funcMapType[key].stopTool();
+            this.funcMapType[key]._start = false;
+          }
         }
       }
+    },
+    activeMeasureFunc(measureType) {
+      //this.clearTools(measureType);
+      this.cursorVisible = true;
+      // this.registerMouseEvent();
+      if (measureType === 'delete') {
+        this.clearTools();
+      } else {
+        //一般来说肯定是有的，但是加一个保险
+        if (!this.funcMapType[measureType]) {
+          this.funcMapType[measureType] = measureTool(webGlobe, this.units[0], measureType);
+        }
+        this.funcMapType[measureType].startTool();
+        this.funcMapType[measureType]._start = true;
+      }
+    },
+    registerMouseEvent() {
+      if (!this.mouseEventManager) {
+        //构造鼠标事件管理对象
+        this.mouseEventManager = new CesiumZondy.Manager.MouseEventManager({
+          viewer: this.webGlobe.viewer
+        });
+        //注册鼠标右键单击事件
+        this.mouseEventManager.registerMouseEvent('RIGHT_CLICK', () => {
+          this.cursorVisible = false;
+        });
+        // this.mouseEventManager.registerMouseEvent('LEFT_CLICK', () => {
+        //   this.mouseEventManager.unRegisterMouseEvent('LEFT_CLICK');
+        //   this.mouseEventManager.unRegisterMouseEvent('RIGHT_CLICK');
+        //   this.cursorVisible = false;
+        // });
+      }
+    },
+    measureStart(measureType) {
+      this.activeMeasureFunc(measureType);
     }
   }
 };
