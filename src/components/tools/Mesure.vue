@@ -93,11 +93,11 @@ export default {
       this.cursorVisible = false;
       this.$emit('measureResult', result);
     },
-    clearTools(measureType) {
+    clearTools() {
       this.cursorVisible = false;
       if (this.funcMapType && !_.isEmpty(this.funcMapType)) {
         for (let key in this.funcMapType) {
-          if (this.funcMapType[key] && key !== measureType && this.funcMapType[key]._start) {
+          if (this.funcMapType[key] && this.funcMapType[key]._start) {
             this.funcMapType[key].stopTool();
             this.funcMapType[key]._start = false;
           }
@@ -105,9 +105,8 @@ export default {
       }
     },
     activeMeasureFunc(measureType) {
-      //this.clearTools(measureType);
       this.cursorVisible = true;
-      // this.registerMouseEvent();
+      this.registerMouseEvent();
       if (measureType === 'delete') {
         this.clearTools();
       } else {
@@ -128,12 +127,14 @@ export default {
         //注册鼠标右键单击事件
         this.mouseEventManager.registerMouseEvent('RIGHT_CLICK', () => {
           this.cursorVisible = false;
+          this.clearTools();
+          this.mouseEventManager.unRegisterMouseEvent('RIGHT_CLICK');
         });
-        // this.mouseEventManager.registerMouseEvent('LEFT_CLICK', () => {
-        //   this.mouseEventManager.unRegisterMouseEvent('LEFT_CLICK');
-        //   this.mouseEventManager.unRegisterMouseEvent('RIGHT_CLICK');
-        //   this.cursorVisible = false;
-        // });
+        this.mouseEventManager.registerMouseEvent('LEFT_CLICK', () => {
+          this.mouseEventManager.unRegisterMouseEvent('LEFT_CLICK');
+          this.mouseEventManager.unRegisterMouseEvent('RIGHT_CLICK');
+          this.cursorVisible = false;
+        });
       }
     },
     measureStart(measureType) {
