@@ -17,7 +17,7 @@
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             tree-checkable
             :show-checked-strategy="SHOW_PARENT"
-            search-placeholder="请选择覆土埋深规则"
+            search-placeholder="请选择碰撞规则"
           />
         </a-col>
         <a-col :span="6" style="display: flex;justify-content: center">
@@ -37,7 +37,7 @@ import {treeUtil} from "@/util/helpers/helper";
 const SHOW_PARENT = TreeSelect.SHOW_PARENT;
 
 export default {
-  name: "municipal-overburden",
+  name: "municipal-collision",
   mixins: [loadingM3ds],
   data() {
     return {
@@ -52,9 +52,9 @@ export default {
     layerData: [Array],
     title: {
       type: String,
-      default: '覆土埋深分析'
+      default: '碰撞分析'
     },
-    //覆土埋深规则
+    //碰撞分析规则
     hitType: {
       type: Number
     }

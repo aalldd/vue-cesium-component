@@ -324,11 +324,34 @@ class Store {
       data = await this.GPServer.get(mapServerName + '/GetHitDetectRulInfo', {
         params: params
       });
+      return data;
     } catch (error) {
-      data = new Promise((resolve) => {
+      new Promise((resolve) => {
         resolve('error');
       });
+      return [];
     }
+  }
+
+  //查询覆土埋深信息
+  async DeepDetec(mapServerName, params, geometryType, offset) {
+    if (offset) {
+      if (geometryType === 'rect') {
+        let geometrys = params.geometry;
+        geometrys.xmin = Number(geometrys.xmin) + Number(offset[0]);
+        geometrys.ymin = Number(geometrys.ymin) + Number(offset[1]);
+        geometrys.xmax = Number(geometrys.xmax) + Number(offset[0]);
+        geometrys.ymax = Number(geometrys.ymax) + Number(offset[1]);
+        params.geometry = geometrys;
+      } else if (geometryType === 'polygon') {
+        params.geometry.rings[0] = params.geometry.rings[0].map((item) => {
+          return [Number(item[0]) + Number(offset[0]), Number(item[1]) + Number(offset[1])];
+        });
+      }
+    }
+    const {data} = await this.GPServer.get(mapServerName + '/DeepDetec', {
+      params: params
+    });
     return data;
   }
 

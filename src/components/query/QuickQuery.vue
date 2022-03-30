@@ -52,6 +52,7 @@ export default {
     },
     handleDraw(result) {
       let geometry;
+      //圆形类型的按照多边形传参
       let geometryType = result.type === 'circle' ? 'polygon' : result.type;
       const {payload} = result;
       //如果回传了笛卡尔3坐标

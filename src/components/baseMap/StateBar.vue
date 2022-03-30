@@ -17,7 +17,7 @@ import _ from "lodash";
 
 export default {
   name: "municipal-3d-statebar",
-  inject: ["Cesium", "webGlobe"],
+  inject: ['Cesium', 'CesiumZondy', 'webGlobe'],
   props: {
     ...vueOptions,
     showHpr: {
@@ -78,15 +78,15 @@ export default {
       this.showPosition();
     },
     unmount() {
-      const {webGlobe, vueKey, vueIndex} = this;
-      let find = window.CesiumZondy.EventHandlerManager.findSource(
+      const {webGlobe, vueKey, vueIndex, CesiumZondy} = this;
+      let find = CesiumZondy.EventHandlerManager.findSource(
         vueKey,
         vueIndex
       );
       if (find) {
         find.source.destroy && find.source.destroy();
       }
-      window.CesiumZondy.EventHandlerManager.deleteSource(vueKey, vueIndex);
+      CesiumZondy.EventHandlerManager.deleteSource(vueKey, vueIndex);
     },
     showPosition() {
       const vm = this;
@@ -94,7 +94,7 @@ export default {
 
       const {viewer} = webGlobe;
 
-      if (vueKey && vueIndex) {
+      if ((vueKey && vueIndex) || vueIndex === 0) {
         let screenSpaceMouseEventHandler = new Cesium.ScreenSpaceEventHandler(
           viewer.scene.canvas
         );

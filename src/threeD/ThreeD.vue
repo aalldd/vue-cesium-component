@@ -48,7 +48,11 @@ export default {
           vueIndex: '0'
         }
       ],
-      wmtsMap: null,
+      wmtsMap: {
+        url: 'http://t0.tianditu.com/DataServer?T=vec_c&X={x}&Y={y}&L={l}',
+        token: '79d9c78880a541ad34a010976a244ec2',
+        ptype: 'img'
+      },
       cameraView: {
         destination: {
           x: -2416948.392038159,

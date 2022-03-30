@@ -80,6 +80,10 @@ const router = new Router({
           name: 'overburden',
           component: () => import('../pages/OverBurdenAna')
         }, {
+          path: '/collision',
+          name: 'collision',
+          component: () => import('../pages/CollisionAna')
+        }, {
           path: '/horvercut',
           name: 'horvercut',
           component: () => import('../pages/HorAndVerCutAna')

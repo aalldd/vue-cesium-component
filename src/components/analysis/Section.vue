@@ -91,10 +91,17 @@ export default {
       deep: true
     }
   },
+  destroyed() {
+    this.removePlanes();
+  },
   methods: {
     onDrawLoad(payload) {
       this.dynaCutList = [];
       this.drawOper = payload;
+    },
+    removePlanes() {
+      this.analysisManager && this.dynaCutList && this.dynaCutList.map(d => this.analysisManager.deleteDynamicCutting(d));
+      this.dynaCutList = [];
     },
     handleDraw(drawRes) {
       const {payload} = drawRes;

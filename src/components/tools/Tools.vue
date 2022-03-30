@@ -21,8 +21,7 @@ export default {
   name: "municipal-tool",
   data() {
     return {
-      wmtsMapObj: {},
-      cameraViewObj: {}
+      wmtsMapObj: {}
     };
   },
   props: {
@@ -54,10 +53,6 @@ export default {
         return [0, 0];
       }
     }
-  },
-  updated() {
-    this.wmtsMapObj = this.wmtsMap;
-    this.cameraViewObj = this.cameraView;
   },
   computed: {
     renderTool(item) {

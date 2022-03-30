@@ -122,6 +122,11 @@ const menuData = [
         menuName: '动态剖切',
         menuRoute: 'section',
         key: '4-11'
+      },
+      {
+        menuName: '碰撞分析',
+        menuRoute: 'collision',
+        key: '4-12'
       }
     ]
   }

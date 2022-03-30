@@ -12,6 +12,6 @@ export default {
    */
   vueIndex: {
     typs: [String, Number],
-    default: 0
+    default: 1
   }
 };

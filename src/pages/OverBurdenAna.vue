@@ -1,5 +1,15 @@
 <template>
-  <municipal-overburden :layerData="layerData" :defaultCheckedKeys="defaultCheckedKeys"></municipal-overburden>
+  <div>
+    <municipal-overburden :layerData="layerData" :defaultCheckedKeys="defaultCheckedKeys" :hitType="hitType"
+                          @load="onComLoad" @query="query"></municipal-overburden>
+    <municipal-result-simple v-if="resultVisible"
+                             :dataSource="dataSource"
+                             :columns="columns"
+                             title="覆土埋深结果"
+                             :load="load"
+                             :exportFileName="exportFileName">
+    </municipal-result-simple>
+  </div>
 </template>
 
 <script>
@@ -12,52 +22,88 @@ export default {
       layerData: [],
       defaultCheckedKeys: [],
       hitType: 3,
-      count: 0
+      columns: [],
+      dataSource: [],
+      load: false,
+      exportFileName: '覆土埋深结果',
+      resultVisible: false
     };
   },
   mounted() {
     this.store = new Store();
-    const vm = this;
-    const getOverBurdenRule = async () => {
-      if (vm.count >= 10) {
-        vm.count = 0;
-        this.$message.warn('请检查服务接口是否正常');
-        window.clearInterval(vm.myInterval);
-      } else {
-        vm.count++;
-      }
-      if (window.commonParam) {
-        const {mapServerName} = window.commonParam;
-        const params = {
-          hitType: vm.hitType
-        };
-        const {data} = await vm.store.GetHitDetectRulInfo(mapServerName, params);
-        const result = [];
-        let checkedKeys = [];
-        if (data.length) {
-          data.forEach((item, index) => {
-            let pr = {
-              title: item,
-              key: index,
-              value: index
-            };
-            result.push(pr);
-            checkedKeys.push(index);
-          });
-        }
-        vm.layerData = result;
-        vm.defaultCheckedKeys = checkedKeys;
-        vm.count = 0;
-        window.clearInterval(vm.myInterval);
-      }
-    };
-    vm.reAsked(getOverBurdenRule);
   },
   methods: {
-    reAsked(callback) {
-      this.myInterval = window.setInterval(() => {
-        setTimeout(callback);
-      }, 1000);
+    async onComLoad(payload) {
+      const {commonParam: {mapServerName}} = payload;
+      const params = {
+        hitType: this.hitType
+      };
+      const data = await this.store.GetHitDetectRulInfo(mapServerName, params);
+      const result = [];
+      let checkedKeys = [];
+      if (data.length) {
+        data.forEach((item, index) => {
+          let pr = {
+            title: item,
+            key: index,
+            value: index
+          };
+          result.push(pr);
+          checkedKeys.push(index);
+        });
+        this.layerData = result;
+        this.defaultCheckedKeys = checkedKeys;
+      }
+    },
+    async query(params) {
+      let newGeo;
+      this.resultVisible = true;
+      this.load = true;
+      const {geometry: geo, geometryType, offset, mapServerName, ruleName} = params;
+      if (geometryType === 'rect') {
+        newGeo = {"xmin": geo[0], "ymin": geo[1], "xmax": geo[2], "ymax": geo[3]};
+      } else {
+        let geos = this.create2dArr(geo);
+        newGeo = {"rings": [geos]};
+      }
+      const newParam = {
+        hitType: this.hitType,
+        geometry: newGeo,
+        ruleName: ruleName.join(',')
+      };
+      let data = await this.store.DeepDetec(mapServerName, newParam, geometryType, offset);
+      this.columns = this.getColumns(data);
+      this.dataSource = this.createSource(data);
+    },
+    getColumns(data) {
+      return [
+        {title: '序号', dataIndex: 'key'},
+        ...Object.keys(data[0]).map((f, ind) => ({
+          title: f,
+          dataIndex: f,
+          key: ind
+        }))
+      ];
+    },
+    createSource(data) {
+      data.forEach((data, index) => {
+        data.key = index + 1;
+      });
+      return data;
+    },
+    create2dArr(points) {
+      const ps = [];
+      let subPs = [], i = 0;
+      points.forEach((point) => {
+        subPs.push(parseFloat(point));
+        i++;
+        if (i % 2 === 0 && i > 0) {
+          ps.push(subPs);
+          i = 0;
+          subPs = [];
+        }
+      });
+      return ps;
     }
   }
 };

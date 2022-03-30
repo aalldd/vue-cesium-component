@@ -28,7 +28,7 @@
             </a-select>
           </a-col>
           <a-col :span="16" style="display:flex;justify-content: flex-start"
-                 v-if="item.uniKey==='angel'">
+                 v-if="item.uniKey==='angle'">
             <a-select style="width: 100%" @change="viewChange"
                       :value="currentView">
               <a-select-option v-for="(jitem,index) in viewList" :value="jitem.name"
@@ -41,12 +41,13 @@
           <a-col :span="16" v-if="['speed','pitch','heading','range'].indexOf(item.uniKey)>=0">
             <a-row style="align-items: center;display: flex;width: 100%">
               <a-col :span="12">
-                <a-slider v-model="item.value" :min="-180" :max="180" style="min-width: 100px;margin-right: 10px"/>
+                <a-slider v-model="item.value" :min="item.uniKey==='speed' || item.uniKey==='range'?0:-180" :max="180"
+                          style="min-width: 100px;margin-right: 10px"/>
               </a-col>
               <a-col :span="12">
                 <a-input-number
                   v-model="item.value"
-                  :min="-180"
+                  :min="item.uniKey==='speed' || item.uniKey==='range'?0:-180"
                   :max="180"
                 />
               </a-col>
@@ -54,7 +55,7 @@
           </a-col>
 
           <a-col :span="16" style="display:flex;justify-content: flex-start" v-if="item.uniKey==='loop'">
-            <a-radio-group :options="loopOption" :value="isLoop?'是':'否'" @change="changeLoop"/>
+            <a-radio-group :options="loopOption" :value="item.value" @change="changeLoop"/>
           </a-col>
 
           <a-col :span="16">
@@ -138,7 +139,7 @@ export default {
       }, {
         title: '漫游视角',
         value: '',
-        uniKey: 'angel'
+        uniKey: 'angle'
       }, {
         title: '漫游速度',
         value: 30,
@@ -252,7 +253,7 @@ export default {
         if (this.viewList?.length && this.fixedRoamDataCopy?.length) {
           this.currentView = this.viewList[0].name;
           this.fixedRoamDataCopy = this.fixedRoamDataCopy.map(item => {
-            if (item.uniKey === 'angel') {
+            if (item.uniKey === 'angle') {
               item.value = this.viewList[0].name;
             }
             return item;
@@ -263,9 +264,12 @@ export default {
     },
     fixedRoamDataCopy: {
       handler() {
-        if (this.fixedRoamDataCopy?.length && this.isRoaming) {
-          this.startRoam();
-        }
+        const start = _.debounce(() => {
+          if (this.fixedRoamDataCopy?.length && this.isRoaming) {
+            this.startRoam();
+          }
+        }, 400);
+        start();
       },
       immediate: true,
       deep: true
@@ -290,7 +294,7 @@ export default {
     },
     viewChange(val) {
       this.currentView = val;
-      this.changeFixedData(val, 'view');
+      this.changeFixedData(val, 'angle');
     },
     changeLoop(e) {
       this.changeFixedData(e.target.value, 'loop');
@@ -327,17 +331,23 @@ export default {
     startRoam() {
       //防止视点跳转
       this.webGlobe.viewer.trackedEntity = undefined;
+      this.stopRoam();
       this.removeAll();
       !!this.animationAnalyse && this.animationAnalyse.stop();
-      const loop = this.findValue('loop') === '是' ? true : false;
+      let loop;
+      loop = this.findValue('loop') === '是';
       const model = this.findValue('model');
-      const angel = this.findValue('angel');
+      const angle = this.findValue('angle');
       const speed = this.findValue('speed');
       const heading = this.findValue('heading');
       const pitch = this.findValue('pitch');
       const range = this.findValue('range');
       const modelUrl = this.modelList.find(item => item.name === model).value;
-      const view = this.viewList.find(item => item.name === angel).value;
+      const view = this.viewList.find(item => item.name === angle).value;
+
+      if (!this.path?.length) {
+        this.$message.warn('请先绘制漫游路线');
+      }
 
       this.animationAnalyse = new Cesium.AnimationAnalyse(this.webGlobe.viewer, {
         exHeight: 1,

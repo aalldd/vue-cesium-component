@@ -23,6 +23,7 @@ export {default as MunicipalConnection} from '../components/analysis/Connection'
 export {default as MunicipalHorAndVerCut} from '../components/analysis/HorAndVerCut';
 export {default as MunicipalFence} from '../components/analysis/Fence';
 export {default as MunicipalSection} from '../components/analysis/Section';
+export {default as MunicipalCollision} from '../components/analysis/Collision';
 export {default as MunicipalFixRoam} from '../components/roam/FixRoam';
 export {default as MunicipalFixRoamData} from '../components/roam/FixRoamData';
 export {default as MunicipalAutoRoam} from '../components/roam/AutoRoam';
