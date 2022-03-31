@@ -3,7 +3,7 @@
                    :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
     <template v-slot:content>
       <municipal-draw :vueKey="vueKey" enable-menu-control="func" :drawItems="drawItems" :infinite="false"
-                      @drawcreate="handleDraw"></municipal-draw>
+                      @drawcreate="handleDraw" style="margin-bottom:10px"></municipal-draw>
       <municipal-layer :customTreeData="false"
                        :layerGroup="layerGroup"
                        @check="check"
