@@ -99,6 +99,16 @@ export default {
       },
     }
   },
+  watch: {
+    drawTextures: {
+      handler() {
+        if (this.drawTextures.length > 0) {
+          this.drawTexture = this.drawTextures[0];
+        }
+      },
+      immediate: true
+    }
+  },
   destroyed() {
     this.removeAll();
   },
@@ -113,8 +123,8 @@ export default {
     },
     handleDraw(drawRes) {
       this.drawOper.removeDrawEntities();
-      const {payload} = drawRes;
-      const positions = [...payload, payload[0]];
+      const {payload, type} = drawRes;
+      const positions = type === 'rect' ? [...payload, payload[0]] : payload;
       let tileset = this.m3ds.find((t) => t.layerId) || this.m3ds[0];
       let transform = tileset.root.transform;
       this.view.viewer.scene.globe.depthTestAgainstTerrain = true;

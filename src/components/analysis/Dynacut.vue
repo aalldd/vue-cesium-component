@@ -117,6 +117,16 @@ export default {
       drawItems: ['polygon', 'rect']
     };
   },
+  watch: {
+    drawTextures: {
+      handler() {
+        if (this.drawTextures.length > 0) {
+          this.drawTexture = this.drawTextures[0];
+        }
+      },
+      immediate: true
+    }
+  },
   computed: {
     activeTexture() {
       return "activeTexture";
@@ -127,8 +137,8 @@ export default {
       this.drawOper = payload;
     },
     handleDraw(drawRes) {
-      const {payload} = drawRes;
-      this.drawRange = [...payload, payload[0]];
+      const {payload, type} = drawRes;
+      this.drawRange = type === 'rect' ? [...payload, payload[0]] : payload;
       this.dynacut();
     },
     removePlanes() {

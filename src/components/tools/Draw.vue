@@ -112,6 +112,14 @@ export default {
         this.drawStyleCopy = Object.assign(this.drawStyleCopy, this.drawStyle);
       },
       immediate: true
+    },
+    drawItems: {
+      handler() {
+        if (this.drawItems.length > 0) {
+          this.drawType = this.drawItems[0];
+        }
+      },
+      immediate: true
     }
   },
   destroyed() {
@@ -151,7 +159,7 @@ export default {
       const {outlineColor, color, drawHeight} = this.startDrawing();
       this.drawType = drawType;
       const self = this;
-      switch (drawType) {
+      switch (this.drawType) {
         //如果绘制范围为全球，我们返回一个字符用来标识是查全部的数据
         case 'global':
           self.drawcreate('global');
@@ -183,7 +191,6 @@ export default {
           return;
         default:
           break;
-          return;
       }
     },
     drawcreate(payload) {
