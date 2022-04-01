@@ -102,7 +102,6 @@ export default {
         geometryType = '';
       } else {
         geometry = payload.geometry.split(',');
-        console.log(geometry);
         geometryType = 'rect';
       }
       this.params.geometry = geometry;

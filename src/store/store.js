@@ -355,6 +355,38 @@ class Store {
     return data;
   }
 
+  // 查询碰撞检测信息 HitDetect?hitType={hitType}&ruleName={ruleName}&geometry={geometry}
+  async HitDetect(mapServerName, param, geometryType, offset) {
+    let params = JSON.parse(JSON.stringify(param));
+    if (offset) {
+      if (geometryType === 'rect') {
+        let geometrys = params.geometry;
+        geometrys.xmin = Number(geometrys.xmin) + Number(offset[0]);
+        geometrys.ymin = Number(geometrys.ymin) + Number(offset[1]);
+        geometrys.xmax = Number(geometrys.xmax) + Number(offset[0]);
+        geometrys.ymax = Number(geometrys.ymax) + Number(offset[1]);
+        params.geometry = geometrys;
+      } else if (geometryType === 'polygon') {
+        params.geometry.rings[0] = params.geometry.rings[0].map((item) => {
+          return [Number(item[0]) + Number(offset[0]), Number(item[1]) + Number(offset[1])];
+        });
+      }
+    }
+    let result = [];
+    if (params.ruleName !== '') {
+      try {
+        const {data} = await this.GPServer.get(mapServerName + '/HitDetect', {
+          params: params
+        });
+        result = data;
+      } catch (error) {
+        message.error('未查询到碰撞信息数据');
+        result = [];
+      }
+    }
+    return result;
+  }
+
   //获取横断面分析信息
   // /ProfileMapAnlySH
   async getCrossSectionData(mapServerName, params, exportName) {

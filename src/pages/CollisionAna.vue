@@ -1,9 +1,25 @@
 <template>
-  <municipal-collision @load="onComLoad" :layerData="layerData"></municipal-collision>
+  <div>
+    <municipal-collision @load="onComLoad"
+                         @query="query"
+                         :layerData="layerData"
+                         :defaultCheckedKeys="defaultCheckedKeys"></municipal-collision>
+    <municipal-result-simple v-if="resultVisible"
+                             :dataSource="dataSource"
+                             :defaultCheckedKeys="defaultCheckedKeys"
+                             :columns="columns"
+                             title="覆土埋深结果"
+                             :load="load"
+                             @onClose="resultVisible=false"
+                             :exportFileName="exportFileName">
+    </municipal-result-simple>
+  </div>
 </template>
 
 <script>
 import Store from "@/store/store";
+import _ from 'lodash';
+import * as mockData from './mock.json';
 
 export default {
   name: "CollisionAna",
@@ -23,7 +39,13 @@ export default {
         "规则": "规则"
       },
       layerData: [],
-      commonObj: {}
+      commonObj: {},
+      defaultCheckedKeys: [],
+      dataSource: [],
+      columns: [],
+      load: false,
+      exportFileName: '碰撞分析',
+      resultVisible: false
     };
   },
   mounted() {
@@ -31,17 +53,20 @@ export default {
   },
   methods: {
     async onComLoad(payload) {
-      const {commonParam: {mapServerName}} = payload;
+      const {commonParam: {mapServerName}, m3ds} = payload;
       const params = [];
       for (let key in this.hitTypeMap) {
         params.push({
           hitType: key
         });
       }
-
+      this.m3ds = m3ds;
       const promiseList = params.map(item => this.store.GetHitDetectRulInfo(mapServerName, item));
       const dataRes = await Promise.allSettled(promiseList);
-      let validData = dataRes.filter(item => item !== 'error');
+      const validData = dataRes.map(item => {
+        const {value: {data}} = item;
+        return {data};
+      });
       let ruleList = Object.values(this.hitTypeMap);
       let hitType = Object.keys(this.hitTypeMap);
       let result;
@@ -63,10 +88,12 @@ export default {
     constructTree(ruleList, resList) {
       const res = [];
       let commonObj = {};
+      let checkedKeys = [];
       if (ruleList.length && ruleList.length === resList.length) {
         ruleList.forEach((item, i) => {
           let hitType = Object.keys(this.hitTypeMap)[i];
           let childrenItems = [];
+          checkedKeys.push(`${hitType}-${i}`);
           res.push({
             title: item,
             key: hitType + '-' + i,
@@ -74,12 +101,13 @@ export default {
             selectable: false,
             children: resList[i].data.map((ly, j) => {
               childrenItems.push(ly);
+              checkedKeys.push(`${hitType}-${i}-${j}`);
               commonObj[`${hitType}-${i}-${j}`] = [ly];
               return {
                 title: ly,
                 key: hitType + '-' + i + '-' + j,
                 value: hitType + '-' + i + '-' + j,
-                children: []
+                isLeaf: true
               };
             })
           });
@@ -87,8 +115,100 @@ export default {
         });
         //{'0-0':[燃气,给水],'0-0-1':[燃气]}  这个索引可以更方便的拼接选中的ruleName
         this.commonObj = commonObj;
+        this.defaultCheckedKeys = checkedKeys;
         return res;
       }
+    },
+    async query(param) {
+      let newGeo;
+      this.resultVisible = true;
+      this.load = true;
+      try {
+        const {geometry: geo, geometryType, offset, mapServerName, ruleName} = param;
+        if (geometryType === 'rect') {
+          newGeo = {"xmin": geo[0], "ymin": geo[1], "xmax": geo[2], "ymax": geo[3]};
+        } else {
+          let geos = this.create2dArr(geo);
+          newGeo = {"rings": [geos]};
+        }
+
+        const params = Object.keys(this.hitTypeMap).map(item => {
+          const geo = _.cloneDeep(newGeo);
+          return {
+            hitType: item,
+            geometry: geo,
+            ruleName: ruleName.join()
+          };
+        });
+
+        const promises = params.map(param => this.store.HitDetect(mapServerName, param, geometryType, offset));
+        let data = await Promise.allSettled(promises);
+        let res = [];
+        data.forEach(item => {
+          if (item.status === 'fulfilled') {
+            res = [...res, ...item.value];
+          }
+        });
+        const renderData = res.map(item => {
+          item.layerName0 = null;
+          item.layerName1 = null;
+          if (item.layerId0) {
+            let gdbpUrlStr = this.m3ds.find(jitem => jitem.layerId === item.layerId0).gdbpUrl.split('\\');
+            let layerName = gdbpUrlStr[gdbpUrlStr.length - 1].split('.')[0];
+            let layerName0 = layerName;
+            item.layerName0 = layerName0;
+          }
+
+          if (item.layerId1) {
+            let gdbpUrlStr = this.m3ds.find(jitem => jitem.layerId === item.layerId1).gdbpUrl.split('\\');
+            let layerName = gdbpUrlStr[gdbpUrlStr.length - 1].split('.')[0];
+            let layerName1 = layerName;
+            item.layerName1 = layerName1;
+          }
+          return item;
+        });
+        if (renderData?.length) {
+          this.columns = this.getColumns(renderData);
+          this.dataSource = this.createSource(renderData);
+        } else {
+          this.columns = [];
+          this.dataSource = [];
+        }
+      } catch (e) {
+        this.$message.warn(e)
+      }
+      this.load = false;
+    },
+    create2dArr(points) {
+      const ps = [];
+      let subPs = [], i = 0;
+      points.forEach((point) => {
+        subPs.push(parseFloat(point));
+        i++;
+        if (i % 2 === 0 && i > 0) {
+          ps.push(subPs);
+          i = 0;
+          subPs = [];
+        }
+      });
+      return ps;
+    },
+    getColumns(renderData) {
+      return [
+        {title: '序号', dataIndex: 'key'},
+        ...Object.keys(renderData[0]).map((f, ind) => ({
+          title: f,
+          dataIndex: f,
+          key: ind,
+          width: 160
+        }))
+      ];
+    },
+    createSource(renderData) {
+      renderData.forEach((data, index) => {
+        data.key = index + 1;
+      });
+      return renderData;
     }
   }
 };
