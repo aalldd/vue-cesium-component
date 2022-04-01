@@ -4,9 +4,11 @@
                           @load="onComLoad" @query="query"></municipal-overburden>
     <municipal-result-simple v-if="resultVisible"
                              :dataSource="dataSource"
+                             :defaultCheckedKeys="defaultCheckedKeys"
                              :columns="columns"
                              title="覆土埋深结果"
                              :load="load"
+                             @onClose="resultVisible=false"
                              :exportFileName="exportFileName">
     </municipal-result-simple>
   </div>
@@ -38,7 +40,7 @@ export default {
       const params = {
         hitType: this.hitType
       };
-      const data = await this.store.GetHitDetectRulInfo(mapServerName, params);
+      const {data} = await this.store.GetHitDetectRulInfo(mapServerName, params);
       const result = [];
       let checkedKeys = [];
       if (data.length) {
@@ -59,21 +61,31 @@ export default {
       let newGeo;
       this.resultVisible = true;
       this.load = true;
-      const {geometry: geo, geometryType, offset, mapServerName, ruleName} = params;
-      if (geometryType === 'rect') {
-        newGeo = {"xmin": geo[0], "ymin": geo[1], "xmax": geo[2], "ymax": geo[3]};
-      } else {
-        let geos = this.create2dArr(geo);
-        newGeo = {"rings": [geos]};
+      try {
+        const {geometry: geo, geometryType, offset, mapServerName, ruleName} = params;
+        if (geometryType === 'rect') {
+          newGeo = {"xmin": geo[0], "ymin": geo[1], "xmax": geo[2], "ymax": geo[3]};
+        } else {
+          let geos = this.create2dArr(geo);
+          newGeo = {"rings": [geos]};
+        }
+        const newParam = {
+          hitType: this.hitType,
+          geometry: newGeo,
+          ruleName: ruleName.join(',')
+        };
+        let data = await this.store.DeepDetec(mapServerName, newParam, geometryType, offset);
+        if (data?.length) {
+          this.columns = this.getColumns(data);
+          this.dataSource = this.createSource(data);
+        } else {
+          this.columns = [];
+          this.dataSource = [];
+        }
+      }catch (e) {
+        console.log(e);
       }
-      const newParam = {
-        hitType: this.hitType,
-        geometry: newGeo,
-        ruleName: ruleName.join(',')
-      };
-      let data = await this.store.DeepDetec(mapServerName, newParam, geometryType, offset);
-      this.columns = this.getColumns(data);
-      this.dataSource = this.createSource(data);
+      this.load = false;
     },
     getColumns(data) {
       return [
@@ -81,7 +93,8 @@ export default {
         ...Object.keys(data[0]).map((f, ind) => ({
           title: f,
           dataIndex: f,
-          key: ind
+          key: ind,
+          width:300
         }))
       ];
     },

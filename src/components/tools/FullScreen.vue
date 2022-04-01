@@ -8,6 +8,7 @@
 
 export default {
   name: "municipal-fullScreen",
+  inject: ['webGlobe'],
   props: {
     initScreen: {
       type: Boolean,
@@ -16,8 +17,12 @@ export default {
   },
   data() {
     return {
-      fullScreen: this.initScreen
+      fullScreen: this.initScreen,
+      prevHeight: ''
     };
+  },
+  mounted() {
+    this.prevHeight = window.getComputedStyle(document.body).height;
   },
   computed: {
     expand() {
@@ -36,10 +41,13 @@ export default {
   methods: {
     switchFullScreen() {
       !this.fullScreen ? this.onfullScreen() : this.exitfullScreen();
-      this.fullScreen=!this.fullScreen
+      this.fullScreen = !this.fullScreen;
     },
     onfullScreen() {
       const element = document.documentElement;
+      window.onresize=()=>{
+        webGlobe.viewer.container.style.height = window.getComputedStyle(document.body).height;
+      }
       if (element.requestFullscreen) {
         element.requestFullscreen();
       } else if (element.msRequestFullscreen) {
@@ -51,6 +59,9 @@ export default {
       }
     },
     exitfullScreen() {
+      window.onresize=()=>{
+        webGlobe.viewer.container.style.height = window.getComputedStyle(document.body).height;
+      }
       if (document.exitFullscreen) {
         document.exitFullscreen();
       } else if (document.msExitFullscreen) {

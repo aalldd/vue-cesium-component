@@ -1,7 +1,7 @@
 import {
   Button, Row, Col, Input, InputNumber, Menu,
   Empty, Icon, Tabs, Table, Badge, Dropdown, Drawer, Slider, Checkbox,
-  Popconfirm, Popover, Avatar, Select, Spin, TreeSelect, Tree, AutoComplete, Switch, Radio
+  Popconfirm, Popover, Avatar, Select, Spin, TreeSelect, Tree, AutoComplete, Switch, Radio, message
 } from 'ant-design-vue';
 
 import Vue from 'vue';
@@ -31,6 +31,7 @@ Vue.use(Switch);
 Vue.use(Slider);
 Vue.use(Radio);
 Vue.use(Checkbox);
+Vue.prototype.$message = message;
 
 
 

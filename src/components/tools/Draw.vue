@@ -113,14 +113,15 @@ export default {
       },
       immediate: true
     },
-    drawItems: {
-      handler() {
-        if (this.drawItems.length > 0) {
-          this.drawType = this.drawItems[0];
-        }
-      },
-      immediate: true
-    }
+    //暂时不要默认选中的项
+    // drawItems: {
+    //   handler() {
+    //     if (this.drawItems.length > 0) {
+    //       this.drawType = this.drawItems[0];
+    //     }
+    //   },
+    //   immediate: true
+    // }
   },
   destroyed() {
     this.stopDrawing();
@@ -333,6 +334,7 @@ export default {
           if (!this.infinite) {
             this.drawElement.stopDrawing();
           }
+          console.log(hierarchy);
           this.drawcreate(hierarchy);
         }
       });
@@ -386,6 +388,7 @@ export default {
     },
     activePreview() {
       const previewRange = this.emgManager.getCurrentView();
+      console.log(previewRange);
       this.drawcreate(previewRange);
     },
     removeDrawEntities() {

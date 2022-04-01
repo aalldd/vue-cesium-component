@@ -57,6 +57,9 @@ export default {
     //覆土埋深规则
     hitType: {
       type: Number
+    },
+    defaultCheckedKeys: {
+      type: Array
     }
   },
   watch: {
@@ -66,6 +69,14 @@ export default {
           this.layerDataCopy = this.layerData;
         }
       }
+    },
+    defaultCheckedKeys: {
+      handler() {
+        if (this.defaultCheckedKeys?.length) {
+          this.value = this.defaultCheckedKeys;
+        }
+      },
+      immediate: true
     }
   },
   mounted() {
@@ -90,7 +101,8 @@ export default {
         geometry = '';
         geometryType = '';
       } else {
-        geometry = payload.geometry;
+        geometry = payload.geometry.split(',');
+        console.log(geometry);
         geometryType = 'rect';
       }
       this.params.geometry = geometry;
@@ -98,9 +110,15 @@ export default {
     },
     query() {
       if (!this.value || this.value.length === 0) {
-        this.$message.info("请先选择查询规则！");
+        this.$message.warn("请先选择查询规则！");
         return;
       }
+
+      if(!this.params.geometry || !this.params.geometryType){
+        this.$message.warn("请先选择绘制查询范围！");
+        return;
+      }
+
       //组件内只回传字符串类型的坐标'x,y,x,y'，外面自己吧这些数据整理为{xmin,ymin}的类型
       const ruleName = [];
       treeUtil.forEach(this.layerDataCopy, (item, index) => {
@@ -109,6 +127,7 @@ export default {
         }
       });
       this.params.ruleName = ruleName;
+      console.log(this.params);
       this.$emit('query', {...this.commonParam, ...this.params});
     }
   }
