@@ -37,8 +37,7 @@ export default {
     this.getData();
   },
   methods: {
-    saveRoam(data) {
-      const {id} = data;
+    saveRoam(data, id) {
       let resultData = {key: this.roamData.length + 1, ...data};
       //需要根据是否存在id来判断是添加新方案还是修改方案
       if (!id) {
@@ -66,18 +65,18 @@ export default {
       });
       if (dataRes.success) {
         this.$message.success('修改成功！');
+        await this.getData()
       } else {
         this.$message.error('修改失败！');
       }
     },
-    async deleteRoamPlan(dataRes){
-      const {ID}=dataRes
-      const data =await this.store.deleteRoamData({ID})
+    async deleteRoamPlan(dataRes) {
+      const {ID} = dataRes;
+      const data = await this.store.deleteRoamData({ID});
       if (data.statusCode == '0000') {
         this.$message.success('删除成功！');
         await this.getData();
-      }
-      else {
+      } else {
         this.$message.error("删除失败！");
       }
     },

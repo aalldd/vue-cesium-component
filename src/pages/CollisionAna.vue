@@ -10,7 +10,9 @@
                              :columns="columns"
                              title="覆土埋深结果"
                              :load="load"
+                             :geometry="currentGeo"
                              @onClose="resultVisible=false"
+                             @onRowClick="onRowClick"
                              :exportFileName="exportFileName">
     </municipal-result-simple>
   </div>
@@ -19,7 +21,6 @@
 <script>
 import Store from "@/store/store";
 import _ from 'lodash';
-import * as mockData from './mock.json';
 
 export default {
   name: "CollisionAna",
@@ -45,7 +46,8 @@ export default {
       columns: [],
       load: false,
       exportFileName: '碰撞分析',
-      resultVisible: false
+      resultVisible: false,
+      currentGeo: null
     };
   },
   mounted() {
@@ -55,6 +57,7 @@ export default {
     async onComLoad(payload) {
       const {commonParam: {mapServerName}, m3ds} = payload;
       const params = [];
+      this.mapServerName = mapServerName;
       for (let key in this.hitTypeMap) {
         params.push({
           hitType: key
@@ -141,7 +144,7 @@ export default {
           };
         });
 
-        const promises = params.map(param => this.store.HitDetect(mapServerName, param, geometryType, offset));
+        const promises = params.map(para => this.store.HitDetect(mapServerName, para, geometryType, offset));
         let data = await Promise.allSettled(promises);
         let res = [];
         data.forEach(item => {
@@ -175,7 +178,7 @@ export default {
           this.dataSource = [];
         }
       } catch (e) {
-        this.$message.warn(e)
+        this.$message.warn(e);
       }
       this.load = false;
     },
@@ -200,7 +203,7 @@ export default {
           title: f,
           dataIndex: f,
           key: ind,
-          width: 160
+          width: 180
         }))
       ];
     },
@@ -209,6 +212,39 @@ export default {
         data.key = index + 1;
       });
       return renderData;
+    },
+    async onRowClick(record) {
+      //  由于服务数据缺少了geometry，所以需要在点击行的时候，获取geometry，然后给到组件去做跳转操作
+      const layerId0 = record.layerId0;
+      const layerId1 = record.layerId1;
+      const oid0 = record.objectId0;
+      const oid1 = record.objectId1;
+      let result = [];
+      const params = [{
+        objectIds: [oid0],
+        layerId: layerId0
+      }, {
+        objectIds: [oid1],
+        layerId: layerId1
+      }];
+      const promises = params.map(param => {
+        return this.store.queryFeatures(param, this.mapServerName);
+      });
+      const data = await Promise.allSettled(promises);
+      data.forEach(item => {
+        if (item.status === "fulfilled") {
+          result.push(item.value);
+        }
+      });
+      result = result.map(item => {
+        return item.features[0].geometry.paths;
+      });
+      this.currentGeo = {
+        paths: result,
+        intersection: true,
+        layerId: [layerId0, layerId1],
+        oid: [oid0, oid1]
+      };
     }
   }
 };

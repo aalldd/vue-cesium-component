@@ -35,7 +35,7 @@ export default {
         width: '300px',
         position: 'absolute',
         right: '2em',
-        top: '3em'
+        top: '4em'
       }
     };
   },

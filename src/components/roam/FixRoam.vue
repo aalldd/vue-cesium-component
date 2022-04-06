@@ -123,10 +123,12 @@ export default {
       loopOption: ['是', '否'],
       showRoamDetail: true,
       preview: false,
+      modify: false,
       currentModel: '',
       currentView: '',
       isLoop: false,
       roamTitle: '',
+      defaultRoamData: [],
       //用来渲染界面的数据，可以由外部决定，不传就用默认的
       fixedRoamDataCopy: [{
         title: '漫游方案名称',
@@ -166,7 +168,9 @@ export default {
         uniKey: 'route'
       }],
       path: [],
-      detailVisibleCopy: false
+      detailVisibleCopy: false,
+      //用来表示修改的方案的id
+      id: null
     };
   },
   props: {
@@ -229,6 +233,7 @@ export default {
               return item;
             }
           });
+          this.defaultRoamData = _.cloneDeep(this.fixedRoamDataCopy);
         }
       },
       immediate: true,
@@ -236,29 +241,13 @@ export default {
     },
     modelList: {
       handler() {
-        if (this.modelList?.length && this.fixedRoamDataCopy?.length) {
-          this.currentModel = this.modelList[0].name;
-          this.fixedRoamDataCopy = this.fixedRoamDataCopy.map(item => {
-            if (item.uniKey === 'model') {
-              item.value = this.modelList[0].name;
-            }
-            return item;
-          });
-        }
+        this.initModel();
       },
       immediate: true
     },
     viewList: {
       handler() {
-        if (this.viewList?.length && this.fixedRoamDataCopy?.length) {
-          this.currentView = this.viewList[0].name;
-          this.fixedRoamDataCopy = this.fixedRoamDataCopy.map(item => {
-            if (item.uniKey === 'angle') {
-              item.value = this.viewList[0].name;
-            }
-            return item;
-          });
-        }
+        this.initView();
       },
       immediate: true
     },
@@ -279,10 +268,36 @@ export default {
     this.webGlobe.viewer.trackedEntity = undefined;
     this.stopRoam();
   },
+  mounted() {
+    this.defaultRoamData = _.cloneDeep(this.fixedRoamDataCopy);
+    this.resetForm();
+  },
   methods: {
     onClose() {
       this.stopRoam();
       this.detailVisibleCopy = false;
+    },
+    initModel() {
+      if (this.modelList?.length && this.fixedRoamDataCopy?.length) {
+        this.currentModel = this.modelList[0].name;
+        this.fixedRoamDataCopy = this.fixedRoamDataCopy.map(item => {
+          if (item.uniKey === 'model') {
+            item.value = this.modelList[0].name;
+          }
+          return item;
+        });
+      }
+    },
+    initView() {
+      if (this.viewList?.length && this.fixedRoamDataCopy?.length) {
+        this.currentView = this.viewList[0].name;
+        this.fixedRoamDataCopy = this.fixedRoamDataCopy.map(item => {
+          if (item.uniKey === 'angle') {
+            item.value = this.viewList[0].name;
+          }
+          return item;
+        });
+      }
     },
     showPath() {
       this.pathVisible = !this.pathVisible;
@@ -312,6 +327,7 @@ export default {
       this.drawOper = payload;
     },
     handleDraw(drawRes) {
+      this.path = [];
       const {payload: result} = drawRes;
       const lats = result.map(item => this.emgManager.Cartesian3ToLat(item));
       lats.forEach(item => {
@@ -377,14 +393,17 @@ export default {
       this.fixedRoamDataCopy.forEach(item => {
         planData[item.uniKey] = item.value;
       });
-      this.$emit('saveRoam', planData);
+      this.$emit('saveRoam', planData,this.id);
     },
     addRoamPlan() {
       this.stopRoam();
       this.roamTitle = '新增漫游方案';
       this.preview = false;
+      this.modify = false;
       this.detailVisibleCopy = true;
+      this.resetForm();
     },
+    //点击修改，预览需要用外部数据去修改表单的数据，而不是重置为默认值
     initForm(record) {
       //消除antd的props数据校验错误
       for (let key in record) {
@@ -392,6 +411,7 @@ export default {
           record[key] = Number(record[key]);
         }
       }
+      this.id = record.ID;
       this.currentModel = record['model'];
       this.currentView = record['angel'];
       this.detailVisibleCopy = true;
@@ -399,6 +419,11 @@ export default {
         if (Object.keys(record).indexOf(item.uniKey) >= 0) {
           item.value = record[item.uniKey];
         }
+        //为什么要单独对视角进行处理，传入的视角字段名是angle，但是传出的视角字段名是angel
+        if (item.uniKey === 'angle') {
+          item.value = record['angel'];
+        }
+
         if (record?.isVisible === '是') {
           this.pathVisible = true;
         } else {
@@ -419,11 +444,19 @@ export default {
     modifyRoamPlan(record) {
       this.roamTitle = `修改${record.planName}方案`;
       this.preview = false;
+      this.modify = true;
       this.initForm(record);
     },
     deleteRoamPlan(record) {
       this.stopRoam();
       this.$emit('deleteRoamPlan', record);
+    },
+    //将表单数据完全重置为默认值
+    resetForm() {
+      this.id = null;
+      this.fixedRoamDataCopy = _.cloneDeep(this.defaultRoamData);
+      this.initModel();
+      this.initView();
     }
   }
 };

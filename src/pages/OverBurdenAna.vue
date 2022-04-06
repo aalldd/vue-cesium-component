@@ -8,7 +8,9 @@
                              :columns="columns"
                              title="覆土埋深结果"
                              :load="load"
+                             :geometry="currentGeo"
                              @onClose="resultVisible=false"
+                             @onRowClick="onRowClick"
                              :exportFileName="exportFileName">
     </municipal-result-simple>
   </div>
@@ -28,7 +30,8 @@ export default {
       dataSource: [],
       load: false,
       exportFileName: '覆土埋深结果',
-      resultVisible: false
+      resultVisible: false,
+      currentGeo:null
     };
   },
   mounted() {
@@ -37,6 +40,7 @@ export default {
   methods: {
     async onComLoad(payload) {
       const {commonParam: {mapServerName}} = payload;
+      this.mapServerName = mapServerName;
       const params = {
         hitType: this.hitType
       };
@@ -82,7 +86,7 @@ export default {
           this.columns = [];
           this.dataSource = [];
         }
-      }catch (e) {
+      } catch (e) {
         console.log(e);
       }
       this.load = false;
@@ -94,7 +98,7 @@ export default {
           title: f,
           dataIndex: f,
           key: ind,
-          width:300
+          width: 300
         }))
       ];
     },
@@ -117,6 +121,20 @@ export default {
         }
       });
       return ps;
+    },
+    async onRowClick(record) {
+      const param = {
+        layerId: record.layerId,
+        objectIds: [record.objectId]
+      };
+      const data = await this.store.queryFeatures(param, this.mapServerName);
+      if(data.features[0].geometry.paths?.length){
+        this.currentGeo={
+          paths:[data.features[0].geometry.paths],
+          layerId: record.layerId,
+          oid:record.objectId
+        }
+      }
     }
   }
 };

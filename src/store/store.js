@@ -116,7 +116,7 @@ class Store {
       for (let index = 0; index < length; index++) {
         if (index % 2 === 0) {
           geometrys[index] = Number(geometrys[index]) + Number(offset[0]);
-        } else if (geometrys.length !== 3) {
+        } else {
           geometrys[index] = Number(geometrys[index]) + Number(offset[1]);
         }
       }
@@ -131,12 +131,18 @@ class Store {
           if (params.returnIdsOnly) {//返回OID列表
             if (geometryType === 'rect') {//矩形查询
               let geometrys = geometry.split(',');
+              const xList=geometrys.filter((item,index)=>index%2===0)
+              const yList=geometrys.filter((item,index)=>index%2!==0)
+              const xmin=_.min(xList)
+              const xmax=_.max(xList)
+              const ymin=_.min(yList)
+              const ymax=_.max(yList)
               const geom = geomUtil.toJSON({
                 type: 'extent',
-                xmin: Math.min(geometrys[0], geometrys[2]),
-                xmax: Math.max(geometrys[0], geometrys[2]),
-                ymin: Math.min(geometrys[1], geometrys[3]),
-                ymax: Math.max(geometrys[1], geometrys[3]),
+                xmin: xmin,
+                xmax: xmax,
+                ymin: ymin,
+                ymax: ymax,
               });
               params.geometry = geom.geometry;
               params.geometryType = geom.geometryType;

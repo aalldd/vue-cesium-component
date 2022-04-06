@@ -34,15 +34,18 @@
             表格
           </a-button>
         </div>
-        <div id="pie-chart" style="width:450px;height: 300px"></div>
-        <div id="line-chart" style="width:450px;height: 360px"></div>
+        <keep-alive>
+          <div id="pie-chart" style="width:450px;height: 300px"></div>
+        </keep-alive>
+        <keep-alive>
+          <div id="line-chart" style="width:450px;height: 360px"></div>
+        </keep-alive>
       </div>
     </template>
   </municipal-panel>
 </template>
 
 <script>
-import loadingM3ds from "@/util/mixins/withLoadingM3ds";
 import exportXLSX from "@/util/operators/exportExcel";
 import panelOptions from "@/util/options/panelOptions";
 //因为组件库中只有这里使用到了echarts，所以按需引入，节省体积
@@ -56,7 +59,6 @@ require('echarts/lib/component/toolbox');
 
 export default {
   name: "municipal-statistic-chart",
-  mixins: [loadingM3ds],
   data() {
     return {
       statisticText: '',
@@ -75,7 +77,7 @@ export default {
           width: '500px',
           position: 'absolute',
           left: '2em',
-          top: '2em'
+          top: '4em'
         };
       }
     },
@@ -215,7 +217,7 @@ export default {
     },
     renderName(text, record, index, title) {
       let span = 0;
-      if (title == "所属管网") {
+      if (title === "所属管网") {
         span = record.pipeSpan;
       } else {
         span = record.fieldSpan;

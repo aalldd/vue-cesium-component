@@ -88,7 +88,7 @@ export default {
           width: '450px',
           position: 'absolute',
           right: '2em',
-          top: '2em'
+          top: '4em'
         };
       }
     },

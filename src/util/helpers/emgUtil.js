@@ -11,6 +11,8 @@ class emgUtil {
     }
     this.dynaCutList = [];
     this.popups = [];
+    this.minPoint = { lng: 114.2203747254737, lat: 22.771835217081637 };
+    this.maxPoint = { lng: 114.21673955517658, lat: 22.648560972168106 };
   }
 
   //三维效果方法
@@ -145,7 +147,7 @@ class emgUtil {
       viewer: this.view.viewer
     });
 
-    sceneManager.flyTo(lng, lat, height + 20, 1);
+    sceneManager.flyTo(lng, lat, height, 1);
   };
 
   // 添加拉伸区 默认平面，可以指定stereoscopic,多边形相对地球表面高度，默认0

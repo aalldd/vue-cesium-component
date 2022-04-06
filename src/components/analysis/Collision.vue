@@ -93,10 +93,24 @@ export default {
       const {payload} = result;
       //如果回传了笛卡尔3坐标
       if (Array.isArray(payload)) {
-        geometry = payload.map(item => {
+        const positionXYs = payload.map(item => {
           const position = this.emgManager.Car3ToFv(item);
           return [position.x, position.y];
-        }).reduce((a, b) => a.concat(b), []).join();
+        });
+        const positions=positionXYs.reduce((a,b)=>a.concat(b),[])
+        const xList = positionXYs.map(item => item[0]);
+        const yList = positionXYs.map(item => item[1]);
+        const xMax = _.max(xList);
+        const xMin = _.min(xList);
+        const yMin = _.min(yList);
+        const yMax = _.max(yList);
+        //对于矩形，我们传对象
+        if(geometryType==='rect'){
+          geometry = [xMin, yMin, xMax, yMax];
+        }else{
+          //对于多边形，我们传xy坐标的数组
+          geometry=positions
+        }
       } else if (payload === "global") {
         geometry = '';
         geometryType = '';

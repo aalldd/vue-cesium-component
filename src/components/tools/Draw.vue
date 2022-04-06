@@ -26,6 +26,7 @@
 </template>
 
 <script>
+import {ScreenSpaceEventType} from "@/components/common/ScreenSpaceEventType";
 import loadingM3ds from "@/util/mixins/withLoadingM3ds";
 import {buffer} from '@turf/turf';
 
@@ -71,7 +72,7 @@ export default {
     drawItems: {
       type: Array,
       default: () => {
-        return ['preview', 'global', 'point', 'line', 'polygon', 'rect', 'circle', 'delete'];
+        return ['global', 'point', 'line', 'polygon', 'rect', 'circle', 'delete'];
       }
     },
     //是否采用mapgis-ceisum提供的原生样式
@@ -104,6 +105,17 @@ export default {
     infinite: {
       type: Boolean,
       default: false
+    },
+    screenSpaceEventType: {
+      type: Array,
+      default: () => [
+        ScreenSpaceEventType.WHEEL,
+        ScreenSpaceEventType.MOUSE_MOVE,
+        ScreenSpaceEventType.LEFT_UP,
+        ScreenSpaceEventType.LEFT_DOWN,
+        ScreenSpaceEventType.RIGHT_UP,
+        ScreenSpaceEventType.RIGHT_DOWN
+      ]
     }
   },
   watch: {
@@ -134,6 +146,10 @@ export default {
     if (!window.drawEntities) {
       window.drawEntities = [];
     }
+    //针对范围为当前视角范围的情况，需要动态的去获取
+    if (this.drawItems.indexOf('preview') >= 0) {
+      this.addHandler();
+    }
     // //构造鼠标事件管理对象
     // this.mouseEventManager = new CesiumZondy.Manager.MouseEventManager({
     //   viewer: this.view.viewer
@@ -146,6 +162,20 @@ export default {
     // });
   },
   methods: {
+    addHandler() {
+      this.handler = new Cesium.ScreenSpaceEventHandler(this.view.viewer.scene.canvas);
+      const getCurrentView = _.throttle(() => {
+        if (this.drawType === 'preview') {
+          const previewRange = this.emgManager.getCurrentView();
+          this.drawcreate(previewRange);
+        }
+      }, 500);
+      this.screenSpaceEventType.forEach(item => {
+        this.handler.setInputAction(() => {
+          getCurrentView()
+        }, Cesium.ScreenSpaceEventType[item.type]);
+      });
+    },
     activeDraw() {
       this.popoverVisible = true;
     },
@@ -334,7 +364,6 @@ export default {
           if (!this.infinite) {
             this.drawElement.stopDrawing();
           }
-          console.log(hierarchy);
           this.drawcreate(hierarchy);
         }
       });
@@ -388,7 +417,6 @@ export default {
     },
     activePreview() {
       const previewRange = this.emgManager.getCurrentView();
-      console.log(previewRange);
       this.drawcreate(previewRange);
     },
     removeDrawEntities() {
