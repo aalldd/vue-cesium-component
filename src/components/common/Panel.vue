@@ -4,7 +4,10 @@
                              :class="[panelClassName]">
       <div class="panel-container">
         <div class="top-wrapper">
-          <div class="title" v-if="title" :style="{display:'flex',alignItems:'center'}">{{ title }}</div>
+          <div class="title" v-if="title">{{
+              title
+            }}
+          </div>
           <div class="right">
             <div class="extra" :style="{display:'flex',alignItems:'center'}">
               <slot name="extra"></slot>
@@ -107,6 +110,10 @@ export default {
       color: $text-color;
       overflow: hidden;
       pointer-events: none;
+      display: flex;
+      align-items: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .right {

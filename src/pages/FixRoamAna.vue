@@ -90,8 +90,7 @@ export default {
         roamData.data.forEach((item, index) => {
           data.push({
             ...item,
-            key: index + 1,
-            loop: item.isLoop ? '是' : '否'
+            key: index + 1
           });
         });
         this.roamData = data;

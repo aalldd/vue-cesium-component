@@ -8,7 +8,7 @@
                              :dataSource="dataSource"
                              :defaultCheckedKeys="defaultCheckedKeys"
                              :columns="columns"
-                             title="覆土埋深结果"
+                             title="碰撞分析结果"
                              :load="load"
                              :geometry="currentGeo"
                              @onClose="resultVisible=false"

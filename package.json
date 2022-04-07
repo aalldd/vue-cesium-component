@@ -1,6 +1,6 @@
 {
   "name": "municipal-cesium-components",
-  "version": "0.0.28",
+  "version": "0.0.30",
   "description": "基于cesium的三维组件框架",
   "main": "dist/municipal-vue-cesium.umd.min.js",
   "scripts": {

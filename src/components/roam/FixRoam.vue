@@ -9,72 +9,77 @@
         </div>
       </template>
       <template v-slot:content>
-        <a-row class="input-item" v-for="(item,index) in fixedRoamDataCopy" :key="index">
-          <a-col :span="8">
-            <span class="input-tag">{{ item.title }}</span>
-          </a-col>
-          <a-col :span="16" v-if="item.uniKey==='planName'">
-            <a-input style="width: 100%" v-model="item.value"></a-input>
-          </a-col>
+        <a-row v-for="(item,index) in fixedRoamDataCopy" :key="index">
+          <div v-if="item.visible" style="width: 100%" class="input-item">
+            <a-col :span="8">
+              <span class="input-tag">{{ item.title }}</span>
+            </a-col>
+            <a-col :span="16" v-if="item.uniKey==='planName'">
+              <a-input style="width: 100%" v-model="item.value"></a-input>
+            </a-col>
 
-          <a-col :span="16" style="display:flex;justify-content: flex-start"
-                 v-if="item.uniKey==='model'">
-            <a-select style="width: 100%" @change="modelChange"
-                      :value="currentModel">
-              <a-select-option v-for="(jitem,index) in modelList" :value="jitem.name"
-                               :key="index">
-                {{ jitem.name }}
-              </a-select-option>
-            </a-select>
-          </a-col>
-          <a-col :span="16" style="display:flex;justify-content: flex-start"
-                 v-if="item.uniKey==='angle'">
-            <a-select style="width: 100%" @change="viewChange"
-                      :value="currentView">
-              <a-select-option v-for="(jitem,index) in viewList" :value="jitem.name"
-                               :key="index">
-                {{ jitem.name }}
-              </a-select-option>
-            </a-select>
-          </a-col>
+            <a-col :span="16" style="display:flex;justify-content: flex-start"
+                   v-if="item.uniKey==='model'">
+              <a-select style="width: 100%" @change="modelChange"
+                        :value="currentModel">
+                <a-select-option v-for="(jitem,index) in modelList" :value="jitem.name"
+                                 :key="index">
+                  {{ jitem.name }}
+                </a-select-option>
+              </a-select>
+            </a-col>
+            <a-col :span="16" style="display:flex;justify-content: flex-start"
+                   v-if="item.uniKey==='angle'">
+              <a-select style="width: 100%" @change="viewChange"
+                        :value="currentView">
+                <a-select-option v-for="(jitem,index) in viewList" :value="jitem.name"
+                                 :key="index">
+                  {{ jitem.name }}
+                </a-select-option>
+              </a-select>
+            </a-col>
 
-          <a-col :span="16" v-if="['speed','pitch','heading','range'].indexOf(item.uniKey)>=0">
-            <a-row style="align-items: center;display: flex;width: 100%">
-              <a-col :span="12">
-                <a-slider v-model="item.value" :min="item.uniKey==='speed' || item.uniKey==='range'?0:-180" :max="180"
-                          style="min-width: 100px;margin-right: 10px"/>
-              </a-col>
-              <a-col :span="12">
-                <a-input-number
-                  v-model="item.value"
-                  :min="item.uniKey==='speed' || item.uniKey==='range'?0:-180"
-                  :max="180"
-                />
-              </a-col>
-            </a-row>
-          </a-col>
+            <a-col :span="16" v-if="['speed','pitch','heading','range'].indexOf(item.uniKey)>=0">
+              <a-row style="align-items: center;display: flex;width: 100%">
+                <a-col :span="12">
+                  <a-slider v-model="item.value" :min="item.uniKey==='speed' || item.uniKey==='range'?0:-180" :max="180"
+                            style="min-width: 100px;margin-right: 10px"/>
+                </a-col>
+                <a-col :span="12">
+                  <a-input-number
+                    v-model="item.value"
+                    :min="item.uniKey==='speed' || item.uniKey==='range'?0:-180"
+                    :max="180"
+                  />
+                </a-col>
+              </a-row>
+            </a-col>
 
-          <a-col :span="16" style="display:flex;justify-content: flex-start" v-if="item.uniKey==='loop'">
-            <a-radio-group :options="loopOption" :value="item.value" @change="changeLoop"/>
-          </a-col>
+            <a-col :span="16" style="display:flex;justify-content: flex-start" v-if="item.uniKey==='isLoop'">
+              <a-radio-group :value="item.value" @change="changeLoop">
+                <a-radio :value="1">是</a-radio>
+                <a-radio :value="0">否</a-radio>
+              </a-radio-group>
+            </a-col>
 
-          <a-col :span="16">
-            <div style="display: flex;justify-content: flex-start" v-if="item.uniKey==='route'">
-              <municipal-draw
-                :vueKey="vueKey"
-                enable-menu-control="func"
-                :drawItems="drawItems"
-                @load="onDrawLoad"
-                @drawcreate="handleDraw"
-              >
-                <municipal-icon
-                  name="-vector-polyline"
-                  style="cursor: pointer"
-                  @click="activeDraw"
-                ></municipal-icon>
-              </municipal-draw>
-            </div>
-          </a-col>
+            <a-col :span="16">
+              <div style="display: flex;justify-content: flex-start" v-if="item.uniKey==='route'">
+                <municipal-draw
+                  :vueKey="vueKey"
+                  enable-menu-control="func"
+                  :drawItems="drawItems"
+                  @load="onDrawLoad"
+                  @drawcreate="handleDraw"
+                >
+                  <municipal-icon
+                    name="-vector-polyline"
+                    style="cursor: pointer"
+                    @click="activeDraw"
+                  ></municipal-icon>
+                </municipal-draw>
+              </div>
+            </a-col>
+          </div>
         </a-row>
         <a-row class="input-item" v-if="!preview">
           <a-col :span="24" style="display:flex;justify-content: flex-end">
@@ -133,39 +138,48 @@ export default {
       fixedRoamDataCopy: [{
         title: '漫游方案名称',
         value: '场景漫游方案',
-        uniKey: 'planName'
+        uniKey: 'planName',
+        visible: true
       }, {
         title: '漫游模型',
         value: '',
-        uniKey: 'model'
+        uniKey: 'model',
+        visible: true
       }, {
         title: '漫游视角',
         value: '',
-        uniKey: 'angle'
+        uniKey: 'angle',
+        visible: true
       }, {
         title: '漫游速度',
         value: 30,
-        uniKey: 'speed'
+        uniKey: 'speed',
+        visible: true
       }, {
         title: '俯仰角度',
         value: -10,
-        uniKey: 'pitch'
+        uniKey: 'pitch',
+        visible: true
       }, {
         title: '方位角度',
         value: 90,
-        uniKey: 'heading'
+        uniKey: 'heading',
+        visible: true
       }, {
         title: '视角距离',
         value: 16,
-        uniKey: 'range'
+        uniKey: 'range',
+        visible: true
       }, {
         title: '循环漫游',
-        value: '是',
-        uniKey: 'loop'
+        value: 1,
+        uniKey: 'isLoop',
+        visible: true
       }, {
         title: '绘制路径',
         value: null,
-        uniKey: 'route'
+        uniKey: 'route',
+        visible: true
       }],
       path: [],
       detailVisibleCopy: false,
@@ -251,6 +265,7 @@ export default {
       },
       immediate: true
     },
+    //针对data的监听，当表单中任意数据改变的时候，如果处于漫游状态，重新漫游，视角改变，改变页面结构，同步改变表单数据，模型改变，改变表单数据
     fixedRoamDataCopy: {
       handler() {
         const start = _.debounce(() => {
@@ -262,9 +277,43 @@ export default {
       },
       immediate: true,
       deep: true
+    },
+    currentView: {
+      handler() {
+        //针对不同的漫游视角，需要去控制显示参数
+        const changeVisible = (unikeyList, status) => {
+          if (this.fixedRoamDataCopy?.length) {
+            this.fixedRoamDataCopy = this.fixedRoamDataCopy.map(item => {
+              if (unikeyList.indexOf(item.uniKey) >= 0) {
+                item.visible = status;
+              }
+              return item;
+            });
+          }
+        };
+        //每次漫游视角改变之后，需要同步去改变当前数据fixedRoamDataCopy中angle的值
+        this.changeFixedData(this.currentView, 'angle');
+        if (this.currentView === '自由视角') {
+          changeVisible(['heading', 'pitch', 'range'], false);
+          changeVisible(['speed'], true);
+        } else if (this.currentView === '上帝视角') {
+          changeVisible(['heading', 'pitch'], false);
+          changeVisible(['speed', 'range'], true);
+        } else {
+          changeVisible(['speed', 'range', 'heading', 'pitch'], true);
+        }
+      },
+      immediate: true
+    },
+    currentModel: {
+      handler() {
+        this.changeFixedData(this.currentModel, 'model');
+      },
+      immediate: true
     }
   },
   destroyed() {
+    this.emgManager.removeAll();
     this.webGlobe.viewer.trackedEntity = undefined;
     this.stopRoam();
   },
@@ -274,29 +323,20 @@ export default {
   },
   methods: {
     onClose() {
+      this.emgManager.removeAll();
+      this.webGlobe.viewer.trackedEntity = undefined;
       this.stopRoam();
+      this.drawOper.removeDrawEntities();
       this.detailVisibleCopy = false;
     },
     initModel() {
       if (this.modelList?.length && this.fixedRoamDataCopy?.length) {
         this.currentModel = this.modelList[0].name;
-        this.fixedRoamDataCopy = this.fixedRoamDataCopy.map(item => {
-          if (item.uniKey === 'model') {
-            item.value = this.modelList[0].name;
-          }
-          return item;
-        });
       }
     },
     initView() {
       if (this.viewList?.length && this.fixedRoamDataCopy?.length) {
         this.currentView = this.viewList[0].name;
-        this.fixedRoamDataCopy = this.fixedRoamDataCopy.map(item => {
-          if (item.uniKey === 'angle') {
-            item.value = this.viewList[0].name;
-          }
-          return item;
-        });
       }
     },
     showPath() {
@@ -305,14 +345,12 @@ export default {
     },
     modelChange(val) {
       this.currentModel = val;
-      this.changeFixedData(val, 'model');
     },
     viewChange(val) {
       this.currentView = val;
-      this.changeFixedData(val, 'angle');
     },
     changeLoop(e) {
-      this.changeFixedData(e.target.value, 'loop');
+      this.changeFixedData(e.target.value, 'isLoop');
     },
     changeFixedData(value, uniKey) {
       this.fixedRoamDataCopy = this.fixedRoamDataCopy.map(data => {
@@ -337,6 +375,7 @@ export default {
         this.path.push(...[longtitude, latitude, height]);
       });
       this.isRoaming && this.startRoam();
+      this.drawOper.removeDrawEntities();
     },
     activeDraw() {
       this.drawOper && this.drawOper.enableDrawLine();
@@ -350,8 +389,7 @@ export default {
       this.stopRoam();
       this.removeAll();
       !!this.animationAnalyse && this.animationAnalyse.stop();
-      let loop;
-      loop = this.findValue('loop') === '是';
+      let isLoop = this.findValue('isLoop');
       const model = this.findValue('model');
       const angle = this.findValue('angle');
       const speed = this.findValue('speed');
@@ -367,7 +405,7 @@ export default {
 
       this.animationAnalyse = new Cesium.AnimationAnalyse(this.webGlobe.viewer, {
         exHeight: 1,
-        isLoop: loop,
+        isLoop: isLoop,
         modelUrl: modelUrl,
         positions: Cesium.Cartesian3.fromDegreesArrayHeights(this.path),
         animationType: Number(view),
@@ -393,7 +431,7 @@ export default {
       this.fixedRoamDataCopy.forEach(item => {
         planData[item.uniKey] = item.value;
       });
-      this.$emit('saveRoam', planData,this.id);
+      this.$emit('saveRoam', planData, this.id);
     },
     addRoamPlan() {
       this.stopRoam();
