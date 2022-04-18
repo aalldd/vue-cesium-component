@@ -1,0 +1,15 @@
+{
+  "presets": [
+    "@babel/preset-env",
+    "@vue/cli-plugin-babel/preset",
+    [
+      "@vue/babel-preset-jsx",
+      {
+        "injectH": false
+      }
+    ]
+  ],
+  "plugins": [
+    "transform-vue-jsx"
+  ]
+}

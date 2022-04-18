@@ -1,0 +1,24 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+
+body{
+  box-sizing: border-box;
+}
+
+li{
+  list-style: none;
+}
+
+a{
+  text-decoration: none;
+}
+
+:global{
+  .vdr.active:before{
+    display: none;
+  }
+}
+
+

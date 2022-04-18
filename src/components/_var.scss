@@ -1,0 +1,49 @@
+$min-height: 6em;
+$min-width: 6em;
+$panel-background: var(--background);
+$panel-border-radius: 4px;
+$panel-border-color: var(--border-color-base);
+$text-color: var(--text-color);
+$font-size-sm: .8em;
+$font-size-base: 1.2em;
+$font-size-lg: 2em;
+$panel-padding: .7em;
+$active-background: var(--primary-color);
+$highlight-color: #4f95b4;
+$border-color-base: var(--border-color-base);
+$popup-background: var(--background);
+
+//mixins
+
+//控制文本溢出，传参，最多显示几行文本
+@mixin ellipsisBasic() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@mixin nowrap() {
+  white-space: nowrap;
+}
+
+@mixin absolute($top: 0, $right: 0, $bottom: 0, $left: 0) {
+  position: absolute;
+  top: $top;
+  right: $right;
+  bottom: $bottom;
+  left: $left;
+}
+
+@mixin boxShadow() {
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+@mixin flex($flex-flow: row nowrap, $align-items: '', $justify-content: '') {
+  display: flex;
+  flex-flow: $flex-flow;
+  align-items: $align-items;
+  justify-content: $justify-content;
+}
+
+@mixin border($border-width:1px,$border-type:solid,$border-color:$panel-border-color) {
+  border: $border-width $border-type $border-color;
+}
