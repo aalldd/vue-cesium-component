@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     query() {
-      this.removeAll();
+      this.currentPicked && this.emgManager.stopHighlight([this.currentPicked.tileset]);
       this.cursorVisible = true;
       if (!this.mouseEventManager) {
         //构造鼠标事件管理对象
