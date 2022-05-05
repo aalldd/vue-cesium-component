@@ -1,15 +1,15 @@
 <template>
   <div class="controlTools">
-    <municipal-measure :vueKey="vueKey" v-if="this.toolComponents.indexOf('measure')>=0"
+    <municipal-measure :vueKey="vueKey" v-if="toolComponents.indexOf('measure')>=0"
                        @measureResult="handleMeasure"></municipal-measure>
-    <municipal-draw :vueKey="vueKey" v-if="this.toolComponents.indexOf('draw')>=0" enable-menu-control="menu"
+    <municipal-draw :vueKey="vueKey" v-if="toolComponents.indexOf('draw')>=0" enable-menu-control="menu" :clampToGround="clampToGround"
                     @drawcreate="handleDraw"></municipal-draw>
-    <municipal-fullScreen v-if="this.toolComponents.indexOf('fullScreen')>=0"
+    <municipal-fullScreen v-if="toolComponents.indexOf('fullScreen')>=0"
                           :initScreen="false"></municipal-fullScreen>
-    <municipal-tian v-if="this.toolComponents.indexOf('tian')>=0" :wmtsMap="wmtsMap"></municipal-tian>
-    <municipal-layer-control v-if="this.toolComponents.indexOf('layerControl')>=0"></municipal-layer-control>
-    <municipal-home v-if="this.toolComponents.indexOf('home')>=0" :cameraView="cameraView"></municipal-home>
-    <municipal-click-query v-if="this.toolComponents.indexOf('clickQuery')>=0"
+    <municipal-tian v-if="toolComponents.indexOf('tian')>=0" :wmtsMap="wmtsMap"></municipal-tian>
+    <municipal-layer-control v-if="toolComponents.indexOf('layerControl')>=0"></municipal-layer-control>
+    <municipal-home v-if="toolComponents.indexOf('home')>=0" :cameraView="cameraView"></municipal-home>
+    <municipal-click-query v-if="toolComponents.indexOf('clickQuery')>=0"
                            :clickQueryData="clickQueryData"
                            :popupOffset="popupOffset"
                            @clickQuery="clickQuery"></municipal-click-query>
@@ -52,6 +52,10 @@ export default {
       default: () => {
         return [0, 0];
       }
+    },
+    clampToGround:{
+      type:Boolean,
+      default:false
     }
   },
   computed: {

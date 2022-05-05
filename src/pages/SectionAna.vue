@@ -1,10 +1,13 @@
 <template>
-  <municipal-section></municipal-section>
+  <municipal-section @onClose="onClose"
+                     v-if="panelVisible"></municipal-section>
 </template>
 
 <script>
+import funMixin from "@/pages/funMixin";
 export default {
-  name: "SectionAna"
+  name: "SectionAna",
+  mixins:[funMixin]
 };
 </script>
 

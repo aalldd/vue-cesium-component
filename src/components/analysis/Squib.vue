@@ -72,6 +72,7 @@
 </template>
 
 <script>
+import emgUtil from "@/util/helpers/emgUtil";
 import panelOptions from "@/util/options/panelOptions";
 import loadingM3ds from "@/util/mixins/withLoadingM3ds";
 
@@ -175,19 +176,40 @@ export default {
     SQUIB_RESULT_TYPES:{
       type:Object,
       default:()=>{
-        return {}
+        return {
+          SQUIBPOINT: "civFeatureMetaTypeIncidentPoint", //爆管发生点
+          SHOULDCLOSEDSWITCH: "civFeatureMetaTypeSwitch", //需关断设备
+          CLOSEDSWITCH: "civFeatureMetaTypeClosedSwitch", //已关断设备
+          SHOULDOPENSWITCH: "civFeatureMetaTypeShouldOpenSwitch", //需开启设备
+          INVALIDATESWITCH: "civFeatureMetaTypeInvalidateSwitch", //失效关断设备
+          ASSISTSWITCH: "civFeatureMetaTypeAssistSwitch", //辅助关断设备
+          EFFECTEDUSER: "civFeatureMetaTypeSwieffect", //受影响用户
+          EFFECTEDPIPELINE: "civFeatureMetaTypePipeLine", //受影响管段
+          EFFECTEDREGION: "civFeatureMetaTypeRegionResult", //受影响区域
+          EFFECTEDRECENTER: "civFeatureMetaTypeRescenter", //受影响水源
+          RESSTOP: "civFeatureMetaTypeResstop" //资源装卸点
+        }
       }
     },
     DEFUALT_SELECTED_TYPES:{
       type:Array,
       default:()=>{
-        return []
+        return [ //默认显示的类型
+          "civFeatureMetaTypeIncidentPoint",
+          "civFeatureMetaTypeSwitch",
+          "civFeatureMetaTypeSwieffect",
+          "civFeatureMetaTypePipeLine",
+          "civFeatureMetaTypeRegionResult"
+        ]
       }
     },
     EXLUDE_TYPES:{
       type:Array,
       default:()=>{
-        return []
+        return [ //排除在外的类型
+          "civFeatureMetaTypeRescenter",
+          "civFeatureMetaTypeResstop"
+        ]
       }
     }
   },
@@ -243,6 +265,10 @@ export default {
       this.effectedLineHeights = [];
     },
     pickPipe() {
+      if(!this.emgManager){
+        this.emgManager=new emgUtil(this.webGlobe)
+      }
+
       this.emgManager.removeAll();
       if (!this.mouseEventManager) {
         //构造鼠标事件管理对象

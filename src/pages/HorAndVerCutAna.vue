@@ -1,6 +1,7 @@
 <template>
   <div>
-    <municipal-horvercut @queryCross="queryCross" @queryVer="queryVer"></municipal-horvercut>
+    <municipal-horvercut @queryCross="queryCross" @queryVer="queryVer" @onClose="onClose"
+                         v-if="panelVisible"></municipal-horvercut>
     <municipal-result-common title="分析剖面图" :panelPosition="panelPosition"
                              @onClose="resultVisible=false"
                              :load="load"
@@ -13,9 +14,11 @@
 
 <script>
 import Store from "@/store/store";
+import funMixin from "@/pages/funMixin";
 
 export default {
   name: "HorAndVerCutAna",
+  mixins:[funMixin],
   data() {
     return {
       panelPosition: 'left',

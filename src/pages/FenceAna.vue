@@ -1,6 +1,6 @@
 <template>
   <div>
-    <municipal-fence :title="title" v-if="fenceVisible" :status="status" :initFormData="fenceData"
+    <municipal-fence :title="title" v-if="panelVisible" :status="status" :initFormData="fenceData" @onClose="onClose"
                      @savePlan="savePlan"></municipal-fence>
     <municipal-plan-mananger v-if="planVisible" :title="titlePlan" @close="planVisible=false"
                              :dataSource="planData"
@@ -15,15 +15,16 @@
 
 <script>
 import Store from "@/store/store";
-
+import funMixin from "@/pages/funMixin";
 export default {
   name: "FenceAna",
+  mixins:[funMixin],
   data() {
     return {
       title: '新增电子围栏方案',
       titlePlan: '电子围栏方案管理',
       planVisible: true,
-      fenceVisible: false,
+      panelVisible: false,
       loading: false,
       //全部的电子围栏方案数据，从服务获取
       planData: [],
@@ -38,13 +39,13 @@ export default {
   },
   methods: {
     addPlan() {
-      this.fenceVisible = true;
+      this.panelVisible = true;
       this.status = 'add';
       this.title = '新增电子围栏方案';
     },
     previewPlan(record) {
       this.formatData(record);
-      this.fenceVisible = true;
+      this.panelVisible = true;
       this.status = 'preview';
       this.title = '预览电子围栏方案';
     },
@@ -61,7 +62,7 @@ export default {
     },
     modifyPlan(record) {
       this.formatData(record);
-      this.fenceVisible = true;
+      this.panelVisible = true;
       this.isPreview = true;
       this.status = 'modify';
       this.title = '修改电子围栏方案';
@@ -70,7 +71,7 @@ export default {
       const data = await this.store.deleteFenceData({
         ID: record.ID
       });
-      if (data.statusCode == '0000') {
+      if (data.statusCode === '0000') {
         this.$message.success('删除成功！');
         await this.getFenceData();
         this.planVisible = false;

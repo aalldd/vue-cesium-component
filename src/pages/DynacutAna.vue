@@ -1,5 +1,7 @@
 <template>
   <municipal-dynacut :title="title" @load="onLoad"
+                     @onClose="onClose"
+                     v-if="panelVisible"
                      @onDynacut="getDynacutInfo"
                      :drawTools="['square', 'polygon']"
                      :drawTextures="drawTextures">
@@ -15,10 +17,11 @@
 
 <script>
 import Store from "@/store/store";
-import {dataFormatter} from '@/store/helpers';
+import funMixin from "@/pages/funMixin";
 
 export default {
   name: "dynacutAna",
+  mixins:[funMixin],
   data() {
     return {
       drawTextures: [

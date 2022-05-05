@@ -109,7 +109,15 @@ module.exports = {
               "/components/analysis/dynacut.md",
               "/components/analysis/tunnel.md",
               "/components/analysis/flow.md",
-              "/components/analysis/squib.md"
+              "/components/analysis/squib.md",
+              "/components/analysis/collision.md",
+              "/components/analysis/connect.md",
+              "/components/analysis/cutFill.md",
+              "/components/analysis/dynamicCut.md",
+              "/components/analysis/fence.md",
+              "/components/analysis/horAndVerCut.md",
+              "/components/analysis/overburden.md",
+              "/components/analysis/roll.md"
             ]
           },
 
@@ -118,7 +126,8 @@ module.exports = {
             collapsable: true,
             sidebarDepth: 0,
             children:[
-              "/components/roam/fixroam.md"
+              "/components/roam/fixroam.md",
+              "/components/roam/autoroam.md"
             ]
           }
         ]

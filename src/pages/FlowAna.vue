@@ -1,5 +1,7 @@
 <template>
   <municipal-flow @query="query"
+                  @onClose="onClose"
+                  v-if="panelVisible"
                   :layerGroup="layerGroup"
                   :flowData="flowData"
                   :cacheData="cacheData"
@@ -9,9 +11,11 @@
 
 <script>
 import Store from '@/store/store';
+import funMixin from "@/pages/funMixin";
 
 export default {
   name: "FlowAna",
+  mixins:[funMixin],
   data() {
     return {
       //流向管网信息

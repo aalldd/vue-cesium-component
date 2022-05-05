@@ -1,5 +1,7 @@
 <template>
   <municipal-fix-roam :modelList="modelList"
+                      @onClose="onClose"
+                      v-if="panelVisible"
                       title="场景漫游"
                       @saveRoam="saveRoam"
                       @deleteRoamPlan="deleteRoamPlan"
@@ -7,10 +9,12 @@
 </template>
 <script>
 const baseUrl = '/static/cesium/model';
+import funMixin from "@/pages/funMixin";
 import Store from '@/store/store';
 
 export default {
   name: "FixRoamAna",
+  mixins:[funMixin],
   data() {
     return {
       modelList: [

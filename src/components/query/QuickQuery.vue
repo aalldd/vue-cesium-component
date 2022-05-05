@@ -27,9 +27,6 @@ export default {
   data() {
     return {
       layerIds: [],
-      layerGroup: {
-        '地下图层': {}
-      },
       drawItems: ['global', 'preview', 'polygon', 'rect', 'circle'],
       params: {}
     };
@@ -39,6 +36,14 @@ export default {
     title: {
       type: String,
       default: '快速查询'
+    },
+    layerGroup:{
+      type:Object,
+      default:()=>{
+        return {
+          '地下管线': {}
+        }
+      }
     }
   },
   methods: {

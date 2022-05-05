@@ -11,9 +11,9 @@ title: 'squib-爆管分析'
 ![效果一览](../../assets/squib1.png)
 ![效果一览](../../assets/squib2.png)
 
-## 基本用法
 
-> 基本的爆管分析用法，想要使用完整的爆管分析功能，需要做如下准备</br>
+## 服务接口示例
+> 爆管分析需要做如下准备</br>
 > 1.需要部署cityInterFace的相关服务，爆管分析的服务涉及到了GPServer，AuxDataServer，MapServer
 > 2.需要准备相关静态文件，并作为一个map表传给爆管分析组件
 > 3.需要了解后端传来的字段，并将服务传来的数据整理成规范的格式，相关字段规范见后续的字段规范章节
@@ -74,87 +74,21 @@ class Store{
 }
 ```
 
+## 基本用法
+> 基本的爆管分析用法，</br>query用来查询爆管点相关信息，queryFeature用来获取管网的具体信息，我们根据这个数据来渲染三维效果，
+> </br>queryInvalid用来查询失效设备，queryDetail用于获取设备详情信息，SQUIB_ICONS用来渲染地图中的图标，
+> </br>featuresData是queryFeatures返回的数据，detailData是queryDetail返回的数据，squibData是querySquibPoint返回的数据
+> ,invalidData是queryInvalid返回的数据
 
-## 属性
-
-### `squibData`
-
-- **类型:** `Array`
-- **侦听属性**
-- **默认值:** `[]`
-- **描述:** 爆管分析数据，数据从接口IncidentOperNew获取
-- **数据格式** 标准的爆管分析查询接口数据格式，见数据接口规范章节
-
-### `invalidData`
-- **类型:** `Array`
-- **侦听属性**
-- **默认值:** `[]`
-- **描述:** 失效关阀数据，数据从接口query获取,通过组件的@queryInvalid获取请求参数,点击扩大关阀时，会调用该接口
-- **数据格式** 标准的设备查询接口数据格式,见数据接口规范章节
-
-### `featuresData`
-- **类型:** `Array`
-- **侦听属性**
-- **默认值:** `[]`
-- **描述:** 所有爆管设备的管网信息，数据从接口query中获取，通过组件的queryFeatures获取请求参数，为了使组件能够了解到是哪一种管段的数据，需要将参数中传过来的type数据回传
-- **数据格式** 标准的管网数据格式,见管网数据接口规范章节
-
-### `detailData`
-- **类型:** `Object`
-- **侦听属性**
-- **默认值:** `[]`
-- **描述:** 点击设备详情按钮之后获取到的设备详细信息，数据从接口query中获取，通过组件的queryDetail获取请求参数
-- **数据格式** 标准的管网数据格式,见管网数据接口规范章节
-
-### `SQUIB_ICONS`
-- **类型:** `Object`
-- **侦听属性**
-- **默认值:** `{}`
-- **描述:** 每种爆管数据类型对应的图标url
-- **数据格式** 见示例
-
-### `SQUIB_RESULT_TYPES`
-- **类型:** `Array`
-- **侦听属性**
-- **默认值:** `[]`
-- **描述:** 每种爆管数据类型名称对照，其中示例中的key值不可变更，需要与服务中的civFeatureMetaType字段相对应
-- **数据格式** 见示例
-
-### `EXLUDE_TYPES`
-- **类型:** `Array`
-- **侦听属性**
-- **默认值:** `[]`
-- **描述:** 排除在外的类型
-- **数据格式** 见示例
-
-### `DEFUALT_SELECTED_TYPES`
-- **类型:** `Array`
-- **侦听属性**
-- **默认值:** `[]`
-- **描述:** 默认选中的类型
-- **数据格式** 见示例
-
-### `panelOptions`
-- **类型:** `set`
-- **侦听属性**
-- **默认值:**
-- **描述:** 控制爆管分析面板的展示相关数据
-- **数据格式** 见panel章节
-
-具体调用方法
 ```vue
 <template>
   <municipal-squib @query="querySquibPoint"
-                   @queryRelationships="queryRelationships"
                    @queryFeatures="queryFeatures"
                    @queryInvalid="queryInvalid"
                    @queryDetail="queryDetail"
                    :squibData="squibData"
                    :invalidData="invalidData"
                    :SQUIB_ICONS="SQUIB_ICONS"
-                   :SQUIB_RESULT_TYPES="SQUIB_RESULT_TYPES"
-                   :DEFUALT_SELECTED_TYPES="DEFUALT_SELECTED_TYPES"
-                   :EXLUDE_TYPES="EXLUDE_TYPES"
                    :featureData="featuresData"
                    :detailData="detailData"
                    :loading="loading"></municipal-squib>
@@ -232,45 +166,6 @@ export default {
       this.squibData = res;
       this.loading = false;
     },
-    async queryRelationships(params) {
-      const {userItem, serverName} = params;
-      let response = await this.store.GetRelationshipList(serverName);//获取爆管点的所有分析结果
-      if (response) {
-        this.relationships = response;
-        this.userItem = userItem;
-        this.serverName = serverName;
-        await this.queryUserCount();
-      }
-    },
-    async queryUserCount() {
-      let layerItem = this.userItems?.length && this.userItems.shift();
-      if (layerItem) {
-        let r = this.relationships.filter(function (item) {
-          return item.layerId === layerItem.layerId;
-        })[0];
-        if (r) {
-          let result = [];
-          for (let ii = 0; ii < r.relationships.length; ii++) {
-            let params = {
-              relationshipTableName: r.relationships[ii].relationshipTableName,
-              objectIds: layerItem.objectIds.join()
-            };
-            let response = await this.store.QueryObjectIds(this.serverName, r.layerId, params);
-            result.push(response);
-          }
-          let total = result.map(function (r) {
-            return r;
-          }).reduce(function (a, b) {
-            return a += b.objectIds.length;
-          }, 0);
-          layerItem.totalUser = total;
-          layerItem.userOids = response.objectIds;
-          await this.queryUserCount();
-        } else {
-          await this.queryUserCount();
-        }
-      }
-    },
     async queryFeatures(params) {
       const promises = [];
       params.forEach(layerItems => {
@@ -312,6 +207,72 @@ export default {
 };
 </script>
 ```
+## 属性
+
+### `squibData`
+
+- **类型:** `Array`
+- **侦听属性**
+- **默认值:** `[]`
+- **描述:** 爆管分析数据，数据从接口IncidentOperNew获取
+- **数据格式** 标准的爆管分析查询接口数据格式，见数据接口规范章节
+
+### `invalidData`
+- **类型:** `Array`
+- **侦听属性**
+- **默认值:** `[]`
+- **描述:** 失效关阀数据，数据从接口query获取,通过组件的@queryInvalid获取请求参数,点击扩大关阀时，会调用该接口
+- **数据格式** 标准的设备查询接口数据格式,见数据接口规范章节
+
+### `featuresData`
+- **类型:** `Array`
+- **侦听属性**
+- **默认值:** `[]`
+- **描述:** 所有爆管设备的管网信息，数据从接口query中获取，通过组件的queryFeatures获取请求参数，为了使组件能够了解到是哪一种管段的数据，需要将参数中传过来的type数据回传
+- **数据格式** 标准的管网数据格式,见管网数据接口规范章节
+
+### `detailData`
+- **类型:** `Object`
+- **侦听属性**
+- **默认值:** `[]`
+- **描述:** 点击设备详情按钮之后获取到的设备详细信息，数据从接口query中获取，通过组件的queryDetail获取请求参数
+- **数据格式** 标准的管网数据格式,见管网数据接口规范章节
+
+### `SQUIB_ICONS`
+- **类型:** `Object`
+- **侦听属性**
+- **默认值:** `{}`
+- **描述:** 每种爆管数据类型对应的图标url
+- **数据格式** 见示例
+
+### `SQUIB_RESULT_TYPES`
+- **类型:** `Array`
+- **侦听属性**
+- **默认值:** `[]`
+- **描述:** 每种爆管数据类型名称对照，其中示例中的key值不可变更，需要与服务中的civFeatureMetaType字段相对应
+- **数据格式** 见示例
+
+### `EXLUDE_TYPES`
+- **类型:** `Array`
+- **侦听属性**
+- **默认值:** `[]`
+- **描述:** 排除在外的类型
+- **数据格式** 见示例
+
+### `DEFUALT_SELECTED_TYPES`
+- **类型:** `Array`
+- **侦听属性**
+- **默认值:** `[]`
+- **描述:** 默认选中的类型
+- **数据格式** 见示例
+
+### `panelOptions`
+- **类型:** `set`
+- **侦听属性**
+- **默认值:**
+- **描述:** 控制爆管分析面板的展示相关数据
+- **数据格式** 见panel章节
+
 
 ## 数据示例
 

@@ -2,6 +2,8 @@
   <div>
     <municipal-condition-query :title="title"
                                @reset="reset"
+                               @onClose="onClose"
+                               v-if="panelVisible"
                                @queryLayerInfo="queryLayerInfo"
                                @queryCondition="queryCondition"
                                @load="funcLoad">
@@ -14,7 +16,7 @@
     <municipal-result-common :title="title+'结果'"
                              v-show="resultVisible"
                              :panelPosition="panelPosition"
-                             @onClose="onClose"
+                             @onClose="onResClose"
                              :tabs="tabs"
                              :load="load"
                              :exportFileName="exportFileName"></municipal-result-common>
@@ -23,9 +25,10 @@
 
 <script>
 import Store from "@/store/store";
-
+import funMixin from './funMixin'
 export default {
   name: "ConditionQueryAna",
+  mixins:[funMixin],
   data() {
     return {
       title: '条件查询',
@@ -47,7 +50,7 @@ export default {
     reset() {
       this.$refs.filter.reset();
     },
-    onClose() {
+    onResClose() {
       this.store && this.store.cancelToken;
       this.resultVisible = false;
     },

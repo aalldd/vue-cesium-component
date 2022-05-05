@@ -1,25 +1,25 @@
 <template>
   <municipal-squib @query="querySquibPoint"
-                   @queryRelationships="queryRelationships"
                    @queryFeatures="queryFeatures"
                    @queryInvalid="queryInvalid"
                    @queryDetail="queryDetail"
                    :squibData="squibData"
                    :invalidData="invalidData"
                    :SQUIB_ICONS="SQUIB_ICONS"
-                   :SQUIB_RESULT_TYPES="SQUIB_RESULT_TYPES"
-                   :DEFUALT_SELECTED_TYPES="DEFUALT_SELECTED_TYPES"
-                   :EXLUDE_TYPES="EXLUDE_TYPES"
                    :featureData="featuresData"
                    :detailData="detailData"
+                   @onClose="onClose"
+                   v-if="panelVisible"
                    :loading="loading"></municipal-squib>
 </template>
 
 <script>
 import Store from '@/store/store';
+import funMixin from "@/pages/funMixin";
 
 export default {
   name: "SquibAna",
+  mixins:[funMixin],
   data() {
     return {
       //爆管信息
@@ -47,31 +47,7 @@ export default {
       invalidData: [],
       //设备详细信息
       detailData: {},
-      loading: false,
-      SQUIB_RESULT_TYPES:{
-        SQUIBPOINT: "civFeatureMetaTypeIncidentPoint", //爆管发生点
-        SHOULDCLOSEDSWITCH: "civFeatureMetaTypeSwitch", //需关断设备
-        CLOSEDSWITCH: "civFeatureMetaTypeClosedSwitch", //已关断设备
-        SHOULDOPENSWITCH: "civFeatureMetaTypeShouldOpenSwitch", //需开启设备
-        INVALIDATESWITCH: "civFeatureMetaTypeInvalidateSwitch", //失效关断设备
-        ASSISTSWITCH: "civFeatureMetaTypeAssistSwitch", //辅助关断设备
-        EFFECTEDUSER: "civFeatureMetaTypeSwieffect", //受影响用户
-        EFFECTEDPIPELINE: "civFeatureMetaTypePipeLine", //受影响管段
-        EFFECTEDREGION: "civFeatureMetaTypeRegionResult", //受影响区域
-        EFFECTEDRECENTER: "civFeatureMetaTypeRescenter", //受影响水源
-        RESSTOP: "civFeatureMetaTypeResstop" //资源装卸点
-      },
-      DEFUALT_SELECTED_TYPES:[ //默认显示的类型
-        "civFeatureMetaTypeIncidentPoint",
-        "civFeatureMetaTypeSwitch",
-        "civFeatureMetaTypeSwieffect",
-        "civFeatureMetaTypePipeLine",
-        "civFeatureMetaTypeRegionResult"
-      ],
-      EXLUDE_TYPES:[ //排除在外的类型
-        "civFeatureMetaTypeRescenter",
-        "civFeatureMetaTypeResstop"
-      ]
+      loading: false
     };
   },
   mounted() {
@@ -86,45 +62,6 @@ export default {
       const res = await this.store.IncidentOperNew(mapServerName, funcName, rest);//获取爆管点的所有分析结果
       this.squibData = res;
       this.loading = false;
-    },
-    async queryRelationships(params) {
-      const {userItem, serverName} = params;
-      let response = await this.store.GetRelationshipList(serverName);//获取爆管点的所有分析结果
-      if (response) {
-        this.relationships = response;
-        this.userItem = userItem;
-        this.serverName = serverName;
-        await this.queryUserCount();
-      }
-    },
-    async queryUserCount() {
-      let layerItem = this.userItems?.length && this.userItems.shift();
-      if (layerItem) {
-        let r = this.relationships.filter(function (item) {
-          return item.layerId === layerItem.layerId;
-        })[0];
-        if (r) {
-          let result = [];
-          for (let ii = 0; ii < r.relationships.length; ii++) {
-            let params = {
-              relationshipTableName: r.relationships[ii].relationshipTableName,
-              objectIds: layerItem.objectIds.join()
-            };
-            let response = await this.store.QueryObjectIds(this.serverName, r.layerId, params);
-            result.push(response);
-          }
-          let total = result.map(function (r) {
-            return r;
-          }).reduce(function (a, b) {
-            return a += b.objectIds.length;
-          }, 0);
-          layerItem.totalUser = total;
-          layerItem.userOids = response.objectIds;
-          await this.queryUserCount();
-        } else {
-          await this.queryUserCount();
-        }
-      }
     },
     async queryFeatures(params) {
       const promises = [];

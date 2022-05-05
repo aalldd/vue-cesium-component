@@ -1,6 +1,7 @@
 <template>
   <div>
-    <municipal-connection @queryConnect="queryConnect"></municipal-connection>
+    <municipal-connection @queryConnect="queryConnect" @onClose="onClose"
+                          v-if="panelVisible"></municipal-connection>
     <municipal-result-common title="分析剖面图" :panelPosition="panelPosition"
                              @onClose="resultVisible=false"
                              :load="load"
@@ -12,9 +13,10 @@
 
 <script>
 import Store from '@/store/store';
-
+import funMixin from "@/pages/funMixin";
 export default {
   name: "ConnectionAna",
+  mixins:[funMixin],
   data() {
     return {
       panelPosition: 'bottom',

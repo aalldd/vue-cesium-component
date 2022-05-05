@@ -54,10 +54,6 @@ export default {
       type: String,
       default: '覆土埋深分析'
     },
-    //覆土埋深规则
-    hitType: {
-      type: Number
-    },
     defaultCheckedKeys: {
       type: Array
     }

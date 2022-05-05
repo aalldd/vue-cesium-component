@@ -1,10 +1,11 @@
 <template>
   <div>
-    <municipal-quick-query @query="query" :title="title"></municipal-quick-query>
+    <municipal-quick-query @query="query" :title="title" @onClose="onClose"
+                           v-if="panelVisible"></municipal-quick-query>
     <municipal-result-common :title="title+'结果'"
                              v-show="resultVisible"
                              :panelPosition="panelPosition"
-                             @onClose="onClose"
+                             @onClose="onResClose"
                              :tabs="tabs"
                              :load="load"
                              :exportFileName="exportFileName"></municipal-result-common>
@@ -13,9 +14,11 @@
 
 <script>
 import Store from "@/store/store";
+import funMixin from "@/pages/funMixin";
 
 export default {
   name: "QuickQueryAna",
+  mixins:[funMixin],
   data() {
     return {
       title: '快速查询',
@@ -27,7 +30,7 @@ export default {
     };
   },
   methods: {
-    onClose() {
+    onResClose() {
       const store = new Store();
       store.cancelToken;
       this.resultVisible = false;

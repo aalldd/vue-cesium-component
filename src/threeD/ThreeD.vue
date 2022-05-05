@@ -13,7 +13,7 @@
     <Menu></Menu>
     <router-view></router-view>
     <municipal-tool :wmtsMap="wmtsMap" :popupOffset="popupOffset" :cameraView="cameraView" @clickQuery="clickQuery"
-                    :clickQueryData="clickQueryData"></municipal-tool>
+                    :clickQueryData="clickQueryData" :clampToGround="true"></municipal-tool>
   </municipal-common-layer>
 </template>
 
@@ -82,14 +82,6 @@ export default {
         mapSolution = ms;
       }
       this.globalConfig = mapSolution?.configJSON?.config3d;
-      //推荐将全局的配置保存在本地存储中，这样二三维联动组件可以直接取到相关配置
-      window.localStorage.setItem(this.globalConfigStore, JSON.stringify(this.globalConfig));
-      window.localStorage.setItem(this.linkageDataStore, JSON.stringify({
-        m3dInfos3d: this.m3dInfos3d,
-        m3dInfos2d: this.m3dInfos2d,
-        pluginPath: this.pluginPath,
-        libPath: this.libPath
-      }));
     }
   },
   methods: {

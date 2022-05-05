@@ -1,13 +1,17 @@
 <template>
   <municipal-auto-roam
+    @onClose="onClose"
+    v-if="panelVisible"
     :modelList="modelList"
     title="自主漫游"
   ></municipal-auto-roam>
 </template>
 <script>
+import funMixin from './funMixin'
 const baseUrl = "/static/cesium/model";
 export default {
   name: "AutoRoamAna",
+  mixins:[funMixin],
   data() {
     return {
       modelList: [
@@ -27,9 +31,9 @@ export default {
           value: `${baseUrl}/person.gltf`,
           name: "人",
         },
-      ],
+      ]
     };
-  },
+  }
 };
 </script>
 

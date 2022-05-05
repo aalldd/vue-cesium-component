@@ -172,7 +172,7 @@ export default {
       }, 500);
       this.screenSpaceEventType.forEach(item => {
         this.handler.setInputAction(() => {
-          getCurrentView()
+          getCurrentView();
         }, Cesium.ScreenSpaceEventType[item.type]);
       });
     },
@@ -225,6 +225,7 @@ export default {
       }
     },
     drawcreate(payload) {
+      console.log(payload);
       this.$emit('drawcreate', {
         payload,
         type: this.drawType
@@ -247,10 +248,12 @@ export default {
         color: color,
         callback: (position) => {
           //拿经纬度坐标
-          const {lng, lat, height} = this.emgManager.changeToLatAndTerrainHeight(position);
-          let modelHeight = this.clampToGround ? height : drawHeight; //模型高度 如果没有指定，就用当前坐标高度
+          let cartographic = Cesium.Cartographic.fromCartesian(position);
+          let lng = Cesium.Math.toDegrees(cartographic.longitude);
+          let lat = Cesium.Math.toDegrees(cartographic.latitude);
+          let height = this.clampToGround ? cartographic.height : drawHeight;
           //添加点：经度、纬度、高程、名称、像素大小、颜色、外边线颜色、边线宽度
-          let drawEntity = this.entityController.appendPoint(lng, lat, modelHeight, '点', 10,
+          let drawEntity = this.entityController.appendPoint(lng, lat, height, '点', 10,
             color,
             outlineColor,
             this.drawStyleCopy.outlineWidth);
@@ -266,19 +269,15 @@ export default {
       this.drawElement.startDrawingPolyline({
         color,
         callback: (positions) => {
+          let pointArr = [];
           let degreeArr = [];
           positions.forEach(position => {
             const {lng, lat, height} = this.emgManager.changeToLatAndTerrainHeight(position);
             const modelHeight = this.clampToGround ? height : drawHeight;
+            this.clampToGround ? pointArr.push(lng, lat) : pointArr.push(lng, lat, modelHeight);
             degreeArr.push([lng, lat, modelHeight]);
           });
-          let polyline = new Cesium.DrawElement.PolylinePrimitive({
-            id: "polyline",
-            positions: positions,
-            width: this.drawStyleCopy.width,
-            geodesic: true
-          });
-          let drawEntity = this.view.viewer.scene.primitives.add(polyline);
+          let drawEntity = this.entityController.appendLine("polyline", pointArr, this.drawStyleCopy.width, color, !this.clampToGround, this.clampToGround);
           window.drawEntities.push(drawEntity);
           if (!this.infinite) {
             this.drawElement.stopDrawing();
@@ -293,33 +292,27 @@ export default {
           let pointArr = [];
           let polygonArr = [];
           positions.forEach(position => {
-            const {lng, lat, height} = this.emgManager.changeToLatAndTerrainHeight(position);
-            const modelHeight = this.clampToGround ? height : drawHeight;
-            const pointM = this.emgManager.positionTransfer({lng, lat, modelHeight});
-            pointArr.push(lng, lat, modelHeight);
+            let cartographic = Cesium.Cartographic.fromCartesian(position);
+            let lng = Cesium.Math.toDegrees(cartographic.longitude);
+            let lat = Cesium.Math.toDegrees(cartographic.latitude);
+            let height = cartographic.height;
+            const pointM = this.emgManager.positionTransfer({lng, lat, height});
+            pointArr.push(lng, lat, drawHeight);
             polygonArr.push(pointM[0], pointM[1]);
           });
           //构造区对象
-          var polygon = {
-            name: "多边形",
-            polygon: {
-              //坐标点
-              hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights(pointArr),
-              //是否指定各点高度
-              perPositionHeight: true,
-              //颜色
-              material: color,
-              //轮廓线是否显示
-              outline: true,
-              //轮廓线颜色
-              outlineColor: outlineColor
-            }
-          };
+          const polygon = new Cesium.DrawElement.PolygonPrimitive({
+            positions: positions,
+            material: Cesium.Material.fromType('Color', {
+              color: color
+            }),
+          });
           //绘制图形通用方法：对接Cesium原生特性
-          const polygonEntity = this.entityController.appendGraphics(polygon);
+          const polygonEntity = this.view.viewer.scene.primitives.add(polygon);
           if (!this.infinite) {
             this.drawElement.stopDrawing();
           }
+          polygonEntity.primitive = true;
           window.drawEntities.push(polygonEntity);
           this.drawcreate(positions);
         }
@@ -342,25 +335,15 @@ export default {
           const cse = [Cesium.Math.toDegrees(southeast.longitude), Cesium.Math.toDegrees(southeast.latitude), drawHeight || northwest.height];
           const csw = [Cesium.Math.toDegrees(southwest.longitude), Cesium.Math.toDegrees(southwest.latitude), drawHeight || northwest.height];
           const hierarchy = Cesium.Cartesian3.fromDegreesArrayHeights([...cnw, ...cne, ...cse, ...csw]);
-          //构造区对象
-          let polygon = {
-            name: "矩形",
-            polygon: {
-              //坐标点
-              hierarchy: hierarchy,
-              //是否指定各点高度
-              perPositionHeight: true,
-              //颜色
-              material: color,
-              //轮廓线是否显示
-              outline: true,
-              //轮廓线颜色
-              outlineColor: outlineColor
-            }
-          };
-          //绘制图形通用方法：对接Cesium原生特性
-          const rectEntity = this.entityController.appendGraphics(polygon);
-          window.drawEntities.push(rectEntity);
+          let rectangle = new Cesium.DrawElement.ExtentPrimitive({
+            extent: positions,
+            material: Cesium.Material.fromType('Color', {
+              color: color
+            }),
+          });
+          let drawEntity = this.view.viewer.scene.primitives.add(rectangle);
+          drawEntity.primitive = true;
+          window.drawEntities.push(drawEntity);
           if (!this.infinite) {
             this.drawElement.stopDrawing();
           }
@@ -371,17 +354,23 @@ export default {
     activeCircle(outlineColor, color, drawHeight) {
       this.drawElement.startDrawingCircle({
         callback: (centerPoint, radius) => {
-          const {lng, lat, height} = this.emgManager.changeToLatAndTerrainHeight(centerPoint);
-          let modelHeight = this.clampToGround ? height : drawHeight;
-          this.range = this.view.viewer.entities.add({
-            position: Cesium.Cartesian3.fromDegrees(lng, lat, height),
-            ellipse: {
-              semiMinorAxis: radius,
-              semiMajorAxis: radius,
-              height: modelHeight, //浮空
-              material: color,
-            }
+          const centerCartographic = Cesium.Cartographic.fromCartesian(centerPoint);
+          let lng = Cesium.Math.toDegrees(centerCartographic.longitude);
+          let lat = Cesium.Math.toDegrees(centerCartographic.latitude);
+          let height = this.clampToGround ? centerCartographic.height : drawHeight;
+          let circle = new Cesium.DrawElement.CirclePrimitive({
+            center: centerPoint,
+            radius: radius,
+            height: height,
+            asynchronous: false,
+            material: Cesium.Material.fromType('Color', {
+              color: color
+            })
           });
+          let drawEntity = this.view.viewer.scene.primitives.add(circle);
+          drawEntity.primitive = true;
+
+          //计算圆的缓冲区，并返回坐标
           const origindata = {
             "type": "FeatureCollection",
             "features": [{
@@ -409,7 +398,7 @@ export default {
             if (!this.infinite) {
               this.drawElement.stopDrawing();
             }
-            window.drawEntities.push(this.range);
+            window.drawEntities.push(drawEntity);
             this.drawcreate(polygonArr);
           }
         }
@@ -423,6 +412,9 @@ export default {
       if (window.drawEntities?.length) {
         window.drawEntities.forEach(item => {
           this.view.viewer.entities.remove(item);
+          if (item.primitive) {
+            item.destroy();
+          }
         });
       }
     },

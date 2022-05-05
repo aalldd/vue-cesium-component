@@ -20,9 +20,9 @@ const loadingM3ds = {
         this.view.tilesetList = this.m3ds;
         this.emgManager = new emgUtil(this.view);
         this.commonConfig = window.commonConfig;
-        this.mapServerName = this.commonConfig?.globalConfig?.mapServerName;
-        this.offset = this.commonConfig?.globalConfig?.offset;
-        this.layerIndexs = this.commonConfig?.globalConfig?.cutLayerIndexList;
+        this.mapServerName = window.commonConfig?.globalConfig?.mapServerName;
+        this.offset = window.commonConfig?.globalConfig?.offset.split(',').map(item=>Number(item));
+        this.layerIndexs = window.commonConfig?.globalConfig?.cutLayerIndexList;
         this.sceneManager = new CesiumZondy.Manager.SceneManager({viewer: this.view.viewer});
         //初始化分析功能管理类
         this.analysisManager = new CesiumZondy.Manager.AnalysisManager({
@@ -58,7 +58,7 @@ const loadingM3ds = {
       }, 1000);
     },
     removeAll() {
-      this.emgManager.removeAll();
+      this.emgManager && this.emgManager.removeAll();
       this.drawElement && this.drawElement.stopDrawing();
     },
     registerMouseEvent() {

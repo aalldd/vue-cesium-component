@@ -3,6 +3,8 @@
                             :title="title"
                             :loading="loading"
                             :attrData="attrData"
+                            @onClose="onClose"
+                            v-if="panelVisible"
                             @queryStatistic="queryStatistic">
     <template v-slot:chart>
       <municipal-statistic-chart :statistic="statistic"
@@ -17,9 +19,11 @@
 
 <script>
 import Store from "@/store/store";
+import funMixin from "@/pages/funMixin";
 
 export default {
   name: "PipeStatisticAna",
+  mixins:[funMixin],
   data() {
     return {
       layerType: 'civGeometryPoint',

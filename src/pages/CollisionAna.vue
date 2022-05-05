@@ -2,7 +2,9 @@
   <div>
     <municipal-collision @load="onComLoad"
                          @query="query"
+                         @onClose="onClose"
                          :layerData="layerData"
+                         v-if="panelVisible"
                          :defaultCheckedKeys="defaultCheckedKeys"></municipal-collision>
     <municipal-result-simple v-if="resultVisible"
                              :dataSource="dataSource"
@@ -20,12 +22,15 @@
 
 <script>
 import Store from "@/store/store";
+import funMixin from './funMixin'
 import _ from 'lodash';
 
 export default {
   name: "CollisionAna",
+  mixins:[funMixin],
   data() {
     return {
+      panelVisible:true,
       hitTypeMap: {1: '水平碰撞规则', 2: '垂直碰撞规则'},
       // 用于映射表字段的哈希表 key值为服务传来的字段名称(缺少的图层名称字段从tileSet中找)，value为界面展示的名称
       tableColumnMap: {

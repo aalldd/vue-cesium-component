@@ -1,12 +1,15 @@
 <template>
   <municipal-flood>
-    <municipal-rain title="降雨信息" :rain-level="rainLevel"></municipal-rain>
+    <municipal-rain title="降雨信息" :rain-level="rainLevel" @onClose="onClose"
+                    v-if="panelVisible"></municipal-rain>
   </municipal-flood>
 </template>
 
 <script>
+import funMixin from "@/pages/funMixin";
 export default {
   name: "FloodAna",
+  mixins:[funMixin],
   data() {
     return {
       rainLevel: [{rain: '小雨', level: '0——0.41', rainSpeed: 4},

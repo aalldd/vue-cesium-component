@@ -33,10 +33,7 @@ export default {
       layerInfoCopy: {},
       fldName: [],
       fieldArr: [],
-      condition: '',
-      layerGroup: {
-        '地下图层': {}
-      }
+      condition: ''
     }
   },
   props: {
@@ -55,6 +52,14 @@ export default {
     layerInfo: {
       type: Object
     },
+    layerGroup:{
+      type:Object,
+      default:()=>{
+        return {
+          '地下管线': {}
+        }
+      }
+    }
   },
   watch: {
     layerInfo: {

@@ -1,7 +1,8 @@
 <template>
   <div>
-    <municipal-overburden :layerData="layerData" :defaultCheckedKeys="defaultCheckedKeys" :hitType="hitType"
-                          @load="onComLoad" @query="query"></municipal-overburden>
+    <municipal-overburden :layerData="layerData" :defaultCheckedKeys="defaultCheckedKeys"
+                          @load="onComLoad" @query="query" @onClose="onClose"
+                          v-if="panelVisible"></municipal-overburden>
     <municipal-result-simple v-if="resultVisible"
                              :dataSource="dataSource"
                              :defaultCheckedKeys="defaultCheckedKeys"
@@ -18,9 +19,11 @@
 
 <script>
 import Store from "@/store/store";
+import funMixin from "@/pages/funMixin";
 
 export default {
   name: "OverBurdenAna",
+  mixins:[funMixin],
   data() {
     return {
       layerData: [],

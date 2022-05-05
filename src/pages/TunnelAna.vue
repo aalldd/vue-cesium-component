@@ -1,7 +1,8 @@
 <template>
   <div>
     <municipal-tunnel title="隧道分析" :layerIndexs="layerIndexs" @sendQueryParam="getQueryParam"
-                      :panelStyle="panelStyle"></municipal-tunnel>
+                      :panelStyle="panelStyle" @onClose="onClose"
+                      v-if="panelVisible"></municipal-tunnel>
     <municipal-result-common title="隧道分析结果" :panelPosition="panelPosition"
                              @onClose="resultVisible=false"
                              v-if="resultVisible"
@@ -16,9 +17,11 @@
 
 <script>
 import Store from '@/store/store';
+import funMixin from "@/pages/funMixin";
 
 export default {
   name: "tunnelAna",
+  mixins:[funMixin],
   inject: ['webGlobe'],
   data() {
     return {
