@@ -23,6 +23,7 @@
 <script>
 import Store from "@/store/store";
 import Menu from "@/threeD/Menu/Menu";
+import BasicOpers from "@/components/tools/basicOpers";
 
 export default {
   components: {
@@ -87,6 +88,21 @@ export default {
   methods: {
     handleLoad(payload) {
       const {component: {webGlobe}, Cesium, CesiumZondy} = payload;
+      const basicOpers = new BasicOpers(webGlobe);
+      const pointArr = [
+        {lng: 114.220411849351, lat: 22.668534933033023, height: 70},
+        {lng: 114.22349530419443, lat: 22.66964127741718, height: 70},
+        {lng: 114.22565889039322, lat: 22.667327368093563, height: 70},
+        {lng: 114.22371181616471, lat: 22.665267667931218, height: 70},
+        {lng: 114.21996773719482, lat: 22.665673065233538, height: 70}
+      ];
+      basicOpers.appendArea('test', pointArr, {
+        fillColor: '#43b984',
+        outLineColor: '#2090dc',
+        fillOpacity: 0.5,
+        outlineOpacity: 1,
+        width: 5
+      });
     },
     onM3dLoad(payload) {
       const m3ds = payload.m3ds;

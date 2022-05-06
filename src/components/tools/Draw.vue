@@ -300,6 +300,7 @@ export default {
             pointArr.push(lng, lat, drawHeight);
             polygonArr.push(pointM[0], pointM[1]);
           });
+          console.log(pointArr);
           //构造区对象
           const polygon = new Cesium.DrawElement.PolygonPrimitive({
             positions: positions,
