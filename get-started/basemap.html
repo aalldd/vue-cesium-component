@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>基本地图 | 中地数码</title>
+    <meta name="generator" content="VuePress 1.9.7">
+    <script src="https://cdn.jsdelivr.net/npm/react@16.6.3/umd/react.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@16.6.3/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/numerify/lib/index.umd.min.js"></script>
+    <link href="http://develop.smaryun.com/static/libs/cdn/zondyclient/npm/webclient-vue-cesium.css" rel="stylesheet" type="text/css">
+    <script src="http://develop.smaryun.com/static/libs/cdn/zondyclient/npm/webclient-vue-cesium.umd.js"></script>
+    <meta name="description" content="Municipal-Cesium-Components">
+    
+    <link rel="preload" href="/vue-cesium-component/assets/css/0.styles.ffdd61bd.css" as="style"><link rel="preload" href="/vue-cesium-component/assets/js/app.cd06ddd5.js" as="script"><link rel="preload" href="/vue-cesium-component/assets/js/3.45d7c105.js" as="script"><link rel="preload" href="/vue-cesium-component/assets/js/43.b661ec53.js" as="script"><link rel="prefetch" href="/vue-cesium-component/assets/js/10.3ed39d27.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/11.7610f8b0.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/12.6cc80a08.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/13.3c6cd8c5.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/14.7bc76aa2.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/15.54604d32.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/16.a7f1bcd0.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/17.1c42d5db.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/18.a705de31.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/19.29c574cf.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/20.712bf00c.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/21.e1490b84.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/22.1e82c067.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/23.a8526eab.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/24.1c2b5230.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/25.67847ef6.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/26.ad70be77.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/27.81833ef9.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/28.65b11ec7.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/29.1cfe3b95.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/30.397dffb9.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/31.45d3a7a0.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/32.c1bc3e39.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/33.db4ffb6e.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/34.46258f6f.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/35.a3694960.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/36.75ce3692.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/37.18407bfe.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/38.739add8a.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/39.39d231e4.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/4.cb2b5b7e.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/40.6e197568.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/41.0e4b705b.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/42.9aaaeaba.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/5.176e068c.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/6.4a43cace.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/7.b630c182.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/8.deddba94.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/9.0b9920ba.js"><link rel="prefetch" href="/vue-cesium-component/assets/js/vendors~docsearch.70fcbd13.js">
+    <link rel="stylesheet" href="/vue-cesium-component/assets/css/0.styles.ffdd61bd.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/vue-cesium-component/" class="home-link router-link-active"><!----> <span class="site-name">中地数码</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/vue-cesium-component/get-started/" class="nav-link router-link-active">
+  开始
+</a></div><div class="nav-item"><a href="/vue-cesium-component/components/" class="nav-link">
+  组件
+</a></div><div class="nav-item"><a href="http://develop.smaryun.com" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  WebClient
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div><div class="nav-item"><a href="https://github.com/MapGIS/WebClient-Vue" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  开源
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/vue-cesium-component/get-started/" class="nav-link router-link-active">
+  开始
+</a></div><div class="nav-item"><a href="/vue-cesium-component/components/" class="nav-link">
+  组件
+</a></div><div class="nav-item"><a href="http://develop.smaryun.com" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  WebClient
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div><div class="nav-item"><a href="https://github.com/MapGIS/WebClient-Vue" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  开源
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></div> <!----></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>指南</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/vue-cesium-component/get-started/" aria-current="page" class="sidebar-link">快速上手</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/vue-cesium-component/get-started/#安装-使用前配置" class="sidebar-link">安装-使用前配置</a></li><li class="sidebar-sub-header"><a href="/vue-cesium-component/get-started/#基本使用" class="sidebar-link">基本使用</a></li></ul></li><li><a href="/vue-cesium-component/get-started/introduction.html" class="sidebar-link">产品介绍</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/vue-cesium-component/get-started/introduction.html#模块说明" class="sidebar-link">模块说明</a></li></ul></li><li><a href="/vue-cesium-component/get-started/basemap.html" aria-current="page" class="active sidebar-link">基础地图</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/vue-cesium-component/get-started/basemap.html#municipal-web-scene组件使用示例" class="sidebar-link">municipal-web-scene组件使用示例</a></li><li class="sidebar-sub-header"><a href="/vue-cesium-component/get-started/basemap.html#场景加载" class="sidebar-link">场景加载</a></li></ul></li></ul></section></li><li><section class="sidebar-group depth-0"><p class="sidebar-heading"><span>组件</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><section class="sidebar-group collapsable is-sub-group depth-1"><p class="sidebar-heading open"><span>基本工具</span> <span class="arrow down"></span></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/vue-cesium-component/components/common/cursorTip.html" class="sidebar-link">cursor-tip 鼠标工具</a></li><li><a href="/vue-cesium-component/components/common/panel.html" class="sidebar-link">panel 面板工具</a></li><li><a href="/vue-cesium-component/components/common/result.html" class="sidebar-link">result 结果面板</a></li><li><a href="/vue-cesium-component/components/common/layer.html" class="sidebar-link">municipal-layer与municipal-layer-select</a></li><li><a href="/vue-cesium-component/components/common/planManager.html" class="sidebar-link">planManager 方案管理面板</a></li></ul></section></li><li><section class="sidebar-group collapsable is-sub-group depth-1"><p class="sidebar-heading"><span>场景</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable is-sub-group depth-1"><p class="sidebar-heading"><span>地图工具</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable is-sub-group depth-1"><p class="sidebar-heading"><span>空间分析</span> <span class="arrow right"></span></p> <!----></section></li><li><section class="sidebar-group collapsable is-sub-group depth-1"><p class="sidebar-heading"><span>漫游</span> <span class="arrow right"></span></p> <!----></section></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="基本地图"><a href="#基本地图" class="header-anchor">#</a> 基本地图</h1> <blockquote><p>1.整个三维组件库的核心，就是webScene组件，该组件用于渲染底层三维场景，相当于html中的main标签，所有子组件都需要嵌套在webScene组件内部！<br></p></blockquote> <blockquote><p>2.一般我们配合m3d图层组件进行使用，这样我们可以在cesium三维场景中添加m3d模型</p></blockquote> <h2 id="municipal-web-scene组件使用示例"><a href="#municipal-web-scene组件使用示例" class="header-anchor">#</a> municipal-web-scene组件使用示例</h2> <div class="language-vue extra-class"><pre class="language-vue"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>template</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>municipal-web-scene</span>
+    <span class="token attr-name">:height</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>height<span class="token punctuation">&quot;</span></span>
+    <span class="token attr-name">:lib-path</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>libPath<span class="token punctuation">&quot;</span></span>
+    <span class="token attr-name">:plugin-path</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>pluginPath<span class="token punctuation">&quot;</span></span>
+    <span class="token attr-name">:key-event-enable</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>keyEventEnable<span class="token punctuation">&quot;</span></span>
+    <span class="token attr-name">:cameraView</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>cameraView<span class="token punctuation">&quot;</span></span>
+    <span class="token attr-name">@load</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>handleLoad<span class="token punctuation">&quot;</span></span>
+  <span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>municipal-3d-igs-m3d</span><span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>municipal-3d-statebar</span> <span class="token attr-name">v-if</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>needState<span class="token punctuation">&quot;</span></span><span class="token punctuation">/&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>slot</span><span class="token punctuation">&gt;</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>slot</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>municipal-web-scene</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>template</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">&gt;</span></span><span class="token script"><span class="token language-javascript">
+  <span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+    name<span class="token operator">:</span> <span class="token string">&quot;webScene&quot;</span><span class="token punctuation">,</span>
+    <span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token punctuation">{</span>
+        <span class="token comment">//地图场景的高度，不传默认父元素高度</span>
+        height<span class="token operator">:</span><span class="token number">1000</span><span class="token punctuation">,</span>
+        <span class="token comment">//cesium资源地址</span>
+        pluginPath<span class="token operator">:</span> <span class="token string">'/static/cesium/webclient-cesium-plugin.min.js'</span><span class="token punctuation">,</span>
+        libPath<span class="token operator">:</span> <span class="token string">'/static/cesium/Cesium.js'</span><span class="token punctuation">,</span>
+        <span class="token comment">//是否允许键盘事件来控制视角</span>
+        keyEventEnable<span class="token operator">:</span><span class="token boolean">true</span><span class="token punctuation">,</span>
+        <span class="token comment">//默认相机视角信息</span>
+        cameraView<span class="token operator">:</span> <span class="token punctuation">{</span>
+          destination<span class="token operator">:</span> <span class="token punctuation">{</span>
+            x<span class="token operator">:</span> <span class="token operator">-</span><span class="token number">2416948.392038159</span><span class="token punctuation">,</span>
+            y<span class="token operator">:</span> <span class="token number">5372543.175879652</span><span class="token punctuation">,</span>
+            z<span class="token operator">:</span> <span class="token number">2444631.2541255946</span>
+          <span class="token punctuation">}</span><span class="token punctuation">,</span>
+          orientation<span class="token operator">:</span> <span class="token punctuation">{</span>
+            heading<span class="token operator">:</span> <span class="token number">0.08752</span><span class="token punctuation">,</span>
+            pitch<span class="token operator">:</span> <span class="token operator">-</span><span class="token number">1.57</span><span class="token punctuation">,</span>
+            roll<span class="token operator">:</span> <span class="token number">0</span>
+          <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    methods<span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token function">handleLoad</span><span class="token punctuation">(</span><span class="token parameter">payload</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">const</span> <span class="token punctuation">{</span>component<span class="token operator">:</span> <span class="token punctuation">{</span>webGlobe<span class="token punctuation">}</span><span class="token punctuation">}</span> <span class="token operator">=</span> payload<span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>webGlobe <span class="token operator">=</span> webGlobe<span class="token punctuation">;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">$emit</span><span class="token punctuation">(</span><span class="token string">'load'</span><span class="token punctuation">,</span> payload<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div><h3 id="通过-props-来交互场景属性"><a href="#通过-props-来交互场景属性" class="header-anchor">#</a> 通过 Props 来交互场景属性</h3> <p>你可以通过 props 来控制地图场景的一些参数如 viewerMode(显示模式), animation(动画播放器), timeline(时间线), cameraView(初始化视角)等.</p> <p>完整的 props 列表请查看<a href="/vue-cesium-component/zh/api/#props">API docs</a>, 注意文字描述中的字段'侦听属性'</p> <h2 id="场景加载"><a href="#场景加载" class="header-anchor">#</a> 场景加载</h2> <p>当地图场景加载完毕,即 map.on(load,callback)事件响应, <code>mapgis-web-scene</code>组件就会发送 <code>load</code> 事件. 整个事件的载荷 payload 会包含 CesiumJS <code>Cesium</code> 对象、MapGIS <code>CesiumZondy</code>对象以及发送当前事件的<code>mapgis-web-scene</code>组件。</p> <div class="language-js extra-class"><pre class="language-js"><code><span class="token function">onMapLoaded</span><span class="token punctuation">(</span><span class="token parameter">payload</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// in component</span>
+  <span class="token keyword">const</span> <span class="token punctuation">{</span>component<span class="token punctuation">,</span> Cesium<span class="token punctuation">,</span> CesiumZondy <span class="token punctuation">}</span> <span class="token operator">=</span> payload<span class="token punctuation">;</span>
+  <span class="token comment">// component 当前场景组件</span>
+  <span class="token comment">// Cesium 标准Cesium对象</span>
+  <span class="token comment">// CesiumZondy 中地Cesium对象</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>所有的<code>mapgis-web-scene</code>的内部组件都会在地图完全加载完毕后才加载渲染。</p> <div class="custom-block warning"><p class="custom-block-title">Vuex 存储 Map 对象</p> <p>请注意，除了基本类型和普通对象外，向 Vuex 或组件的“data”添加其他类型的对象通常都不是一个好主意。尤其是类似以下几种情况:</p> <ol><li>向 vuex 的 store 中添加地图 map，以方便其他组件使用, <code>强烈不推荐</code><div class="language-js extra-class"><pre class="language-js"><code><span class="token keyword">this</span><span class="token punctuation">.</span>$store<span class="token punctuation">.</span>map <span class="token operator">=</span> map<span class="token punctuation">;</span>
+</code></pre></div></li> <li>向组件的 data 属性添加地图 map,<code>强烈不推荐</code><div class="language-js extra-class"><pre class="language-js"><code>  <span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+      map<span class="token operator">:</span> <span class="token keyword">undefined</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token comment">// 某处代码....</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>map <span class="token operator">=</span> map<span class="token punctuation">;</span>
+</code></pre></div></li> <li>向全局的对象中添加地图 map，以方便全局使用,实在没办法了可以这样使用<div class="language-js extra-class"><pre class="language-js"><code>window<span class="token punctuation">.</span>globalMap <span class="token operator">=</span> window<span class="token punctuation">.</span>globalMap <span class="token operator">||</span> map<span class="token punctuation">;</span>
+</code></pre></div><blockquote><p>某种情况来说，采取第 3 种相对容易找到出 bug 的原因，第 1,2 种很容易导致不知名的 bug，如（更新延迟等）且短时间找不到原因 Orz...</p></blockquote></li></ol> <p>Vue 为每个属性添加了 getter 和 setter 方法，所以如果你将 Map 对象添加到 Vuex store 或组件 data 中，可能会导致奇怪的 bug。
+如果希望存储映射对象，请将其存储为非响应性属性，如下面的示例所示。</p></div> <div class="language-vue extra-class"><pre class="language-vue"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>template</span><span class="token punctuation">&gt;</span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>municipal-web-scene</span> <span class="token attr-name">@load</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">&quot;</span>onMapLoaded<span class="token punctuation">&quot;</span></span> <span class="token punctuation">/&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>template</span><span class="token punctuation">&gt;</span></span>
+
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span><span class="token punctuation">&gt;</span></span><span class="token script"><span class="token language-javascript">
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">{</span>
+  <span class="token comment">// …component code…</span>
+  <span class="token function">created</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>map <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span> <span class="token comment">//这里的this.map 不是指的 props/data里面的map 而是传统的js对象的属性参数</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  methods<span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token function">onMapLoaded</span><span class="token punctuation">(</span><span class="token parameter">event</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token comment">// 组件内部使用，绝大部分场景都可以满足应用场景，</span>
+      <span class="token comment">// 少数场景请使用上面的方案三配合Promise的方式来全局调用</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>webGlobe <span class="token operator">=</span> window<span class="token punctuation">.</span>webGlobe<span class="token punctuation">;</span>
+      <span class="token comment">// 或者只是存起来，加入全局vuex的状态存储中，以方便其他组件使用map对象，</span>
+      <span class="token comment">// 强烈禁止,应为很容易在其他地方误触this.$store.map的setter事件</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>$store<span class="token punctuation">.</span>webGlobe <span class="token operator">=</span> window<span class="token punctuation">.</span>webGlobe<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>script</span><span class="token punctuation">&gt;</span></span>
+</code></pre></div></div> <footer class="page-edit"><!----> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
+      ←
+      <a href="/vue-cesium-component/get-started/introduction.html" class="prev">
+        产品介绍
+      </a></span> <span class="next"><a href="/vue-cesium-component/components/common/cursorTip.html">
+        cursor-tip 鼠标工具
+      </a>
+      →
+    </span></p></div> </main></div><div class="global-ui"></div></div>
+    <script src="/vue-cesium-component/assets/js/app.cd06ddd5.js" defer></script><script src="/vue-cesium-component/assets/js/3.45d7c105.js" defer></script><script src="/vue-cesium-component/assets/js/43.b661ec53.js" defer></script>
+  </body>
+</html>
