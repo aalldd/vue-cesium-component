@@ -14,5 +14,6 @@ const MyComponents = {
 export default MyComponents;
 
 export * from './components';
+export * from '../util/helpers/basicOpers';
 
 

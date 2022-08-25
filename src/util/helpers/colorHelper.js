@@ -56,7 +56,6 @@ export const handleColor=(color,opacity=1)=>{
   }else if(_.startsWith(color,'rgba')){
     targetColor=color
   }
-  console.log(targetColor);
   targetColor=handleColorType(targetColor)
   return targetColor
 }

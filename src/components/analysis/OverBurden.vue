@@ -1,11 +1,23 @@
 <template>
-  <municipal-panel :title="title" :draggable="draggable" @onClose="$emit('onClose')" :closable="closable"
-                   :need-expand="expandable" :panel-style="panelStyle" :panel-class-name="panelClassName">
+  <municipal-panel
+    :title="title"
+    :draggable="draggable"
+    @onClose="$emit('onClose')"
+    :closable="closable"
+    :need-expand="expandable"
+    :panel-style="panelStyle"
+    :panel-class-name="panelClassName"
+  >
     <template v-slot:content>
       <a-row>
         <a-col :span="6">
-          <municipal-draw :vueKey="vueKey" enable-menu-control="func" :drawItems="drawItems" @load="onDrawLoad"
-                          @drawcreate="handleDraw">
+          <municipal-draw
+            :vueKey="vueKey"
+            enable-menu-control="func"
+            :drawItems="drawItems"
+            @load="onDrawLoad"
+            @drawcreate="handleDraw"
+          >
           </municipal-draw>
         </a-col>
         <a-col :span="12">
@@ -20,7 +32,7 @@
             search-placeholder="请选择覆土埋深规则"
           />
         </a-col>
-        <a-col :span="6" style="display: flex;justify-content: center">
+        <a-col :span="6" style="display: flex; justify-content: center">
           <a-button type="primary" @click="query">查询</a-button>
         </a-col>
       </a-row>
@@ -31,8 +43,8 @@
 <script>
 import loadingM3ds from "@/util/mixins/withLoadingM3ds";
 import panelOptions from "@/util/options/panelOptions";
-import {TreeSelect} from 'ant-design-vue';
-import {treeUtil} from "@/util/helpers/helper";
+import { TreeSelect } from "ant-design-vue";
+import { treeUtil } from "@/util/helpers/helper";
 
 const SHOW_PARENT = TreeSelect.SHOW_PARENT;
 
@@ -41,7 +53,7 @@ export default {
   mixins: [loadingM3ds],
   data() {
     return {
-      drawItems: ['preview', 'polygon', 'rect'],
+      drawItems: ["preview", "polygon", "rect"],
       layerDataCopy: [],
       value: [],
       SHOW_PARENT,
@@ -52,11 +64,11 @@ export default {
     layerData: [Array],
     title: {
       type: String,
-      default: '覆土埋深分析'
+      default: "覆土埋深分析",
     },
     defaultCheckedKeys: {
-      type: Array
-    }
+      type: Array,
+    },
   },
   watch: {
     layerData: {
@@ -64,7 +76,7 @@ export default {
         if (this.layerData?.length) {
           this.layerDataCopy = this.layerData;
         }
-      }
+      },
     },
     defaultCheckedKeys: {
       handler() {
@@ -72,8 +84,8 @@ export default {
           this.value = this.defaultCheckedKeys;
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   mounted() {
     this.params = {};
@@ -85,34 +97,34 @@ export default {
     handleDraw(result) {
       let geometry;
       //圆形类型的按照多边形传参
-      let geometryType = result.type === 'circle' ? 'polygon' : result.type;
-      const {payload} = result;
+      let geometryType = result.type === "circle" ? "polygon" : result.type;
+      const { payload } = result;
       //如果回传了笛卡尔3坐标
       if (Array.isArray(payload)) {
-        const positionXYs = payload.map(item => {
+        const positionXYs = payload.map((item) => {
           const position = this.emgManager.Car3ToFv(item);
           return [position.x, position.y];
         });
-        const positions=positionXYs.reduce((a,b)=>a.concat(b),[])
-        const xList = positionXYs.map(item => item[0]);
-        const yList = positionXYs.map(item => item[1]);
+        const positions = positionXYs.reduce((a, b) => a.concat(b), []);
+        const xList = positionXYs.map((item) => item[0]);
+        const yList = positionXYs.map((item) => item[1]);
         const xMax = _.max(xList);
         const xMin = _.min(xList);
         const yMin = _.min(yList);
         const yMax = _.max(yList);
         //对于矩形，我们传对象
-        if(geometryType==='rect'){
+        if (geometryType === "rect") {
           geometry = [xMin, yMin, xMax, yMax];
-        }else{
+        } else {
           //对于多边形，我们传xy坐标的数组
-          geometry=positions
+          geometry = positions;
         }
       } else if (payload === "global") {
-        geometry = '';
-        geometryType = '';
+        geometry = "";
+        geometryType = "";
       } else {
-        geometry = payload.geometry.split(',');
-        geometryType = 'rect';
+        geometry = payload.geometry.split(",");
+        geometryType = "rect";
       }
       this.params.geometry = geometry;
       this.params.geometryType = geometryType;
@@ -137,12 +149,10 @@ export default {
       });
       this.params.ruleName = ruleName;
 
-      this.$emit('query', {...this.commonParam, ...this.params});
-    }
-  }
+      this.$emit("query", { ...this.commonParam, ...this.params });
+    },
+  },
 };
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
